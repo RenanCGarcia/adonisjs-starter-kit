@@ -37,6 +37,7 @@ const moduleBoundaries = [
   ...Object.entries(backendModules).flatMap(([name, deps]: [string, string[]]) => {
     const allowed = [`#${name}`, ...SHARED_ALIASES, ...deps.map(dep => `#${dep}`)]
     const message = `Module "${name}" may import ${deps.join(', ') || 'no other module'}. A new dependency goes in apps/backend/modules.json first.`
+
     return [
       restrictImports(`${BACKEND_APP}/${name}/**`, allowed, message),
       restrictImports(`${BACKEND_APP}/${name}/tests/**`, [...allowed, '#tests'], message),
@@ -69,10 +70,55 @@ const designSystem: OxlintOverride[] = [
 
 export default defineConfig({
   extends: [julrPreset({ adonisjs: true })],
-  jsPlugins: ['@shadcn/lint'],
+  jsPlugins: [
+    '@shadcn/lint',
+    { name: 'anti-slop', specifier: './tools/oxlint/anti-slop/index.ts' },
+  ],
 
-  // TODO: remove once https://github.com/oxc-project/oxc/issues/10223 is fixed
-  ignorePatterns: ['**/.adonisjs/**', 'node_modules/**', 'dist/**', 'build/**', '*.yml'],
+  ignorePatterns: [
+    // TODO: remove once https://github.com/oxc-project/oxc/issues/10223 is fixed
+    '**/.adonisjs/**',
+    'node_modules/**',
+    'dist/**',
+    'build/**',
+    '*.yml',
+    // Installed agent tooling and the vendored plugin are not project source.
+    '.agent/**',
+    '.agents/**',
+    '.claude/**',
+    '.codex/**',
+    '.continue/**',
+    '.cursor/**',
+    '.gemini/**',
+    '.opencode/**',
+    '.pi/**',
+    '.roo/**',
+    '.windsurf/**',
+    '.e2e/**',
+    'tools/oxlint/anti-slop/**',
+  ],
+
+  rules: {
+    'oxc/no-accumulating-spread': 'error',
+    'anti-slop/no-array-filter-map': 'error',
+    'anti-slop/no-reduce-accumulator-copy': 'error',
+    'anti-slop/no-chained-type-assertions': 'error',
+    'anti-slop/no-conditional-empty-object-spread': 'error',
+    'anti-slop/no-known-value-widening': 'error',
+    'anti-slop/no-module-mocking': 'error',
+    'anti-slop/no-object-parameters': 'error',
+    'anti-slop/no-reflect-apply': 'error',
+    'anti-slop/no-reflect-get': 'error',
+    'anti-slop/no-runtime-typeof': 'error',
+    'anti-slop/no-shape-in-symbol-names': 'error',
+    'anti-slop/no-unknown-parameters': 'error',
+    'anti-slop/no-unknown-returns': 'error',
+    'anti-slop/no-unknown-type-aliases': 'error',
+    'anti-slop/no-unsafe-dictionary-type': 'error',
+    'anti-slop/no-widen-then-assert': 'error',
+    'anti-slop/require-readable-spacing': 'error',
+    'anti-slop/require-safety-comment-for-type-assertion': 'error',
+  },
 
   overrides: [...moduleBoundaries, ...designSystem],
 })
