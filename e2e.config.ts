@@ -24,7 +24,7 @@ export default {
         readyUrl: 'http://localhost:3333/',
         command: {
           executable: 'pnpm',
-          args: ['exec', 'turbo', 'run', 'dev', '--ui=stream'],
+          args: ['dev', '--ui=stream'],
           startupTimeout: 120_000,
           log: '.e2e/logs/app.log',
         },

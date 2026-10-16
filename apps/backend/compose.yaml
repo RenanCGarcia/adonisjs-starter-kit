@@ -1,5 +1,3 @@
-name: '${APP_NAME}'
-
 services:
   pgsql:
     container_name: '${APP_NAME}_pgsql'

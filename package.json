@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "prepare": "lefthook install",
-    "dev": "turbo dev",
+    "dev": "docker compose up -d --wait && turbo dev",
     "codegen": "turbo codegen",
     "build": "turbo build",
     "test": "turbo test",
