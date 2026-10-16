@@ -28,3 +28,13 @@ export function currentTenantContext(): TenantContext {
 
   return context
 }
+
+/**
+ * The current tenant id, or null in runAsSystem() and outside any context. Never throws,
+ * so it can't scope tenant queries: it is for code that falls back to platform level.
+ */
+export function currentTenantId(): string | null {
+  const context = storage.getStore()
+
+  return context?.kind === 'tenant' ? context.tenantId : null
+}
