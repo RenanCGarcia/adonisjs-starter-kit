@@ -85,6 +85,9 @@ export default defineConfig({
 
     // attachments
     () => import('#attachments/routes'),
+
+    // tenancy
+    () => import('#tenancy/routes'),
   ],
 
   /*
