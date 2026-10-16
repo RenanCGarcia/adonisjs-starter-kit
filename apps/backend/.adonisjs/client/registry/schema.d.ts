@@ -163,6 +163,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'access.member_roles.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/members/:userId/role'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/member').assignRoleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { userId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/member').assignRoleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/member_roles_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/member_roles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.member_permissions.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/members/:userId/permissions'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/member').replaceGrantsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { userId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/member').replaceGrantsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'health_checks.live': {
     methods: ["GET","HEAD"]
     pattern: '/health/live'

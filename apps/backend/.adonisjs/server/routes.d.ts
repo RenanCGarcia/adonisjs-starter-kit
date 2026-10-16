@@ -17,6 +17,8 @@ export type ScannedRoutes = {
     'access.roles.store': { paramsTuple?: []; params?: {} }
     'access.roles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'access.roles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'access.member_roles.update': { paramsTuple: [ParamValue]; params: {'userId': ParamValue} }
+    'access.member_permissions.update': { paramsTuple: [ParamValue]; params: {'userId': ParamValue} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
@@ -39,6 +41,8 @@ export type ScannedRoutes = {
   PUT: {
     'profile.avatar.update': { paramsTuple?: []; params?: {} }
     'access.roles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'access.member_roles.update': { paramsTuple: [ParamValue]; params: {'userId': ParamValue} }
+    'access.member_permissions.update': { paramsTuple: [ParamValue]; params: {'userId': ParamValue} }
   }
   POST: {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }

@@ -5,6 +5,8 @@
 
 export const controllers = {
   access: {
+    MemberPermissions: () => import('#app/access/controllers/member_permissions_controller'),
+    MemberRoles: () => import('#app/access/controllers/member_roles_controller'),
     MyPermissions: () => import('#app/access/controllers/my_permissions_controller'),
     Roles: () => import('#app/access/controllers/roles_controller'),
   },

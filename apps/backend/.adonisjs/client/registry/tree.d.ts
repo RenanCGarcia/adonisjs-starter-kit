@@ -42,6 +42,12 @@ export interface ApiDefinition {
       update: typeof routes['access.roles.update']
       destroy: typeof routes['access.roles.destroy']
     }
+    memberRoles: {
+      update: typeof routes['access.member_roles.update']
+    }
+    memberPermissions: {
+      update: typeof routes['access.member_permissions.update']
+    }
   }
   healthChecks: {
     live: typeof routes['health_checks.live']

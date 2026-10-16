@@ -3,7 +3,7 @@ import { middleware } from '#start/kernel'
 import { apiRoutes } from '#core/api_routes'
 import { controllers } from '#generated/controllers'
 
-const { MyPermissions, Roles } = controllers.access
+const { MyPermissions, Roles, MemberRoles, MemberPermissions } = controllers.access
 
 apiRoutes(() => {
   router
@@ -14,6 +14,13 @@ apiRoutes(() => {
       router.post('roles', [Roles, 'store'])
       router.put('roles/:id', [Roles, 'update']).where('id', router.matchers.uuid())
       router.delete('roles/:id', [Roles, 'destroy']).where('id', router.matchers.uuid())
+
+      router
+        .put('members/:userId/role', [MemberRoles, 'update'])
+        .where('userId', router.matchers.uuid())
+      router
+        .put('members/:userId/permissions', [MemberPermissions, 'update'])
+        .where('userId', router.matchers.uuid())
     })
     .as('access')
     .use([middleware.auth(), middleware.tenant()])

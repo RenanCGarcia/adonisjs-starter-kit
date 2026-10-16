@@ -84,6 +84,18 @@ const routes = {
     tokens: [{"old":"/api/v1/roles/:id","type":0,"val":"api","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"roles","end":""},{"old":"/api/v1/roles/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['access.roles.destroy']['types'],
   },
+  'access.member_roles.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/members/:userId/role',
+    tokens: [{"old":"/api/v1/members/:userId/role","type":0,"val":"api","end":""},{"old":"/api/v1/members/:userId/role","type":0,"val":"v1","end":""},{"old":"/api/v1/members/:userId/role","type":0,"val":"members","end":""},{"old":"/api/v1/members/:userId/role","type":1,"val":"userId","end":""},{"old":"/api/v1/members/:userId/role","type":0,"val":"role","end":""}],
+    types: placeholder as Registry['access.member_roles.update']['types'],
+  },
+  'access.member_permissions.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/members/:userId/permissions',
+    tokens: [{"old":"/api/v1/members/:userId/permissions","type":0,"val":"api","end":""},{"old":"/api/v1/members/:userId/permissions","type":0,"val":"v1","end":""},{"old":"/api/v1/members/:userId/permissions","type":0,"val":"members","end":""},{"old":"/api/v1/members/:userId/permissions","type":1,"val":"userId","end":""},{"old":"/api/v1/members/:userId/permissions","type":0,"val":"permissions","end":""}],
+    types: placeholder as Registry['access.member_permissions.update']['types'],
+  },
   'health_checks.live': {
     methods: ["GET","HEAD"],
     pattern: '/health/live',
