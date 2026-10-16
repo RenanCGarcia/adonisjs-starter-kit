@@ -38,8 +38,8 @@
     "@japa/api-client": "^3.2.1",
     "@tuyau/core": "catalog:",
     "@vinejs/vine": "^4.4.0",
-    "better-sqlite3": "^13.0.3",
     "luxon": "^3.7.2",
+    "pg": "catalog:",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

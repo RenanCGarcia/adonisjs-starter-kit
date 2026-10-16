@@ -1,0 +1,25 @@
+name: '${APP_NAME}'
+
+services:
+  pgsql:
+    container_name: '${APP_NAME}_pgsql'
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USER}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      - pgsql:/var/lib/postgresql
+      - ./database/docker/create_test_database.sh:/docker-entrypoint-initdb.d/create_test_database.sh
+    ports:
+      - '${DB_PORT}:5432'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-q', '-d', '${DB_DATABASE}', '-U', '${DB_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgsql:
+    name: '${APP_NAME}_pgsql'
