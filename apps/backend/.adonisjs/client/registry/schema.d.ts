@@ -79,6 +79,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/attachments/controllers/attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'tenants.tenants.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/tenants'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/tenancy/controllers/tenants_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/tenancy/controllers/tenants_controller').default['index']>>>
+    }
+  }
+  'tenants.tenants.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/tenants'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#tenancy/validators/tenant').createTenantValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#tenancy/validators/tenant').createTenantValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/tenancy/controllers/tenants_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/tenancy/controllers/tenants_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'health_checks.live': {
     methods: ["GET","HEAD"]
     pattern: '/health/live'

@@ -26,6 +26,12 @@ export interface ApiDefinition {
       store: typeof routes['attachments.attachments.store']
     }
   }
+  tenants: {
+    tenants: {
+      index: typeof routes['tenants.tenants.index']
+      store: typeof routes['tenants.tenants.store']
+    }
+  }
   healthChecks: {
     live: typeof routes['health_checks.live']
     ready: typeof routes['health_checks.ready']

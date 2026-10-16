@@ -42,6 +42,18 @@ const routes = {
     tokens: [{"old":"/api/v1/attachments","type":0,"val":"api","end":""},{"old":"/api/v1/attachments","type":0,"val":"v1","end":""},{"old":"/api/v1/attachments","type":0,"val":"attachments","end":""}],
     types: placeholder as Registry['attachments.attachments.store']['types'],
   },
+  'tenants.tenants.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/tenants',
+    tokens: [{"old":"/api/v1/tenants","type":0,"val":"api","end":""},{"old":"/api/v1/tenants","type":0,"val":"v1","end":""},{"old":"/api/v1/tenants","type":0,"val":"tenants","end":""}],
+    types: placeholder as Registry['tenants.tenants.index']['types'],
+  },
+  'tenants.tenants.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/tenants',
+    tokens: [{"old":"/api/v1/tenants","type":0,"val":"api","end":""},{"old":"/api/v1/tenants","type":0,"val":"v1","end":""},{"old":"/api/v1/tenants","type":0,"val":"tenants","end":""}],
+    types: placeholder as Registry['tenants.tenants.store']['types'],
+  },
   'health_checks.live': {
     methods: ["GET","HEAD"],
     pattern: '/health/live',

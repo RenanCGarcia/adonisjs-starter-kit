@@ -1,0 +1,49 @@
+import { test } from '@japa/runner'
+import User from '#users/models/user'
+import Tenant from '#tenancy/models/tenant'
+import testUtils from '@adonisjs/core/services/test_utils'
+import TenantMembership from '#tenancy/models/tenant_membership'
+
+test.group('Tenancy | tenants', group => {
+  group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
+
+  test('lists only the tenants the user belongs to', async ({ client, assert }) => {
+    const user = await User.create({ email: 'user@example.com', password: 'password123' })
+    const globex = await Tenant.create({ name: 'Globex' })
+    const acme = await Tenant.create({ name: 'Acme' })
+    const initech = await Tenant.create({ name: 'Initech' })
+    const other = await User.create({ email: 'other@example.com', password: 'password123' })
+    await TenantMembership.createMany([
+      { tenantId: globex.id, userId: user.id },
+      { tenantId: acme.id, userId: user.id },
+      { tenantId: initech.id, userId: other.id },
+    ])
+
+    const response = await client.visit('tenants.tenants.index').loginAs(user)
+
+    response.assertStatus(200)
+    assert.deepEqual(
+      response.body().data.map(tenant => tenant.name),
+      ['Acme', 'Globex'],
+    )
+  })
+
+  test('creates a tenant with its creator as a member', async ({ client, assert }) => {
+    const user = await User.create({ email: 'founder@example.com', password: 'password123' })
+
+    const response = await client
+      .visit('tenants.tenants.store')
+      .json({ name: 'Acme' })
+      .loginAs(user)
+
+    response.assertStatus(200)
+    assert.equal(response.body().data.name, 'Acme')
+
+    const membership = await TenantMembership.query()
+      .where('tenant_id', response.body().data.id)
+      .where('user_id', user.id)
+      .first()
+
+    assert.isNotNull(membership)
+  })
+})

@@ -14,6 +14,9 @@ export const controllers = {
   core: {
     HealthChecks: () => import('#app/core/controllers/health_checks_controller'),
   },
+  tenancy: {
+    Tenants: () => import('#app/tenancy/controllers/tenants_controller'),
+  },
   users: {
     Avatar: () => import('#app/users/controllers/avatar_controller'),
     Profile: () => import('#app/users/controllers/profile_controller'),
