@@ -5,6 +5,7 @@ packages:
 catalogMode: strict
 
 catalog:
+  '@adonisjs/bouncer': ^4.0.1
   '@adonisjs/drive': ^4.0.0
   '@adonisjs/mail': ^10.4.0
   '@adonisjs/queue': ^0.6.2

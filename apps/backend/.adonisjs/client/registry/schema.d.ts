@@ -103,6 +103,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/tenancy/controllers/tenants_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'access.my_permissions.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/access/me'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/my_permissions_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/my_permissions_controller').default['show']>>>
+    }
+  }
   'health_checks.live': {
     methods: ["GET","HEAD"]
     pattern: '/health/live'

@@ -12,18 +12,21 @@ export type ScannedRoutes = {
     'attachments.attachments.store': { paramsTuple?: []; params?: {} }
     'tenants.tenants.index': { paramsTuple?: []; params?: {} }
     'tenants.tenants.store': { paramsTuple?: []; params?: {} }
+    'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'tenants.tenants.index': { paramsTuple?: []; params?: {} }
+    'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'tenants.tenants.index': { paramsTuple?: []; params?: {} }
+    'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
   }

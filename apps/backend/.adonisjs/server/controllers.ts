@@ -4,6 +4,9 @@
  */
 
 export const controllers = {
+  access: {
+    MyPermissions: () => import('#app/access/controllers/my_permissions_controller'),
+  },
   attachments: {
     Attachments: () => import('#app/attachments/controllers/attachments_controller'),
   },

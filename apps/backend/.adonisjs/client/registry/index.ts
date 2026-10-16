@@ -54,6 +54,12 @@ const routes = {
     tokens: [{"old":"/api/v1/tenants","type":0,"val":"api","end":""},{"old":"/api/v1/tenants","type":0,"val":"v1","end":""},{"old":"/api/v1/tenants","type":0,"val":"tenants","end":""}],
     types: placeholder as Registry['tenants.tenants.store']['types'],
   },
+  'access.my_permissions.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/access/me',
+    tokens: [{"old":"/api/v1/access/me","type":0,"val":"api","end":""},{"old":"/api/v1/access/me","type":0,"val":"v1","end":""},{"old":"/api/v1/access/me","type":0,"val":"access","end":""},{"old":"/api/v1/access/me","type":0,"val":"me","end":""}],
+    types: placeholder as Registry['access.my_permissions.show']['types'],
+  },
   'health_checks.live': {
     methods: ["GET","HEAD"],
     pattern: '/health/live',

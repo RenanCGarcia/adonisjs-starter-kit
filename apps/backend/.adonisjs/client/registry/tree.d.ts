@@ -32,6 +32,11 @@ export interface ApiDefinition {
       store: typeof routes['tenants.tenants.store']
     }
   }
+  access: {
+    myPermissions: {
+      show: typeof routes['access.my_permissions.show']
+    }
+  }
   healthChecks: {
     live: typeof routes['health_checks.live']
     ready: typeof routes['health_checks.ready']
