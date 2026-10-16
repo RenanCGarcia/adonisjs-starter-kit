@@ -2,7 +2,7 @@
   "name": "monorepo",
   "version": "0.0.0",
   "private": true,
-  "license": "MIT",
+  "license": "UNLICENSED",
   "type": "module",
   "scripts": {
     "prepare": "lefthook install",
