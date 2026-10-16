@@ -1,6 +1,7 @@
 import { test } from '@japa/runner'
 import User from '#users/models/user'
 import Tenant from '#tenancy/models/tenant'
+import emitter from '@adonisjs/core/services/emitter'
 import testUtils from '@adonisjs/core/services/test_utils'
 import TenantMembership from '#tenancy/models/tenant_membership'
 
@@ -29,6 +30,7 @@ test.group('Tenancy | tenants', group => {
   })
 
   test('creates a tenant with its creator as a member', async ({ client, assert }) => {
+    using events = emitter.fake(['tenancy:tenant_created'])
     const user = await User.create({ email: 'founder@example.com', password: 'password123' })
 
     const response = await client
@@ -45,5 +47,9 @@ test.group('Tenancy | tenants', group => {
       .first()
 
     assert.isNotNull(membership)
+    events.assertEmitted(
+      'tenancy:tenant_created',
+      ({ data }) => data.tenantId === response.body().data.id && data.creatorId === user.id,
+    )
   })
 })
