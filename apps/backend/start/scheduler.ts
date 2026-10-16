@@ -1,3 +1,3 @@
-// Recurring jobs: await <Job>.schedule(payload).cron('0 3 * * *') or .every('5m')
+import PruneAttachmentsJob from '#attachments/jobs/prune_attachments'
 
-export {}
+await PruneAttachmentsJob.schedule({}).cron('0 3 * * *')

@@ -86,7 +86,7 @@ Do `apps/backend`, `node ace` dá acesso aos geradores, migrations (`migration:r
 - **Autenticação** com dois guards: `api` (tokens de acesso, padrão) e `web` (sessão). Endpoints prontos: `POST /api/v1/auth/signup`, `POST /api/v1/auth/login`, `POST /api/v1/account/logout`, `GET /api/v1/account/profile`, `PUT /api/v1/account/avatar`.
 - **Respostas padronizadas.** `ctx.serialize()` (em `providers/api_provider.ts`) envolve toda resposta em `{ data }` e formata a paginação do Lucid; o tratador de exceções força JSON.
 - **Validação** com VineJS: `request.validateUsing()` em todo controller.
-- **Arquivos (attachments)** via Drive/S3: upload em duas etapas, URLs assinadas de uma hora, regras por caso de uso e limpeza de órfãos com `node ace attachments:prune`. Em dev, o S3 é o RustFS do Compose e o bucket é criado sozinho.
+- **Arquivos (attachments)** via Drive/S3: upload em duas etapas, URLs assinadas de uma hora, regras por caso de uso e limpeza diária de órfãos agendada no `start/scheduler.ts` (ou na hora, com `node ace attachments:prune`). Em dev, o S3 é o RustFS do Compose e o bucket é criado sozinho.
 - **E-mail** com `@adonisjs/mail` por SMTP; em dev tudo cai no Mailpit.
 - **Filas** com `@adonisjs/queue` sobre Redis: jobs ficam em `app/<módulo>/jobs/` (`node ace make:job <módulo>/<nome>`) e rodam no worker (`node ace queue:work`), que o `pnpm dev` sobe junto com a API. Nos testes, os jobs rodam inline (`QUEUE_DRIVER=sync`).
 - **Health checks:** `GET /health/live` (liveness, sem dependências) e `GET /health/ready` (disco, memória, Postgres, conexões, storage, Redis), protegido pelo header `x-monitoring-secret`.
@@ -134,7 +134,7 @@ Do `apps/backend`, `node ace` dá acesso aos geradores, migrations (`migration:r
 
 - `Dockerfile` multi-stage com dois alvos: `backend` (Node Alpine, usuário sem privilégios, `HEALTHCHECK` em `/health/live`) e `frontend` (nginx com o build estático). `VITE_API_URL` entra como build arg, já que o Vite embute a URL no bundle.
 - `compose.dokploy.yaml` para o [Dokploy](https://dokploy.com): um serviço `migrate` roda `migration:run --force` e o `backend` e o `worker` (`queue:work`) só sobem depois que ele termina com sucesso.
-- Em produção, configure ao menos `APP_KEY`, `APP_URL`, `MONITORING_SECRET`, `CORS_ORIGIN`, as variáveis do banco, do SMTP, do S3 e do Redis, e agende `node ace attachments:prune` (uma vez por dia basta).
+- Em produção, configure ao menos `APP_KEY`, `APP_URL`, `MONITORING_SECRET`, `CORS_ORIGIN` e as variáveis do banco, do SMTP, do S3 e do Redis.
 
 ## Arquitetura do backend
 

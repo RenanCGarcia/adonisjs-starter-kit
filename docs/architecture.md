@@ -80,7 +80,7 @@ A file reaches a record in two requests: the frontend uploads it to `POST /api/v
 3. **Lets the frontend upload first.** The upload endpoint accepts every type in `#attachments/rules`; the consumer narrows it.
 4. **Claims in the same transaction as its write**: `new ClaimAttachments().handle(trx, { ids, uploaderId, rule })`, with a rule from `defineAttachmentRule({ extnames, maxSize })` and only the ids the record is newly adding. It throws a 422 `E_INVALID_ATTACHMENT` for an unknown id, another user's upload, or a file outside the rule.
 5. **Embeds it through `AttachmentTransformer`**, which signs a one-hour URL. Load the relation first; whoever serializes the record has already authorized it.
-6. **Drops the reference to remove a file.** Never delete attachments by hand: `node ace attachments:prune` deletes every attachment older than a day that no foreign key references, row and object. Schedule it (daily is enough); it is safe to run concurrently or after a crash.
+6. **Drops the reference to remove a file.** Never delete attachments by hand: the prune deletes every attachment older than a day that no foreign key references, row and object. It runs daily at 03:00 UTC from `start/scheduler.ts` (`PruneAttachmentsJob`), and on demand with `node ace attachments:prune`; it is safe to run concurrently or after a crash.
 
 ## Queues
 
@@ -89,7 +89,7 @@ Background work runs as jobs on `@adonisjs/queue`, backed by Redis through the `
 - **Dispatch after the transaction commits**: `await SendInvoice.dispatch({ invoiceId })`. A job dispatched inside a transaction can run before the commit, or after a rollback, and miss its row.
 - **Payloads carry ids, not models**: the payload is serialized to JSON, and the job loads fresh rows when it runs.
 - **Jobs can run twice**: retries (`maxRetries`) and stalled-job recovery re-run a job that may have partly succeeded, so make it idempotent.
-- **Recurring jobs** are declared in `start/scheduler.ts`, preloaded only for the HTTP server.
+- **Recurring jobs** are declared in `start/scheduler.ts`, preloaded only for the HTTP server. A schedule is upserted by its id (the job class name), so every boot of every instance converges on one schedule. `PruneAttachmentsJob` is the reference example.
 - **The worker is its own process**: `node ace queue:work`. `pnpm dev` runs it next to the server under `node --watch`; production runs the `worker` service in `compose.dokploy.yaml`.
 - **Tests run jobs inline**: `.env.test` sets `QUEUE_DRIVER=sync`. To assert a dispatch without running the job, use `QueueManager.fake()` and restore it in the group's teardown.
 
