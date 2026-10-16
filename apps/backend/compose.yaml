@@ -18,6 +18,25 @@ services:
       timeout: 5s
       retries: 3
 
+  mailpit:
+    container_name: '${APP_NAME}_mailpit'
+    image: axllent/mailpit:latest
+    environment:
+      MP_DATABASE: /data/mailpit.db
+    volumes:
+      - mailpit:/data
+    ports:
+      - '${SMTP_PORT:-1025}:1025'
+      - '${MAILPIT_PORT:-8025}:8025'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', '/mailpit', 'readyz']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 volumes:
   pgsql:
     name: '${APP_NAME}_pgsql'
+  mailpit:
+    name: '${APP_NAME}_mailpit'
