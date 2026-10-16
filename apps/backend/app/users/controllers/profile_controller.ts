@@ -3,6 +3,9 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class ProfileController {
   async show({ auth, serialize }: HttpContext) {
-    return serialize(UserTransformer.transform(auth.getUserOrFail()))
+    const user = auth.getUserOrFail()
+    await user.load(preloader => preloader.load('avatar'))
+
+    return serialize(UserTransformer.transform(user))
   }
 }

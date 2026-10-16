@@ -6,6 +6,9 @@ export interface ApiDefinition {
     profile: {
       show: typeof routes['profile.profile.show']
     }
+    avatar: {
+      update: typeof routes['profile.avatar.update']
+    }
     accessTokens: {
       destroy: typeof routes['profile.access_tokens.destroy']
     }

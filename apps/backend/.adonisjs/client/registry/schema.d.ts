@@ -19,6 +19,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/users/controllers/profile_controller').default['show']>>>
     }
   }
+  'profile.avatar.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/account/avatar'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#users/validators/user').updateAvatarValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#users/validators/user').updateAvatarValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/users/controllers/avatar_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/users/controllers/avatar_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'auth.new_account.store': {
     methods: ["POST"]
     pattern: '/api/v1/auth/signup'

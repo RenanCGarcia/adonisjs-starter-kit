@@ -1,6 +1,6 @@
 {
   "core": [],
-  "users": ["core"],
+  "users": ["core", "attachments"],
   "auth": ["core", "users"],
   "attachments": ["core"]
 }

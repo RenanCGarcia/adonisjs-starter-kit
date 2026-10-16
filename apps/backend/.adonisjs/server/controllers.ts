@@ -12,6 +12,7 @@ export const controllers = {
     NewAccount: () => import('#app/auth/controllers/new_account_controller'),
   },
   users: {
+    Avatar: () => import('#app/users/controllers/avatar_controller'),
     Profile: () => import('#app/users/controllers/profile_controller'),
   },
 }

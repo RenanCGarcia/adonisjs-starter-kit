@@ -71,8 +71,18 @@ export class AuthAccessTokenSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
+  static $columns = [
+    'avatarAttachmentId',
+    'createdAt',
+    'email',
+    'fullName',
+    'id',
+    'password',
+    'updatedAt',
+  ] as const
   $columns = UserSchema.$columns
+  @column()
+  declare avatarAttachmentId: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
