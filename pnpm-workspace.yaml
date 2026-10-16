@@ -7,5 +7,3 @@ allowBuilds:
   better-sqlite3: true
   esbuild: true
   lefthook: true
-onlyBuiltDependencies:
-  - better-sqlite3
