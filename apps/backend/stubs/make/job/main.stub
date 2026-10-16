@@ -1,0 +1,20 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var jobName = string(entity.name).pascalCase().toString()}}
+{{#var jobFileName = string(entity.name).snakeCase().toString()}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'jobs', jobFileName + '.ts')
+  })
+}}}
+import { Job } from '@adonisjs/queue'
+import type { JobOptions } from '@adonisjs/queue/types'
+
+interface {{ jobName }}Payload {}
+
+export default class {{ jobName }} extends Job<{{ jobName }}Payload> {
+  static override options: JobOptions = {
+    maxRetries: 3,
+  }
+
+  async execute() {}
+}

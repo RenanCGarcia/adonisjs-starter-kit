@@ -29,6 +29,7 @@ export default defineConfig({
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/session/commands'),
     () => import('@adonisjs/mail/commands'),
+    () => import('@adonisjs/queue/commands'),
   ],
 
   /*
@@ -57,6 +58,7 @@ export default defineConfig({
     () => import('@adonisjs/mail/mail_provider'),
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@adonisjs/redis/redis_provider'),
+    () => import('@adonisjs/queue/queue_provider'),
   ],
 
   /*
@@ -70,6 +72,7 @@ export default defineConfig({
   preloads: [
     () => import('#start/kernel'),
     () => import('#start/validator'),
+    { file: () => import('#start/scheduler'), environment: ['web'] },
 
     // core
     () => import('#core/routes'),

@@ -35,6 +35,7 @@ app/<module>/
   actions/            # one write use case per file
   queries/            # one read use case per file
   services/           # behavior with side effects shared by several actions
+  jobs/               # background work run by the queue worker
   models/, transformers/, validators/, middleware/, exceptions/, enums/
   database/factories/
   types/events.ts     # EventsList declaration merge, when the module emits events
@@ -53,6 +54,7 @@ node ace make:validator users/invoice --resource
 node ace make:transformer users/invoice
 node ace make:exception users/invoice_locked
 node ace make:service users/invoice_numbering
+node ace make:job users/send_invoice                    # app/users/jobs/send_invoice.ts
 node ace make:test users/invoices --suite=functional    # --suite is required
 ```
 
@@ -79,6 +81,17 @@ A file reaches a record in two requests: the frontend uploads it to `POST /api/v
 4. **Claims in the same transaction as its write**: `new ClaimAttachments().handle(trx, { ids, uploaderId, rule })`, with a rule from `defineAttachmentRule({ extnames, maxSize })` and only the ids the record is newly adding. It throws a 422 `E_INVALID_ATTACHMENT` for an unknown id, another user's upload, or a file outside the rule.
 5. **Embeds it through `AttachmentTransformer`**, which signs a one-hour URL. Load the relation first; whoever serializes the record has already authorized it.
 6. **Drops the reference to remove a file.** Never delete attachments by hand: `node ace attachments:prune` deletes every attachment older than a day that no foreign key references, row and object. Schedule it (daily is enough); it is safe to run concurrently or after a crash.
+
+## Queues
+
+Background work runs as jobs on `@adonisjs/queue`, backed by Redis through the `main` connection in `config/redis.ts`. A job lives in its module's `jobs/` folder (`node ace make:job <module>/<name>`); the worker discovers every `app/*/jobs/**` file, so a job needs no registration.
+
+- **Dispatch after the transaction commits**: `await SendInvoice.dispatch({ invoiceId })`. A job dispatched inside a transaction can run before the commit, or after a rollback, and miss its row.
+- **Payloads carry ids, not models**: the payload is serialized to JSON, and the job loads fresh rows when it runs.
+- **Jobs can run twice**: retries (`maxRetries`) and stalled-job recovery re-run a job that may have partly succeeded, so make it idempotent.
+- **Recurring jobs** are declared in `start/scheduler.ts`, preloaded only for the HTTP server.
+- **The worker is its own process**: `node ace queue:work`. `pnpm dev` runs it next to the server under `node --watch`; production runs the `worker` service in `compose.dokploy.yaml`.
+- **Tests run jobs inline**: `.env.test` sets `QUEUE_DRIVER=sync`. To assert a dispatch without running the job, use `QueueManager.fake()` and restore it in the group's teardown.
 
 ## Health checks
 

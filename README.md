@@ -4,7 +4,7 @@ Monorepo full-stack em TypeScript para começar projetos novos: uma API AdonisJS
 
 | Workspace       | O que é                                                                                           |
 | --------------- | ------------------------------------------------------------------------------------------------- |
-| `apps/backend`  | API AdonisJS 7 (Lucid + Postgres, VineJS, auth por token, Drive/S3, Mail, health checks).         |
+| `apps/backend`  | API AdonisJS 7 (Lucid + Postgres, VineJS, auth por token, Drive/S3, Mail, filas, health checks).  |
 | `apps/frontend` | SPA React 19 + Vite + TanStack Router, consumindo a API pelo cliente Tuyau.                       |
 | `packages/ui`   | Design system compartilhado: shadcn (Base UI), Tailwind 4, tokens em `globals.css`.               |
 | `tests/`        | Testes e2e (runner `e2e`, Playwright + agente).                                                   |
@@ -15,7 +15,7 @@ Monorepo full-stack em TypeScript para começar projetos novos: uma API AdonisJS
 
 - **Node 24** (versão fixada em `mise.toml`; com [mise](https://mise.jdx.dev), `mise install`).
 - **pnpm 12** via Corepack (`corepack enable`): a versão vem de `packageManager` no `package.json`.
-- **Docker** com Compose, para Postgres, Mailpit e RustFS em desenvolvimento.
+- **Docker** com Compose, para Postgres, Mailpit, RustFS e Redis em desenvolvimento.
 
 ## Começando um projeto novo
 
@@ -44,7 +44,7 @@ Monorepo full-stack em TypeScript para começar projetos novos: uma API AdonisJS
 4. **Suba tudo e rode as migrations:**
 
    ```sh
-   pnpm dev                             # docker compose up -d --wait && turbo dev
+   pnpm dev                             # docker compose up -d --wait && turbo dev dev:worker
    cd apps/backend && node ace migration:run
    ```
 
@@ -88,6 +88,7 @@ Do `apps/backend`, `node ace` dá acesso aos geradores, migrations (`migration:r
 - **Validação** com VineJS: `request.validateUsing()` em todo controller.
 - **Arquivos (attachments)** via Drive/S3: upload em duas etapas, URLs assinadas de uma hora, regras por caso de uso e limpeza de órfãos com `node ace attachments:prune`. Em dev, o S3 é o RustFS do Compose e o bucket é criado sozinho.
 - **E-mail** com `@adonisjs/mail` por SMTP; em dev tudo cai no Mailpit.
+- **Filas** com `@adonisjs/queue` sobre Redis: jobs ficam em `app/<módulo>/jobs/` (`node ace make:job <módulo>/<nome>`) e rodam no worker (`node ace queue:work`), que o `pnpm dev` sobe junto com a API. Nos testes, os jobs rodam inline (`QUEUE_DRIVER=sync`).
 - **Health checks:** `GET /health/live` (liveness, sem dependências) e `GET /health/ready` (disco, memória, Postgres, conexões, storage, Redis), protegido pelo header `x-monitoring-secret`.
 - **Segurança:** Shield, sessão em cookie `httpOnly`/`secure` em produção, CORS liberado em dev e restrito à allowlist `CORS_ORIGIN` fora dele.
 - **Env validado no boot** (`start/env.ts`): uma variável faltando derruba o processo na hora, não em runtime.
@@ -132,8 +133,8 @@ Do `apps/backend`, `node ace` dá acesso aos geradores, migrations (`migration:r
 ### Deploy
 
 - `Dockerfile` multi-stage com dois alvos: `backend` (Node Alpine, usuário sem privilégios, `HEALTHCHECK` em `/health/live`) e `frontend` (nginx com o build estático). `VITE_API_URL` entra como build arg, já que o Vite embute a URL no bundle.
-- `compose.dokploy.yaml` para o [Dokploy](https://dokploy.com): um serviço `migrate` roda `migration:run --force` e o `backend` só sobe depois que ele termina com sucesso.
-- Em produção, configure ao menos `APP_KEY`, `APP_URL`, `MONITORING_SECRET`, `CORS_ORIGIN`, as variáveis do banco, do SMTP e do S3, e agende `node ace attachments:prune` (uma vez por dia basta).
+- `compose.dokploy.yaml` para o [Dokploy](https://dokploy.com): um serviço `migrate` roda `migration:run --force` e o `backend` e o `worker` (`queue:work`) só sobem depois que ele termina com sucesso.
+- Em produção, configure ao menos `APP_KEY`, `APP_URL`, `MONITORING_SECRET`, `CORS_ORIGIN`, as variáveis do banco, do SMTP, do S3 e do Redis, e agende `node ace attachments:prune` (uma vez por dia basta).
 
 ## Arquitetura do backend
 
