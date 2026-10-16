@@ -5,8 +5,7 @@ import Attachment from '#attachments/models/attachment'
 export const AttachmentFactory = factory
   .define(Attachment, async () => {
     return {
-      id: randomUUID(),
-      uploaderId: 1,
+      uploaderId: randomUUID(),
       name: 'image.png',
       extname: 'png' as const,
       mimeType: 'image/png',

@@ -5,9 +5,9 @@ export default class extends BaseSchema {
 
   override async up() {
     this.schema.createTable(this.tableName, table => {
-      table.uuid('id').primary()
+      table.uuid('id').primary().defaultTo(this.raw('uuidv7()'))
       // No FK to users: attachments must not depend on any consumer, even in the schema.
-      table.integer('uploader_id').notNullable().index()
+      table.uuid('uploader_id').notNullable().index()
       table.string('name', 255).notNullable()
       table.string('extname').notNullable()
       table.string('mime_type').notNullable()

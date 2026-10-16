@@ -5,7 +5,7 @@ import InvalidAttachmentException from '#attachments/exceptions/invalid_attachme
 
 export interface ClaimAttachmentsInput {
   ids: readonly string[]
-  uploaderId: number
+  uploaderId: string
   rule: AttachmentRule
 }
 

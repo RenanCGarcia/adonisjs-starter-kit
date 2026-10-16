@@ -1,11 +1,10 @@
-import { randomUUID } from 'node:crypto'
 import type { MultipartFile } from '@adonisjs/core/bodyparser'
 import Attachment from '#attachments/models/attachment'
 import { ATTACHMENT_MIME_TYPES, type AttachmentExtname } from '#attachments/rules'
 
 export interface UploadAttachmentInput {
   file: MultipartFile
-  uploaderId: number
+  uploaderId: string
 }
 
 export default class UploadAttachment {
@@ -19,7 +18,6 @@ export default class UploadAttachment {
     const mimeType = ATTACHMENT_MIME_TYPES[extname]
 
     const attachment = await Attachment.create({
-      id: randomUUID(),
       uploaderId,
       name: displayName(file.clientName, extname),
       extname,
