@@ -4,11 +4,11 @@ Every behavior has exactly one **owner**: the lowest layer that can observe it. 
 
 ## Layers and what they own
 
-| Layer      | Where                                             | Owns                                                                                                                                                                                      |
-| ---------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit       | `apps/backend/tests/unit`                         | Pure logic with its own rules: validator rules, transformers, model helpers, any function with branches.                                                                                  |
-| Functional | `apps/backend/tests/functional` (Japa API client) | The HTTP contract: status codes, response shapes, auth guards, validation errors, database effects.                                                                                       |
-| E2E        | `tests/*.e2e.ts`                                  | Wiring between frontend and backend that no lower layer sees: redirects, token storage, a screen calling the right endpoint and rendering its result. One test per critical user journey. |
+| Layer      | Where                                                          | Owns                                                                                                                                                                                      |
+| ---------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit       | `apps/backend/app/<module>/tests/unit`                         | Pure logic with its own rules: validator rules, transformers, model helpers, any function with branches.                                                                                  |
+| Functional | `apps/backend/app/<module>/tests/functional` (Japa API client) | The HTTP contract: status codes, response shapes, auth guards, validation errors, database effects.                                                                                       |
+| E2E        | `tests/*.e2e.ts`                                               | Wiring between frontend and backend that no lower layer sees: redirects, token storage, a screen calling the right endpoint and rendering its result. One test per critical user journey. |
 
 Each layer up keeps the **happy path** of the layer below and spends its assertions on the seam it adds. The sign-in e2e test proves the form signs a member in and the profile renders; the functional suite owns wrong passwords, unknown emails, and malformed bodies; a unit test owns the password-length rule.
 

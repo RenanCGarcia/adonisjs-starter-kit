@@ -1,7 +1,7 @@
-import User from '#models/user'
-import { loginValidator } from '#validators/user'
+import User from '#users/models/user'
+import { loginValidator } from '#auth/validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
-import UserTransformer from '#transformers/user_transformer'
+import UserTransformer from '#users/transformers/user_transformer'
 
 export default class AccessTokensController {
   async store({ request, serialize }: HttpContext) {

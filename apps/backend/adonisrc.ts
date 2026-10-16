@@ -64,9 +64,17 @@ export default defineConfig({
   |
   */
   preloads: [
-    () => import('#start/routes'),
     () => import('#start/kernel'),
     () => import('#start/validator'),
+
+    // core
+    () => import('#core/routes'),
+
+    // users
+    () => import('#users/routes'),
+
+    // auth
+    () => import('#auth/routes'),
   ],
 
   /*
@@ -81,12 +89,12 @@ export default defineConfig({
   tests: {
     suites: [
       {
-        files: ['tests/unit/**/*.spec.{ts,js}'],
+        files: ['app/**/tests/unit/**/*.spec.{ts,js}'],
         name: 'unit',
         timeout: 2000,
       },
       {
-        files: ['tests/functional/**/*.spec.{ts,js}'],
+        files: ['app/**/tests/functional/**/*.spec.{ts,js}'],
         name: 'functional',
         timeout: 30000,
       },
@@ -108,7 +116,18 @@ export default defineConfig({
   hooks: {
     init: [
       indexEntities({
-        transformers: { enabled: true },
+        controllers: {
+          enabled: true,
+          source: './app',
+          glob: ['**/*_controller.ts'],
+          importAlias: '#app',
+        },
+        transformers: {
+          enabled: true,
+          source: './app',
+          glob: ['**/*_transformer.ts'],
+          importAlias: '#app',
+        },
       }),
       generateRegistry(),
     ],
