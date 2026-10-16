@@ -1,7 +1,13 @@
 import type { BaseModel } from '@adonisjs/lucid/orm'
 import { currentTenantContext } from '#tenancy/tenant_context'
 import type { NormalizeConstructor } from '@adonisjs/core/types/helpers'
-import { beforeCreate, beforeFetch, beforeFind, beforePaginate } from '@adonisjs/lucid/orm'
+import {
+  beforeCreate,
+  beforeFetch,
+  beforeFind,
+  beforePaginate,
+  beforeSave,
+} from '@adonisjs/lucid/orm'
 import type {
   LucidModel,
   ModelAdapterOptions,
@@ -57,6 +63,16 @@ export function withTenant<
       }
 
       row.tenantId = context.tenantId
+    }
+
+    /** A tenantId from user input (merge, fill) must not move a row into another tenant. */
+    @beforeSave()
+    static guardTenantId(row: WithTenant) {
+      const context = currentTenantContext()
+
+      if (context.kind === 'tenant' && row.$dirty.tenantId && row.tenantId !== context.tenantId) {
+        throw new Error(`${row.constructor.name} can't be saved into another tenant`)
+      }
     }
 
     @beforeFind()

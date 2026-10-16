@@ -110,7 +110,7 @@ Every query of a tenant-scoped model runs inside a context from `#tenancy/tenant
 2. **Add the column** in the migration: `table.uuid('tenant_id').notNullable().references('id').inTable('tenants').onDelete('CASCADE').index()`.
 3. **Compose the mixin**: `class Project extends compose(ProjectSchema, withTenant) {}`, with `withTenant` from `#tenancy/mixins/with_tenant`. A model without a `tenantId` column doesn't compile.
 
-The mixin adds `<table>.tenant_id = <tenant>` to every query built from the model: reads, `find`, `paginate` and its count, bulk `update()` and `delete()`, `pojo()`, and relationship queries and preloads that reach it from a global model. On create, it fills `tenantId` from the context; in `runAsSystem()`, set it yourself or the create throws.
+The mixin adds `<table>.tenant_id = <tenant>` to every query built from the model: reads, `find`, `paginate` and its count, bulk `update()` and `delete()`, `pojo()`, and relationship queries and preloads that reach it from a global model. On create, it fills `tenantId` from the context; in `runAsSystem()`, set it yourself or the create throws. Inside a tenant, saving a row with another `tenantId` throws, so a `tenantId` that slips through `merge()` or `fill()` never moves a row.
 
 The scope doesn't reach:
 

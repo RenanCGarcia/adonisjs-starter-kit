@@ -162,6 +162,25 @@ test.group('Tenancy | withTenant', group => {
     assert.equal(probe.tenantId, acme.id)
   })
 
+  test('refuses to write a row into another tenant', async ({ assert }) => {
+    const { acme, globex, acmeId, ownerId } = await seed()
+
+    await runInTenant(acme.id, async () => {
+      await assert.rejects(
+        () => Probe.create({ ownerId, name: 'smuggled', tenantId: globex.id }),
+        /into another tenant/,
+      )
+
+      const probe = await Probe.findOrFail(acmeId)
+      await assert.rejects(() => probe.merge({ tenantId: globex.id }).save(), /into another tenant/)
+    })
+
+    assert.deepEqual(
+      (await namesOf(globex)).map(row => row.name),
+      ['probe 2', 'probe 3'],
+    )
+  })
+
   test('refuses to create without a tenantId in the system context', async ({ assert }) => {
     const { ownerId } = await seed()
 
