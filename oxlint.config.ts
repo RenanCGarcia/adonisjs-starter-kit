@@ -44,11 +44,35 @@ const moduleBoundaries = [
   }),
 ]
 
+const designSystem: OxlintOverride[] = [
+  {
+    files: ['apps/frontend/src/**', 'packages/ui/src/**'],
+    rules: {
+      'shadcn/no-restyle': ['error', { allow: ['layout'] }],
+      'shadcn/no-raw-colors': 'error',
+      'shadcn/no-arbitrary-values': ['error', { allow: ['layout'] }],
+      'shadcn/no-inline-styles': 'error',
+      'shadcn/require-static-classes': 'error',
+      'shadcn/no-unknown-classes': 'error',
+    },
+  },
+  {
+    // Components own their appearance and may need structural values such as ring-[3px].
+    files: ['packages/ui/src/components/**'],
+    rules: {
+      'shadcn/no-restyle': 'off',
+      'shadcn/no-arbitrary-values': 'off',
+      'shadcn/require-static-classes': 'off',
+    },
+  },
+]
+
 export default defineConfig({
   extends: [julrPreset({ adonisjs: true })],
+  jsPlugins: ['@shadcn/lint'],
 
   // TODO: remove once https://github.com/oxc-project/oxc/issues/10223 is fixed
   ignorePatterns: ['**/.adonisjs/**', 'node_modules/**', 'dist/**', 'build/**', '*.yml'],
 
-  overrides: moduleBoundaries,
+  overrides: [...moduleBoundaries, ...designSystem],
 })

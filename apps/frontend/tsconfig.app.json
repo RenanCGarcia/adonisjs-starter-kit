@@ -29,7 +29,8 @@
     "noUnusedParameters": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@monorepo/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": ["src"]

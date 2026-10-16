@@ -39,7 +39,7 @@ function LoginComponent() {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
+    <form onSubmit={handleSubmit} className="grid max-w-80 gap-2">
       <input name="email" type="email" placeholder="Email" required />
       <input name="password" type="password" placeholder="Password" required />
       <button type="submit">Login</button>

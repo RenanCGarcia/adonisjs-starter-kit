@@ -13,7 +13,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   return (
     <>
-      <nav style={{ display: 'flex', gap: 12 }}>
+      <nav className="flex gap-3">
         <Link to="/">Home</Link>
         <Link to="/profile">Profile</Link>
         <Link to="/login">Login</Link>
