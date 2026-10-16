@@ -14,11 +14,13 @@ test('a member signs in, sees their profile, and logs out', async ({
   const fullName = `E2E Member ${Date.now()}`
   const email = `e2e-${Date.now()}@example.test`
   const password = randomUUID().slice(0, 24)
+
   const signup = await fetch(`${API_URL}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify({ fullName, email, password, passwordConfirmation: password }),
   })
+
   expect(signup.status).toBe(200)
 
   // The profile is protected: a signed-out visit lands on the login form.

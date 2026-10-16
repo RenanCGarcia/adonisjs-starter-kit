@@ -15,6 +15,7 @@ export default class AuthMiddleware {
     } = {},
   ) {
     await ctx.auth.authenticateUsing(options.guards)
+
     return next()
   }
 }

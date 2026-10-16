@@ -9,6 +9,7 @@ export const client = createTuyau({
     beforeRequest: [
       request => {
         const token = auth.getToken()
+
         if (token) request.headers.set('Authorization', `Bearer ${token}`)
       },
     ],

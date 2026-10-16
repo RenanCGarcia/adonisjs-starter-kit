@@ -12,6 +12,7 @@
 */
 
 await import('reflect-metadata')
+
 const { Ignitor, prettyPrintError } = await import('@adonisjs/core/ignitor')
 
 /**
@@ -28,6 +29,7 @@ const IMPORTER = (filePath: string) => {
   if (filePath.startsWith('./') || filePath.startsWith('../')) {
     return import(new URL(filePath, APP_ROOT).href)
   }
+
   return import(filePath)
 }
 

@@ -32,11 +32,14 @@ export default class MakeModule extends BaseCommand {
     if (!/^[a-z][a-z0-9_]*$/.test(this.name)) {
       this.logger.error(`Invalid module name "${this.name}": use snake_case`)
       this.exitCode = 1
+
       return
     }
+
     if (existsSync(this.app.makePath('app', this.name))) {
       this.logger.error(`app/${this.name}/ already exists`)
       this.exitCode = 1
+
       return
     }
 
@@ -105,11 +108,14 @@ export default class MakeModule extends BaseCommand {
     const path = this.app.makePath(relativePath)
     const source = readFileSync(path, 'utf-8')
     const updated = transform(source)
+
     if (updated === source) {
       this.logger.error(`could not update ${relativePath}: register app/${this.name} there by hand`)
       this.exitCode = 1
+
       return
     }
+
     writeFileSync(path, updated)
     this.touched.push(path)
     this.logger.success(`update ${relativePath}`)
@@ -120,11 +126,14 @@ export default class MakeModule extends BaseCommand {
     this.patch('package.json', source => {
       const pkg = JSON.parse(source)
       const entries = Object.entries<string>(pkg.imports)
+
       const lastModule = entries.findLastIndex(([, target]) =>
         /^\.\/app\/[^*]+\/\*\.js$/.test(target),
       )
+
       entries.splice(lastModule + 1, 0, [`#${this.name}/*`, `./app/${this.name}/*.js`])
       pkg.imports = Object.fromEntries(entries)
+
       return `${JSON.stringify(pkg, null, 2)}\n`
     })
   }
@@ -132,6 +141,7 @@ export default class MakeModule extends BaseCommand {
   /** Appends the module's routes (and listeners) to the adonisrc.ts preloads. */
   private registerPreloads() {
     const lines = [`    // ${this.name}`, `    () => import('#${this.name}/routes'),`]
+
     if (this.events) lines.push(`    () => import('#${this.name}/start/events'),`)
 
     this.patch('adonisrc.ts', source =>
@@ -147,6 +157,7 @@ export default class MakeModule extends BaseCommand {
     this.patch('modules.json', source => {
       const modules = JSON.parse(source)
       modules[this.name] = ['core']
+
       return `${JSON.stringify(modules, null, 2)}\n`
     })
   }

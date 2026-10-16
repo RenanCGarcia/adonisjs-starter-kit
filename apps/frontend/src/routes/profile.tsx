@@ -9,6 +9,7 @@ export const Route = createFileRoute('/profile')({
   },
   loader: async () => {
     const { data } = await api.profile.profile.show({})
+
     return { user: data }
   },
   component: ProfileComponent,
