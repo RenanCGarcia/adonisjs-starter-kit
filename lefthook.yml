@@ -9,6 +9,10 @@ pre-commit:
       glob: "*.{ts,tsx,js,jsx}"
       run: pnpm oxlint --fix {staged_files}
       stage_fixed: true
+    # Changing the module map can break files that are not staged: lint them all.
+    module-boundaries:
+      glob: "{oxlint.config.ts,apps/backend/modules.json}"
+      run: pnpm lint
 
 commit-msg:
   commands:
