@@ -1,6 +1,7 @@
 # Agent notes
 
 - **Before writing code**: find the closest existing example and mirror its shape. Keep the diff to what the task needs; no drive-by renames or refactors.
+- **Comments**: only for what the code can't say: why it's done this way, a non-obvious constraint, a link to an issue. Never restate what the names and the body already show; when in doubt, leave it out.
 - **Done**: `pnpm typecheck && pnpm lint` pass, plus the narrowest relevant test. If a command can't run (missing infra, no network), report it with its output instead of claiming completion.
 - **Backend architecture**: before creating or moving anything under `apps/backend/app/` (controller, action, query, model, transformer, validator, module), read `docs/architecture.md`. Starting a new module or feature: follow its step-by-step section in order. Dependencies between modules are declared in `apps/backend/modules.json` and enforced by the lint.
 - **Controller responses**: every controller action validates input with `request.validateUsing()` and returns `serialize(...)` (a transformer for models, a plain object otherwise). The frontend's Tuyau types are inferred from that return: a model or bare object leaves them empty.
