@@ -2,11 +2,12 @@
 
 `apps/backend/app/` holds one folder per **module**: a bounded context that owns its vocabulary, its tables, and its routes. A module may hold several models; modules are not 1:1 with tables. Code outside `app/` (`start/`, `config/`, `database/`, `providers/`, `tests/`) is application wiring, not a module.
 
-| Module  | Owns                                                                                      |
-| ------- | ----------------------------------------------------------------------------------------- |
-| `core`  | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`. |
-| `users` | The `User` identity: model, transformer, access tokens, the profile endpoint.             |
-| `auth`  | Behavior over that identity: sign-up, login, logout, the auth middleware.                 |
+| Module        | Owns                                                                                      |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| `core`        | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`. |
+| `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.             |
+| `auth`        | Behavior over that identity: sign-up, login, logout, the auth middleware.                 |
+| `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.             |
 
 ## Starting a new module or feature
 
@@ -67,6 +68,17 @@ The frontend calls the API through Tuyau, whose types are inferred from the cont
 - **Return `serialize(...)`.** A model through its transformer (`serialize(UserTransformer.transform(user))`, `serialize(UserTransformer.paginate(rows, meta))` for a paginated list), anything else as a plain object (`serialize({ message })`). Never return a model or a bare object: a model reaches the frontend as `ModelObject` with no fields, and a bare object skips the `{ data }` envelope that `providers/api_provider.ts` gives every response.
 
 Expected failures return through the response helpers (`return response.notFound({ message, key })`): the frontend can narrow them with `error.isStatus(404)`.
+
+## Attachments
+
+A file reaches a record in two requests: the frontend uploads it to `POST /api/v1/attachments`, then sends the returned `id` with the record's write. `users.avatar_attachment_id` is the reference example. A module that stores files:
+
+1. **Depends on `attachments`** in `modules.json`.
+2. **References it with a foreign key column named `*_attachment_id`** (or a join table with one), `references('id').inTable('attachments')`, with the default `ON DELETE`. A test fails on any `*_attachment_id` column without that FK, or with a cascading one.
+3. **Lets the frontend upload first.** The upload endpoint accepts every type in `#attachments/rules`; the consumer narrows it.
+4. **Claims in the same transaction as its write**: `new ClaimAttachments().handle(trx, { ids, uploaderId, rule })`, with a rule from `defineAttachmentRule({ extnames, maxSize })` and only the ids the record is newly adding. It throws a 422 `E_INVALID_ATTACHMENT` for an unknown id, another user's upload, or a file outside the rule.
+5. **Embeds it through `AttachmentTransformer`**, which signs a one-hour URL. Load the relation first; whoever serializes the record has already authorized it.
+6. **Drops the reference to remove a file.** Never delete attachments by hand: `node ace attachments:prune` deletes every attachment older than a day that no foreign key references, row and object. Schedule it (daily is enough); it is safe to run concurrently or after a crash.
 
 ## Dependencies between modules
 
