@@ -70,6 +70,22 @@ services:
       - aws --endpoint-url http://rustfs:9000 s3api head-bucket --bucket '${S3_BUCKET}' 2>/dev/null || aws --endpoint-url http://rustfs:9000 s3 mb 's3://${S3_BUCKET}'
     restart: 'no'
 
+  redis:
+    container_name: '${APP_NAME}_redis'
+    image: redis:8-alpine
+    # Append-only file, so queued jobs survive a container restart.
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redis:/data
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 volumes:
   pgsql:
     name: '${APP_NAME}_pgsql'
@@ -77,3 +93,5 @@ volumes:
     name: '${APP_NAME}_mailpit'
   rustfs:
     name: '${APP_NAME}_rustfs'
+  redis:
+    name: '${APP_NAME}_redis'
