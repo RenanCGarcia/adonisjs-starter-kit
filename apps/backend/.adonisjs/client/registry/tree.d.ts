@@ -36,6 +36,12 @@ export interface ApiDefinition {
     myPermissions: {
       show: typeof routes['access.my_permissions.show']
     }
+    roles: {
+      index: typeof routes['access.roles.index']
+      store: typeof routes['access.roles.store']
+      update: typeof routes['access.roles.update']
+      destroy: typeof routes['access.roles.destroy']
+    }
   }
   healthChecks: {
     live: typeof routes['health_checks.live']

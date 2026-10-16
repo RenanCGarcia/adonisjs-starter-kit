@@ -13,6 +13,10 @@ export type ScannedRoutes = {
     'tenants.tenants.index': { paramsTuple?: []; params?: {} }
     'tenants.tenants.store': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
+    'access.roles.index': { paramsTuple?: []; params?: {} }
+    'access.roles.store': { paramsTuple?: []; params?: {} }
+    'access.roles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'access.roles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
@@ -20,6 +24,7 @@ export type ScannedRoutes = {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'tenants.tenants.index': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
+    'access.roles.index': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
@@ -27,11 +32,13 @@ export type ScannedRoutes = {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
     'tenants.tenants.index': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
+    'access.roles.index': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'profile.avatar.update': { paramsTuple?: []; params?: {} }
+    'access.roles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
@@ -39,6 +46,10 @@ export type ScannedRoutes = {
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
     'attachments.attachments.store': { paramsTuple?: []; params?: {} }
     'tenants.tenants.store': { paramsTuple?: []; params?: {} }
+    'access.roles.store': { paramsTuple?: []; params?: {} }
+  }
+  DELETE: {
+    'access.roles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

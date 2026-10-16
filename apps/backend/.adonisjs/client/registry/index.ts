@@ -60,6 +60,30 @@ const routes = {
     tokens: [{"old":"/api/v1/access/me","type":0,"val":"api","end":""},{"old":"/api/v1/access/me","type":0,"val":"v1","end":""},{"old":"/api/v1/access/me","type":0,"val":"access","end":""},{"old":"/api/v1/access/me","type":0,"val":"me","end":""}],
     types: placeholder as Registry['access.my_permissions.show']['types'],
   },
+  'access.roles.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/roles',
+    tokens: [{"old":"/api/v1/roles","type":0,"val":"api","end":""},{"old":"/api/v1/roles","type":0,"val":"v1","end":""},{"old":"/api/v1/roles","type":0,"val":"roles","end":""}],
+    types: placeholder as Registry['access.roles.index']['types'],
+  },
+  'access.roles.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/roles',
+    tokens: [{"old":"/api/v1/roles","type":0,"val":"api","end":""},{"old":"/api/v1/roles","type":0,"val":"v1","end":""},{"old":"/api/v1/roles","type":0,"val":"roles","end":""}],
+    types: placeholder as Registry['access.roles.store']['types'],
+  },
+  'access.roles.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/roles/:id',
+    tokens: [{"old":"/api/v1/roles/:id","type":0,"val":"api","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"roles","end":""},{"old":"/api/v1/roles/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['access.roles.update']['types'],
+  },
+  'access.roles.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/roles/:id',
+    tokens: [{"old":"/api/v1/roles/:id","type":0,"val":"api","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"roles","end":""},{"old":"/api/v1/roles/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['access.roles.destroy']['types'],
+  },
   'health_checks.live': {
     methods: ["GET","HEAD"],
     pattern: '/health/live',
