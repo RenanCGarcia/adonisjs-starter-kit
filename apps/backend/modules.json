@@ -3,5 +3,5 @@
   "users": ["core", "attachments"],
   "auth": ["core", "users"],
   "attachments": ["core"],
-  "tenancy": ["core"]
+  "tenancy": ["core", "users"]
 }
