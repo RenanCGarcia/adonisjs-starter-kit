@@ -9,6 +9,7 @@
 | `auth`        | Behavior over that identity: sign-up, login, logout, the auth middleware.                                |
 | `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.                            |
 | `tenancy`     | Tenants and their members, the tenant scope on models, the `tenant` middleware. Optional.                |
+| `access`      | Roles, individual permission grants, and the Bouncer ability every authorization check goes through.     |
 
 ## Starting a new module or feature
 
@@ -130,7 +131,7 @@ A route that touches tenant data uses `middleware.tenant()` after `middleware.au
 | Unknown tenant, or the user isn't a member | 403, `key: 'E_TENANT_ACCESS_DENIED'`, the same body for both                    |
 | A tenant of the user                       | `ctx.tenant` is the `Tenant`, and the rest of the request runs in `runInTenant` |
 
-`GET /api/v1/tenants` lists the user's tenants. `POST /api/v1/tenants` creates one with the user as its first member. Both need only `auth`.
+`GET /api/v1/tenants` lists the user's tenants. `POST /api/v1/tenants` creates one with the user as its first member, then emits `tenancy:tenant_created` (`{ tenantId, creatorId }`). Both need only `auth`.
 
 ### Jobs and commands
 
@@ -138,7 +139,7 @@ A job or command has no request, so it has no context. A job that touches tenant
 
 ### Removing tenancy
 
-From `apps/backend/`:
+`access` imports tenancy: apply [Access without tenancy](#access-without-tenancy) before step 8. From `apps/backend/`:
 
 1. Delete `app/tenancy/`.
 2. Delete `database/migrations/1792181279112_create_tenants_table.ts` and `database/migrations/1792181280651_create_tenant_memberships_table.ts`.
@@ -149,6 +150,129 @@ From `apps/backend/`:
 7. In `database/schema.ts`, delete `TenantMembershipSchema` and `TenantSchema`.
 8. Run `node ace codegen` to drop the tenant routes and `TenantTransformer` from `.adonisjs/`.
 9. In this file, delete the `tenancy` row of the module table and this section.
+
+## Authorization
+
+The `access` module decides what a user may do. A user holds at most one role and any number of individual grants; their permissions are the role's plus the grants, with no denials. Every check goes through one Bouncer ability, `can` from `#access/abilities`.
+
+### Add a permission
+
+Add it to `PERMISSIONS` in `app/access/permissions.ts`: `invoicesVoid: 'invoices.void'`. Roles and grants accept it from then on.
+
+Removing one is safe: a stored permission the catalog no longer lists grants nothing, and `GET /api/v1/access/me` and the roles endpoints leave it out.
+
+### Check it in a controller
+
+```ts
+async destroy({ bouncer, request, serialize }: HttpContext) {
+  await bouncer.authorize(can, PERMISSIONS.invoicesVoid)
+  // ...
+}
+```
+
+A denial answers 403 with `{ errors: [{ message: 'Access denied' }] }`.
+
+The permissions load on the first check of a request and are memoized on the request's `User` instance, so a route that never checks runs no query. A `User` kept beyond its request keeps what it loaded.
+
+### Endpoints
+
+| Route                                                          | Needs            | Does                                                                                                                 |
+| -------------------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/access/me`                                        | `auth`           | `{ permissions }`: what the user passes, in catalog order, for the frontend to gate its UI.                          |
+| `GET`, `POST /api/v1/roles`; `PUT`, `DELETE /api/v1/roles/:id` | `roles.manage`   | Lists, creates, renames and re-permissions roles. `DELETE` answers 409 `E_ROLE_IN_USE` while someone holds the role. |
+| `PUT /api/v1/members/:userId/role` (`{ roleId }`)              | `members.manage` | Replaces the member's role; `null` removes it.                                                                       |
+| `PUT /api/v1/members/:userId/permissions` (`{ permissions }`)  | `members.manage` | Replaces the member's grants.                                                                                        |
+
+- A `userId` that isn't a member answers 404 `E_MEMBER_NOT_FOUND`.
+- A change that would leave no one holding `members.manage`, when someone held it, answers 409 `E_LAST_MANAGER`: a member can't demote or strip the last manager, themselves included.
+- No endpoint accepts `platform.admin`: a user holding it passes every check. Grant it from `node ace repl`, with `Role.create({ name: 'Admin', permissions: ['platform.admin'] })` and `RoleAssignment.create({ userId, roleId })`.
+
+### With tenancy
+
+Roles, assignments and grants belong to a tenant. The routes above also need `tenant` and act in the tenant of `X-Tenant-Id`: its roles, its members (a user of another tenant answers 404), and a `roleId` of another tenant answers 422.
+
+A check reads the tenant context. Inside `middleware.tenant()` it uses that tenant's role and grants, one query per request. Outside any tenant (no context, or `runAsSystem()`) it uses the platform-level ones, rows whose `tenant_id` is NULL. Only platform admins hold any, so a route that forgets `middleware.tenant()` denies everyone else.
+
+The REPL calls above leave `tenantId` NULL, so they create a platform admin, who passes every check in every tenant.
+
+`access` listens to `tenancy:tenant_created`: it creates the tenant's "Owner" role with every permission but `platform.admin`, and assigns it to the creator. Both steps keep what exists, so the listener is safe to run again. A permission added to the catalog later doesn't reach existing Owner roles: add it through `PUT /api/v1/roles/:id`.
+
+`POST /api/v1/tenants` awaits the listener. If it throws, the request answers 500 with the tenant and the membership already committed, and the tenant has no Owner. Finish it from `node ace repl`:
+
+```ts
+await import('#access/actions/seed_tenant_owner').then(({ default: SeedTenantOwner }) =>
+  new SeedTenantOwner().handle({ tenantId, creatorId }),
+)
+```
+
+### Access without tenancy
+
+Between steps 7 and 8 of [Removing tenancy](#removing-tenancy). Every role and grant becomes global, and a user holds one role. From `apps/backend/`:
+
+1. Replace `app/access/scope.ts` with:
+
+   ```ts
+   import type { ChainableContract } from '@adonisjs/lucid/types/querybuilder'
+
+   /** Without tenancy every role and grant applies everywhere. */
+   export type Scope = null
+
+   export function currentScope(): Scope {
+     return null
+   }
+
+   export function inScope<Query extends ChainableContract>(
+     query: Query,
+     _scope: Scope,
+     _table: string,
+   ) {
+     return query
+   }
+
+   export function scopeColumns(_scope: Scope) {
+     return {}
+   }
+   ```
+
+2. Replace `app/access/tests/seed.ts` with:
+
+   ```ts
+   import User from '#users/models/user'
+   import Role from '#access/models/role'
+   import PermissionGrant from '#access/models/permission_grant'
+   import RoleAssignment from '#access/models/role_assignment'
+
+   let users = 0
+
+   function user() {
+     users += 1
+
+     return User.create({ email: `user${users}@example.com`, password: 'password123' })
+   }
+
+   export const platform = {
+     role: (name: string, permissions: string[]) => Role.create({ name, permissions }),
+     assign: (holder: User, role: Role) =>
+       RoleAssignment.create({ userId: holder.id, roleId: role.id }),
+     grant: (holder: User, permission: string) =>
+       PermissionGrant.create({ userId: holder.id, permission }),
+   }
+
+   export function workspace() {
+     return Promise.resolve({ ...platform, headers: {}, member: user })
+   }
+   ```
+
+3. Delete `app/access/start/events.ts`, `app/access/actions/seed_tenant_owner.ts`, `app/access/tests/functional/owner.spec.ts` and `app/access/tests/functional/tenant_isolation.spec.ts`. In `adonisrc.ts`, delete `() => import('#access/start/events')`.
+4. In `app/access/routes.ts`, replace `.use([middleware.auth(), middleware.tenant()])` with `.use(middleware.auth())`.
+5. In `modules.json`, remove `"tenancy"` from the `access` list.
+6. In the three `database/migrations/*_create_{roles,role_assignments,permission_grants}_table.ts`, delete the `tenant_id` and `tenant_key` columns (and the comment above `tenant_key`) and the `tenant_memberships` foreign key, then:
+   - roles: replace `table.unique(['tenant_key', 'name'])` with `table.unique(['name'])`, and delete `table.unique(['id', 'tenant_key'])`.
+   - role_assignments: replace `table.uuid('role_id').notNullable()` with `table.uuid('role_id').notNullable().references('id').inTable('roles')`, `table.unique(['user_id', 'tenant_key'])` with `table.unique(['user_id'])`, and delete the `role_id, tenant_key` foreign key and the comment above it.
+   - permission_grants: replace `table.unique(['user_id', 'tenant_key', 'permission'])` with `table.unique(['user_id', 'permission'])`.
+7. In `database/schema_rules.ts`, delete the three `skipColumns: ['tenant_key']` (and the `role_assignments` and `permission_grants` entries they leave empty).
+8. In `database/schema.ts`, delete `'tenantId'` and the `tenantId` declaration from `PermissionGrantSchema`, `RoleAssignmentSchema` and `RoleSchema`.
+9. In this file, delete "With tenancy" and this section.
 
 ## Health checks
 
