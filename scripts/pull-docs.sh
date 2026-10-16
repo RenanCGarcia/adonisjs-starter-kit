@@ -1,18 +1,28 @@
 #!/usr/bin/env sh
-# Clones (or updates) the AdonisJS v7 docs into repos/adonisjs-docs as read-only
-# reference for coding agents. Gitignored: only the docs content/ is checked out.
+# Clones (or updates) third-party docs into repos/<name> as read-only reference
+# for coding agents. Gitignored: only the listed doc paths are checked out.
 set -eu
 
-DEST="$(git rev-parse --show-toplevel)/repos/adonisjs-docs"
-REPO="https://github.com/adonisjs/v7-docs.git"
+ROOT="$(git rev-parse --show-toplevel)/repos"
 
-if [ -d "$DEST/.git" ]; then
-  git -C "$DEST" pull --quiet --ff-only
-else
-  git clone --quiet --depth 1 --filter=blob:none --sparse "$REPO" "$DEST"
-fi
+# pull <name> <repo> <branch> <path>...
+# Paths use non-cone sparse-checkout patterns: cone mode would also check out
+# each repo's root files (package.json, ace.js...).
+pull() {
+  name="$1" repo="$2" branch="$3"
+  shift 3
+  dest="$ROOT/$name"
 
-# Non-cone mode: cone mode would also check out the docs site's root files (ace.js, package.json...).
-git -C "$DEST" sparse-checkout set --no-cone /content/start/ /content/guides/ /content/reference/
+  if [ -d "$dest/.git" ]; then
+    git -C "$dest" pull --quiet --ff-only
+  else
+    git clone --quiet --depth 1 --filter=blob:none --sparse --branch "$branch" "$repo" "$dest"
+  fi
 
-echo "AdonisJS docs at $(git -C "$DEST" log -1 --format='%h (%cs)') -> $DEST/content"
+  git -C "$dest" sparse-checkout set --no-cone "$@"
+  echo "$name at $(git -C "$dest" log -1 --format='%h (%cs)') -> $dest"
+}
+
+pull adonisjs-docs https://github.com/adonisjs/v7-docs.git main /content/start/ /content/guides/ /content/reference/
+pull lucid-docs https://github.com/adonisjs/lucid.git 22.x /docs/
+pull vinejs-docs https://github.com/vinejs/vinejs.dev.git main /content/docs/guides/ /content/docs/types/ /content/docs/extend/
