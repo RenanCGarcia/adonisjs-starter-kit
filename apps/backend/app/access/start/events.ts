@@ -1,3 +1,4 @@
-// Listeners for this module's events: emitter.on('access:<past_tense_verb>', ...)
+import emitter from '@adonisjs/core/services/emitter'
+import SeedTenantOwner from '#access/actions/seed_tenant_owner'
 
-export {}
+emitter.on('tenancy:tenant_created', event => new SeedTenantOwner().handle(event))
