@@ -5,7 +5,10 @@ packages:
 catalogMode: strict
 
 catalog:
+  '@adonisjs/drive': ^4.0.0
   '@adonisjs/mail': ^10.4.0
+  '@aws-sdk/client-s3': ^3.1152.0
+  '@aws-sdk/s3-request-presigner': ^3.1152.0
   '@tuyau/core': '^1.2.2'
   '@types/node': '~26.6.5'
   '@types/react': '^19.3.0'
