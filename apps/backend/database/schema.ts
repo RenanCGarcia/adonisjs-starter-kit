@@ -7,6 +7,33 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
+export class AttachmentSchema extends BaseModel {
+  static $columns = [
+    'createdAt',
+    'extname',
+    'id',
+    'mimeType',
+    'name',
+    'size',
+    'uploaderId',
+  ] as const
+  $columns = AttachmentSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare extname: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare mimeType: string
+  @column()
+  declare name: string
+  @column()
+  declare size: number
+  @column()
+  declare uploaderId: number
+}
+
 export class AuthAccessTokenSchema extends BaseModel {
   static $columns = [
     'abilities',

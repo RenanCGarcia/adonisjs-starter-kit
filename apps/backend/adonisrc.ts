@@ -78,6 +78,9 @@ export default defineConfig({
 
     // auth
     () => import('#auth/routes'),
+
+    // attachments
+    () => import('#attachments/routes'),
   ],
 
   /*

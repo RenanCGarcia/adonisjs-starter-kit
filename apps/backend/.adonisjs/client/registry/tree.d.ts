@@ -18,4 +18,9 @@ export interface ApiDefinition {
       store: typeof routes['auth.access_tokens.store']
     }
   }
+  attachments: {
+    attachments: {
+      store: typeof routes['attachments.attachments.store']
+    }
+  }
 }
