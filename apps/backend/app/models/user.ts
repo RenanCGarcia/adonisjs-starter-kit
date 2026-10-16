@@ -13,6 +13,6 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
     if (first && last) {
       return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
     }
-    return `${first.slice(0, 2)}`.toUpperCase()
+    return (first ?? '').slice(0, 2).toUpperCase()
   }
 }
