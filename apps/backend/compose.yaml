@@ -35,8 +35,45 @@ services:
       timeout: 5s
       retries: 3
 
+  rustfs:
+    container_name: '${APP_NAME}_rustfs'
+    image: rustfs/rustfs:latest
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ACCESS_KEY: '${AWS_ACCESS_KEY_ID}'
+      RUSTFS_SECRET_KEY: '${AWS_SECRET_ACCESS_KEY}'
+      RUSTFS_CONSOLE_ENABLE: 'true'
+    volumes:
+      - rustfs:/data
+    ports:
+      - '${S3_PORT:-9000}:9000'
+      - '${RUSTFS_CONSOLE_PORT:-9001}:9001'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:9000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Creates S3_BUCKET once rustfs is up; exits right after.
+  rustfs-init:
+    image: amazon/aws-cli:latest
+    depends_on:
+      rustfs:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: '${AWS_ACCESS_KEY_ID}'
+      AWS_SECRET_ACCESS_KEY: '${AWS_SECRET_ACCESS_KEY}'
+      AWS_REGION: '${AWS_REGION}'
+    entrypoint: ['sh', '-c']
+    command:
+      - aws --endpoint-url http://rustfs:9000 s3api head-bucket --bucket '${S3_BUCKET}' 2>/dev/null || aws --endpoint-url http://rustfs:9000 s3 mb 's3://${S3_BUCKET}'
+    restart: 'no'
+
 volumes:
   pgsql:
     name: '${APP_NAME}_pgsql'
   mailpit:
     name: '${APP_NAME}_mailpit'
+  rustfs:
+    name: '${APP_NAME}_rustfs'
