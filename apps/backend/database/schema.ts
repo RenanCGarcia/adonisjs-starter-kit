@@ -70,6 +70,53 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class PermissionGrantSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'permission', 'tenantId', 'userId'] as const
+  $columns = PermissionGrantSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare permission: string
+  @column()
+  declare tenantId: string | null
+  @column()
+  declare userId: string
+}
+
+export class RoleAssignmentSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'roleId', 'tenantId', 'userId'] as const
+  $columns = RoleAssignmentSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare roleId: string
+  @column()
+  declare tenantId: string | null
+  @column()
+  declare userId: string
+}
+
+export class RoleSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'name', 'permissions', 'tenantId', 'updatedAt'] as const
+  $columns = RoleSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare name: string
+  @column()
+  declare permissions: string[]
+  @column()
+  declare tenantId: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class TenantMembershipSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'tenantId', 'userId'] as const
   $columns = TenantMembershipSchema.$columns

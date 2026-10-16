@@ -88,6 +88,10 @@ export default defineConfig({
 
     // tenancy
     () => import('#tenancy/routes'),
+
+    // access
+    () => import('#access/routes'),
+    () => import('#access/start/events'),
   ],
 
   /*

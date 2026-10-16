@@ -11,6 +11,7 @@
     "#users/*": "./app/users/*.js",
     "#attachments/*": "./app/attachments/*.js",
     "#tenancy/*": "./app/tenancy/*.js",
+    "#access/*": "./app/access/*.js",
     "#generated/*": "./.adonisjs/server/*.js",
     "#providers/*": "./providers/*.js",
     "#database/*": "./database/*.js",
