@@ -79,4 +79,28 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/attachments/controllers/attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'health_checks.live': {
+    methods: ["GET","HEAD"]
+    pattern: '/health/live'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/core/controllers/health_checks_controller').default['live']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/core/controllers/health_checks_controller').default['live']>>>
+    }
+  }
+  'health_checks.ready': {
+    methods: ["GET","HEAD"]
+    pattern: '/health/ready'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/core/controllers/health_checks_controller').default['ready']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/core/controllers/health_checks_controller').default['ready']>>>
+    }
+  }
 }

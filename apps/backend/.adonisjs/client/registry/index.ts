@@ -42,6 +42,18 @@ const routes = {
     tokens: [{"old":"/api/v1/attachments","type":0,"val":"api","end":""},{"old":"/api/v1/attachments","type":0,"val":"v1","end":""},{"old":"/api/v1/attachments","type":0,"val":"attachments","end":""}],
     types: placeholder as Registry['attachments.attachments.store']['types'],
   },
+  'health_checks.live': {
+    methods: ["GET","HEAD"],
+    pattern: '/health/live',
+    tokens: [{"old":"/health/live","type":0,"val":"health","end":""},{"old":"/health/live","type":0,"val":"live","end":""}],
+    types: placeholder as Registry['health_checks.live']['types'],
+  },
+  'health_checks.ready': {
+    methods: ["GET","HEAD"],
+    pattern: '/health/ready',
+    tokens: [{"old":"/health/ready","type":0,"val":"health","end":""},{"old":"/health/ready","type":0,"val":"ready","end":""}],
+    types: placeholder as Registry['health_checks.ready']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

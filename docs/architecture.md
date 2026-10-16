@@ -2,12 +2,12 @@
 
 `apps/backend/app/` holds one folder per **module**: a bounded context that owns its vocabulary, its tables, and its routes. A module may hold several models; modules are not 1:1 with tables. Code outside `app/` (`start/`, `config/`, `database/`, `providers/`, `tests/`) is application wiring, not a module.
 
-| Module        | Owns                                                                                      |
-| ------------- | ----------------------------------------------------------------------------------------- |
-| `core`        | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`. |
-| `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.             |
-| `auth`        | Behavior over that identity: sign-up, login, logout, the auth middleware.                 |
-| `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.             |
+| Module        | Owns                                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------------------- |
+| `core`        | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`, health checks. |
+| `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.                            |
+| `auth`        | Behavior over that identity: sign-up, login, logout, the auth middleware.                                |
+| `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.                            |
 
 ## Starting a new module or feature
 
@@ -79,6 +79,24 @@ A file reaches a record in two requests: the frontend uploads it to `POST /api/v
 4. **Claims in the same transaction as its write**: `new ClaimAttachments().handle(trx, { ids, uploaderId, rule })`, with a rule from `defineAttachmentRule({ extnames, maxSize })` and only the ids the record is newly adding. It throws a 422 `E_INVALID_ATTACHMENT` for an unknown id, another user's upload, or a file outside the rule.
 5. **Embeds it through `AttachmentTransformer`**, which signs a one-hour URL. Load the relation first; whoever serializes the record has already authorized it.
 6. **Drops the reference to remove a file.** Never delete attachments by hand: `node ace attachments:prune` deletes every attachment older than a day that no foreign key references, row and object. Schedule it (daily is enough); it is safe to run concurrently or after a crash.
+
+## Health checks
+
+Two endpoints, outside `/api/v1`:
+
+- **`GET /health/live`** is the liveness probe for Docker (`HEALTHCHECK`) or an orchestrator. It answers 200 while the process serves HTTP and checks no dependency, so a database outage never turns into a restart loop.
+- **`GET /health/ready`** is for monitoring. It requires the `x-monitoring-secret` header to equal `MONITORING_SECRET` (401 otherwise), runs every check in `start/health.ts`, and returns the report under `data`: 200 when every check passes, 503 when one fails. Each entry in `data.checks` carries its `name`, `status` (`ok`, `warning`, `error`), a `message` describing the result, and the measured values and thresholds in `meta`.
+
+| Check                                | Fails when                                                                    | Thresholds (warn / fail) |
+| ------------------------------------ | ----------------------------------------------------------------------------- | ------------------------ |
+| `Disk space check`                   | Disk usage crosses the threshold; cached for an hour.                         | 75% / 80%                |
+| `Memory heap check`                  | V8 heap in use crosses the threshold.                                         | 250 MB / 300 MB          |
+| `Memory RSS check`                   | Resident memory of the process crosses the threshold.                         | 320 MB / 350 MB          |
+| `Database health check (pg)`         | Postgres refuses the connection.                                              |                          |
+| `Connection count health check (pg)` | Connections on the whole server (`pg_stat_activity`) cross.                   | 70 / 90                  |
+| `Storage check`                      | The S3 bucket can't be listed (unreachable, bad credentials, missing bucket). |                          |
+
+A new dependency the app can't serve without gets its own check, registered in `start/health.ts`; a custom one extends `BaseCheck` in `app/core/health_checks/`.
 
 ## Dependencies between modules
 

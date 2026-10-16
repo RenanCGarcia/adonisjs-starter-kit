@@ -26,4 +26,8 @@ export interface ApiDefinition {
       store: typeof routes['attachments.attachments.store']
     }
   }
+  healthChecks: {
+    live: typeof routes['health_checks.live']
+    ready: typeof routes['health_checks.ready']
+  }
 }

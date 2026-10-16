@@ -10,12 +10,18 @@ export type ScannedRoutes = {
     'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
     'attachments.attachments.store': { paramsTuple?: []; params?: {} }
+    'health_checks.live': { paramsTuple?: []; params?: {} }
+    'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
+    'health_checks.live': { paramsTuple?: []; params?: {} }
+    'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
+    'health_checks.live': { paramsTuple?: []; params?: {} }
+    'health_checks.ready': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'profile.avatar.update': { paramsTuple?: []; params?: {} }
