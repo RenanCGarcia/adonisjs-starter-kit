@@ -1,0 +1,8 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var validatorFileName = generators.validatorFileName(entity.name)}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'validators', validatorFileName)
+  })
+}}}
+import vine from '@vinejs/vine'

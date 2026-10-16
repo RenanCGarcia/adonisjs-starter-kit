@@ -1,0 +1,14 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var suiteName = flags.suite || new Function("throw new Error('Pass the suite: --suite=unit or --suite=functional')")()}}
+{{#var testGroupName = generators.testGroupName(entity)}}
+{{#var testFileName = generators.testFileName(entity.name)}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'tests', suiteName, testFileName)
+  })
+}}}
+import { test } from '@japa/runner'
+
+test.group('{{ testGroupName }}', () => {
+  test('example test', async () => {})
+})

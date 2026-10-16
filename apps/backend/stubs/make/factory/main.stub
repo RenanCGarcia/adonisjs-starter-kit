@@ -1,0 +1,19 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var factoryName = generators.factoryName(entity.name)}}
+{{#var factoryFileName = generators.factoryFileName(entity.name)}}
+{{#var modelName = generators.modelName(model.name)}}
+{{#var modelFileName = generators.modelFileName(model.name)}}
+{{#var modelImportPath = generators.importPath('#' + module + '/models', modelFileName.replace(/\.ts$/, ''))}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'database/factories', factoryFileName)
+  })
+}}}
+import factory from '@adonisjs/lucid/factories'
+import {{ modelName }} from '{{ modelImportPath }}'
+
+export const {{ factoryName }} = factory
+  .define({{ modelName }}, async () => {
+    return {}
+  })
+  .build()

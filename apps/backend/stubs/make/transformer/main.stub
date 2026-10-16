@@ -1,0 +1,19 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var transformerName = generators.transformerName(entity.name)}}
+{{#var transformerFileName = generators.transformerFileName(entity.name)}}
+{{#var modelName = generators.modelName(model.name)}}
+{{#var modelFileName = generators.modelFileName(model.name)}}
+{{#var modelImportPath = generators.importPath('#' + module + '/models', modelFileName.replace(/\.ts$/, ''))}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'transformers', transformerFileName)
+  })
+}}}
+import { BaseTransformer } from '@adonisjs/core/transformers'
+import {{ modelName }} from '{{ modelImportPath }}'
+
+export default class {{ transformerName }} extends BaseTransformer<{{modelName}}> {
+  toObject() {
+    return this.pick(this.resource, ['id'])
+  }
+}

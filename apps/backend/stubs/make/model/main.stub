@@ -1,0 +1,13 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var modelSchemaName = `${modelName}Schema` }}
+{{#var modelFileName = generators.modelFileName(entity.name)}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'models', modelFileName)
+  })
+}}}
+import { {{ modelSchemaName }} } from '#database/schema'
+
+export default class {{ modelName }} extends {{ modelSchemaName }} {
+}

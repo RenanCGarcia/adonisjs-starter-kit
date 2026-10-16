@@ -1,0 +1,25 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var controllerName = generators.controllerName(entity.name, singular)}}
+{{#var controllerFileName = generators.controllerFileName(entity.name, singular)}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'controllers', controllerFileName)
+  })
+}}}
+import type { HttpContext } from '@adonisjs/core/http'
+
+export default class {{ controllerName }} {
+  async index(_ctx: HttpContext) {}
+
+  async create(_ctx: HttpContext) {}
+
+  async store(_ctx: HttpContext) {}
+
+  async show(_ctx: HttpContext) {}
+
+  async edit(_ctx: HttpContext) {}
+
+  async update(_ctx: HttpContext) {}
+
+  async destroy(_ctx: HttpContext) {}
+}

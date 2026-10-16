@@ -1,0 +1,11 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var serviceName = generators.serviceName(entity.name)}}
+{{#var serviceFileName = generators.serviceFileName(entity.name)}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'services', serviceFileName)
+  })
+}}}
+export class {{ serviceName }} {
+  // Your code here
+}

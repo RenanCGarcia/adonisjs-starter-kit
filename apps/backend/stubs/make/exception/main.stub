@@ -1,0 +1,13 @@
+{{#var module = entity.path !== './' && process.getBuiltinModule('node:fs').existsSync(app.makePath('app', entity.path)) ? entity.path : new Function("throw new Error('The name must start with an existing module: <module>/<name>, e.g. users/tokens. New modules come from node ace make:module.')")()}}
+{{#var exceptionName = generators.exceptionName(entity.name)}}
+{{#var exceptionFileName = generators.exceptionFileName(entity.name)}}
+{{{
+  exports({
+    to: app.makePath('app', module, 'exceptions', exceptionFileName)
+  })
+}}}
+import { Exception } from '@adonisjs/core/exceptions'
+
+export default class {{ exceptionName }} extends Exception {
+  static override status = 500
+}
