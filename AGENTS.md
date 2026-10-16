@@ -1,5 +1,10 @@
 # Agent notes
 
+- **Before writing code**: find the closest existing example and mirror its shape. Keep the diff to what the task needs; no drive-by renames or refactors.
+- **Done**: `pnpm typecheck && pnpm lint` pass, plus the narrowest relevant test. If a command can't run (missing infra, no network), report it with its output instead of claiming completion.
+- **Backend architecture**: before creating or moving anything under `apps/backend/app/` (controller, action, query, model, transformer, validator, module), read `docs/architecture.md`. Starting a new module or feature: follow its step-by-step section in order. Dependencies between modules are declared in `apps/backend/modules.json` and enforced by the lint.
+- **Controller responses**: every controller action validates input with `request.validateUsing()` and returns `serialize(...)` (a transformer for models, a plain object otherwise). The frontend's Tuyau types are inferred from that return: a model or bare object leaves them empty.
+- **Naming is wiring**: controllers must end in `_controller.ts` and transformers in `_transformer.ts`, or the generated registries (`#generated/controllers`, the frontend's `Data` types) silently skip them.
 - **Tests**: before writing, extending, or reviewing any test (unit, functional, e2e), read `docs/testing.md`: one owner layer per behavior, no duplicate coverage.
 - **AdonisJS docs**: for any AdonisJS question, read the v7 docs in `repos/adonisjs-docs/content` (`start/`, `guides/`, `reference/`) before guessing or searching the web. If the folder is missing or empty, run `pnpm docs:pull` (also updates it). It's gitignored, so root-level Grep/Glob skip it: pass the path explicitly. Read-only: never edit or import from it.
 - **Lucid docs**: for any Lucid (ORM, query builder, migrations, factories) question, start with `repos/lucid-docs/docs/AI-REFERENCE-OVERVIEW.md`, then the topic file (`AI-REFERENCE-ORM.md`, `-MIGRATIONS.md`...). Same rules as the AdonisJS docs: `pnpm docs:pull` if missing, pass the path explicitly, read-only.
