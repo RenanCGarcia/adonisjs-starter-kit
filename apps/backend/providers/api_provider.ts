@@ -23,12 +23,14 @@ class ApiSerializer extends BaseSerializer<{
    *
    * @throws Error if metadata doesn't match Lucid's pagination structure
    */
+  // oxlint-disable-next-line anti-slop/no-unknown-parameters -- BaseSerializer passes the metadata as unknown; the guard below parses it.
   definePaginationMetaData(metaData: unknown): SimplePaginatorMetaKeys {
     if (!this.isLucidPaginatorMetaData(metaData)) {
       throw new Error(
         'Invalid pagination metadata. Expected metadata to contain Lucid pagination keys',
       )
     }
+
     return metaData
   }
 }
@@ -37,6 +39,8 @@ class ApiSerializer extends BaseSerializer<{
  * Single instance of ApiSerializer used across the application
  */
 const serializer = new ApiSerializer()
+
+// SAFETY: both functions forward their arguments unchanged to the serializer methods they are typed as.
 const serialize = Object.assign(
   function (this: HttpContext, ...[data, resolver]: Parameters<ApiSerializer['serialize']>) {
     return serializer.serialize(data, resolver ?? this.containerResolver)
