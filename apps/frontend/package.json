@@ -1,13 +1,30 @@
 {
-  "name": "frontend",
+  "name": "@monorepo/frontend",
   "version": "0.0.0",
   "private": true,
-  "description": "Empty frontend starter - choose your own framework",
   "type": "module",
   "scripts": {
-    "dev": "echo 'Setup your frontend framework first. See README.md'",
-    "build": "echo 'Setup your frontend framework first. See README.md'",
-    "test": "echo 'No tests configured yet'",
-    "typecheck": "echo 'No typecheck configured yet'"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsr generate && tsc -b"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.170.44",
+    "@tuyau/core": "^1.2.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@monorepo/backend": "workspace:*",
+    "@tanstack/react-router-devtools": "^1.167.2",
+    "@tanstack/router-cli": "^1.167.44",
+    "@tanstack/router-plugin": "^1.168.46",
+    "@types/node": "~26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4"
   }
 }

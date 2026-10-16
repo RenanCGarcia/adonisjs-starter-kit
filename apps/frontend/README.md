@@ -37,7 +37,7 @@ npm install @tuyau/core
 ```typescript
 // src/lib/api.ts
 import { createTuyau } from '@tuyau/core/client'
-import { registry } from '@api-starter-kit/backend/registry'
+import { registry } from '@monorepo/backend/registry'
 
 export const api = createTuyau({
   baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3333',
@@ -51,7 +51,7 @@ export const api = createTuyau({
 // src/routes/users.tsx
 import { createFileRoute } from '@tanstack/react-router'
 import { api } from '@/lib/api'
-import type { Data } from '@api-starter-kit/backend/data'
+import type { Data } from '@monorepo/backend/data'
 
 export const Route = createFileRoute('/users')({
   loader: async () => {
@@ -99,7 +99,7 @@ npm install @tuyau/core
 ```typescript
 // plugins/api.ts
 import { createTuyau } from '@tuyau/core/client'
-import { registry } from '@api-starter-kit/backend/registry'
+import { registry } from '@monorepo/backend/registry'
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
@@ -133,7 +133,7 @@ export default defineNuxtConfig({
 
 ```vue
 <script setup lang="ts">
-import type { Data } from '../../backend/.adonisjs/client/data'
+import type { Data } from '@monorepo/backend/data'
 
 const { $api } = useNuxtApp()
 
@@ -294,7 +294,7 @@ const handleLogin = async () => {
 All backend routes are fully typed:
 
 ```typescript
-import type { registry } from '../../backend/.adonisjs/client/registry'
+import type { registry } from '@monorepo/backend/registry'
 
 // Your IDE will autocomplete route names and methods
 api.api.v1.users.$get()           // GET /api/v1/users
@@ -307,7 +307,7 @@ api.api.v1.users.$post({ ... })    // POST /api/v1/users
 Import data types from the backend:
 
 ```typescript
-import type { Data } from '../../backend/.adonisjs/client/data'
+import type { Data } from '@monorepo/backend/data'
 
 // Use transformer types
 const user: Data.User = {
