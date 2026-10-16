@@ -16,14 +16,14 @@ export default class AccessTokensController {
     })
   }
 
-  async destroy({ auth }: HttpContext) {
+  async destroy({ auth, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
     if (user.currentAccessToken) {
       await User.accessTokens.delete(user, user.currentAccessToken.identifier)
     }
 
-    return {
+    return serialize({
       message: 'Logged out successfully',
-    }
+    })
   }
 }
