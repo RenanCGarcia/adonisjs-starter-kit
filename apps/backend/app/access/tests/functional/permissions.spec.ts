@@ -1,52 +1,49 @@
 import { test } from '@japa/runner'
-import type { ApiClient } from '@japa/api-client'
 import type User from '#users/models/user'
-import Tenant from '#tenancy/models/tenant'
+import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { assign, grant, member, role } from '#access/tests/seed'
+import { platform, workspace } from '#access/tests/seed'
+
+async function permissionsOf(client: ApiClient, user: User, headers: Record<string, string>) {
+  const response = await client.visit('access.my_permissions.show').headers(headers).loginAs(user)
+
+  response.assertStatus(200)
+
+  return response.body().data.permissions
+}
 
 test.group('Access | effective permissions', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
 
-  const permissionsIn = async (client: ApiClient, user: User, tenant: Tenant) => {
-    const response = await client
-      .visit('access.my_permissions.show')
-      .header('X-Tenant-Id', tenant.id)
-      .loginAs(user)
+  test('joins the permissions of the role and the grants', async ({ client, assert }) => {
+    const acme = await workspace()
+    const user = await acme.member()
+    await acme.assign(user, await acme.role('Editor', ['roles.manage']))
+    await acme.grant(user, 'members.manage')
+    const plain = await acme.member()
 
-    response.assertStatus(200)
-
-    return response.body().data.permissions
-  }
-
-  test('joins the role and the grants of the current tenant only', async ({ client, assert }) => {
-    const acme = await Tenant.create({ name: 'Acme' })
-    const globex = await Tenant.create({ name: 'Globex' })
-    const user = await member(acme, globex)
-    await assign(user, await role(acme, 'Editor', ['roles.manage']))
-    await grant(user, acme, 'members.manage')
-    await assign(user, await role(globex, 'Viewer', []))
-    await grant(user, globex, 'roles.manage')
-
-    assert.deepEqual(await permissionsIn(client, user, acme), ['roles.manage', 'members.manage'])
-    assert.deepEqual(await permissionsIn(client, user, globex), ['roles.manage'])
+    assert.deepEqual(await permissionsOf(client, user, acme.headers), [
+      'roles.manage',
+      'members.manage',
+    ])
+    assert.deepEqual(await permissionsOf(client, plain, acme.headers), [])
   })
 
   test('ignores permissions the catalog no longer lists', async ({ client, assert }) => {
-    const acme = await Tenant.create({ name: 'Acme' })
-    const user = await member(acme)
-    await assign(user, await role(acme, 'Legacy', ['reports.export', 'roles.manage']))
-    await grant(user, acme, 'invoices.void')
+    const acme = await workspace()
+    const user = await acme.member()
+    await acme.assign(user, await acme.role('Legacy', ['reports.export', 'roles.manage']))
+    await acme.grant(user, 'invoices.void')
 
-    assert.deepEqual(await permissionsIn(client, user, acme), ['roles.manage'])
+    assert.deepEqual(await permissionsOf(client, user, acme.headers), ['roles.manage'])
   })
 
-  test('gives a platform admin every permission in any tenant', async ({ client, assert }) => {
-    const acme = await Tenant.create({ name: 'Acme' })
-    const admin = await member(acme)
-    await assign(admin, await role(null, 'Admin', ['platform.admin']))
+  test('gives a platform admin every permission', async ({ client, assert }) => {
+    const acme = await workspace()
+    const admin = await acme.member()
+    await platform.assign(admin, await platform.role('Admin', ['platform.admin']))
 
-    assert.deepEqual(await permissionsIn(client, admin, acme), [
+    assert.deepEqual(await permissionsOf(client, admin, acme.headers), [
       'roles.manage',
       'members.manage',
       'platform.admin',

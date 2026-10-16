@@ -6,25 +6,42 @@ import RoleAssignment from '#access/models/role_assignment'
 
 let users = 0
 
-/** A user who belongs to `tenants`. */
-export async function member(...tenants: Tenant[]) {
+function user() {
   users += 1
-  const user = await User.create({ email: `user${users}@example.com`, password: 'password123' })
 
-  for (const tenant of tenants) await tenant.related('memberships').create({ userId: user.id })
-
-  return user
+  return User.create({ email: `user${users}@example.com`, password: 'password123' })
 }
 
-/** A role in `tenant`, or a platform role for null. */
-export function role(tenant: Tenant | null, name: string, permissions: string[]) {
-  return Role.create({ tenantId: tenant?.id ?? null, name, permissions })
+function scoped(tenantId: string | null) {
+  return {
+    role: (name: string, permissions: string[]) => Role.create({ tenantId, name, permissions }),
+    assign: (holder: User, role: Role) =>
+      RoleAssignment.create({ tenantId, userId: holder.id, roleId: role.id }),
+    grant: (holder: User, permission: string) =>
+      PermissionGrant.create({ tenantId, userId: holder.id, permission }),
+  }
 }
 
-export function assign(user: User, role: Role) {
-  return RoleAssignment.create({ userId: user.id, tenantId: role.tenantId, roleId: role.id })
-}
+/** Roles and grants at platform level, outside every tenant. */
+export const platform = scoped(null)
 
-export function grant(user: User, tenant: Tenant | null, permission: string) {
-  return PermissionGrant.create({ userId: user.id, tenantId: tenant?.id ?? null, permission })
+/**
+ * A tenant to act in, and the headers that select it. Specs other than tenant_isolation and
+ * owner go through this, so "Access without tenancy" in docs/architecture.md only swaps
+ * this file.
+ */
+export async function workspace(name = 'Acme') {
+  const tenant = await Tenant.create({ name })
+
+  return {
+    ...scoped(tenant.id),
+    tenant,
+    headers: { 'X-Tenant-Id': tenant.id },
+    async member() {
+      const joined = await user()
+      await tenant.related('memberships').create({ userId: joined.id })
+
+      return joined
+    },
+  }
 }
