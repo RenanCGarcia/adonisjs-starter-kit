@@ -1,0 +1,38 @@
+services:
+  migrate:
+    build:
+      context: .
+      target: backend
+    image: ${APP_NAME}-backend:latest
+    command: ['node', 'ace', 'migration:run', '--force']
+    env_file: .env
+    restart: 'no'
+
+  backend:
+    build:
+      context: .
+      target: backend
+    image: ${APP_NAME}-backend:latest
+    env_file: .env
+    init: true
+    expose:
+      - '3333'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      target: frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    expose:
+      - '80'
+    restart: unless-stopped
+
+networks:
+  default:
+    name: dokploy-network
+    external: true
