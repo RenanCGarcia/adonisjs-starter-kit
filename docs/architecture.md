@@ -8,6 +8,7 @@
 | `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.                            |
 | `auth`        | Behavior over that identity: sign-up, login, logout, the auth middleware.                                |
 | `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.                            |
+| `tenancy`     | Tenants and their members, the tenant scope on models, the `tenant` middleware. Optional.                |
 
 ## Starting a new module or feature
 
@@ -92,6 +93,62 @@ Background work runs as jobs on `@adonisjs/queue`, backed by Redis through the `
 - **Recurring jobs** are declared in `start/scheduler.ts`, preloaded only for the HTTP server. A schedule is upserted by its id (the job class name), so every boot of every instance converges on one schedule. `PruneAttachmentsJob` is the reference example.
 - **The worker is its own process**: `node ace queue:work`. `pnpm dev` runs it next to the server under `node --watch`; production runs the `worker` service in `compose.dokploy.yaml`.
 - **Tests run jobs inline**: `.env.test` sets `QUEUE_DRIVER=sync`. To assert a dispatch without running the job, use `QueueManager.fake()` and restore it in the group's teardown.
+
+## Tenancy
+
+A tenant is a workspace that users join through `tenant_memberships`. The `tenancy` module scopes rows to the current tenant. `core`, `users`, `auth`, and `attachments` never import it, so an app without tenants deletes it: see [Removing tenancy](#removing-tenancy).
+
+Every query of a tenant-scoped model runs inside a context from `#tenancy/tenant_context`:
+
+- **`runInTenant(tenantId, fn)`** restricts the queries in `fn` to that tenant.
+- **`runAsSystem(fn)`** lifts the restriction, for work that spans tenants. Await every query inside `fn`: a builder returned unexecuted runs after the context ends.
+- **Neither**: the query throws a 500 `E_MISSING_TENANT_CONTEXT`. A missing context is a bug, never "every tenant".
+
+### Make a model tenant-scoped
+
+1. **Depend on `tenancy`** in `modules.json`.
+2. **Add the column** in the migration: `table.uuid('tenant_id').notNullable().references('id').inTable('tenants').onDelete('CASCADE').index()`.
+3. **Compose the mixin**: `class Project extends compose(ProjectSchema, withTenant) {}`, with `withTenant` from `#tenancy/mixins/with_tenant`. A model without a `tenantId` column doesn't compile.
+
+The mixin adds `<table>.tenant_id = <tenant>` to every query built from the model: reads, `find`, `paginate` and its count, bulk `update()` and `delete()`, `pojo()`, and relationship queries and preloads that reach it from a global model. On create, it fills `tenantId` from the context; in `runAsSystem()`, set it yourself or the create throws.
+
+The scope doesn't reach:
+
+- **`db` queries and the `exists` and `unique` rules**, which read the table directly. To validate a reference, use `vine.string().uuid().exists(existsInTenant(Project))` from `#tenancy/validators/exists_in_tenant`.
+- **`has()`, `whereHas()`, and `withCount()` from a global model**: the subquery counts every tenant. Filter `tenant_id` in the callback.
+- **Instance `save()` and `delete()`**, which write by primary key to a row a scoped query already loaded.
+
+A preload with `groupLimit()` on a tenant-scoped model fails with a SQL error.
+
+### Requests
+
+A route that touches tenant data uses `middleware.tenant()` after `middleware.auth()`, and the client sends the tenant id in the `X-Tenant-Id` header:
+
+| Header                                     | Response                                                                        |
+| ------------------------------------------ | ------------------------------------------------------------------------------- |
+| Missing or not a UUID                      | 400, `key: 'E_INVALID_TENANT_HEADER'`                                           |
+| Unknown tenant, or the user isn't a member | 403, `key: 'E_TENANT_ACCESS_DENIED'`, the same body for both                    |
+| A tenant of the user                       | `ctx.tenant` is the `Tenant`, and the rest of the request runs in `runInTenant` |
+
+`GET /api/v1/tenants` lists the user's tenants. `POST /api/v1/tenants` creates one with the user as its first member. Both need only `auth`.
+
+### Jobs and commands
+
+A job or command has no request, so it has no context. A job that touches tenant data carries `tenantId` in its payload and runs its work in `runInTenant(this.payload.tenantId, () => ...)`. Work across tenants, such as a scheduled cleanup, runs in `runAsSystem()`.
+
+### Removing tenancy
+
+From `apps/backend/`:
+
+1. Delete `app/tenancy/`.
+2. Delete `database/migrations/1792181279112_create_tenants_table.ts` and `database/migrations/1792181280651_create_tenant_memberships_table.ts`.
+3. In `start/kernel.ts`, delete the `tenant:` line in `router.named()`.
+4. In `adonisrc.ts`, delete the `// tenancy` preload comment and `() => import('#tenancy/routes')`.
+5. In `package.json`, delete the `"#tenancy/*"` import.
+6. In `modules.json`, delete the `tenancy` entry.
+7. In `database/schema.ts`, delete `TenantMembershipSchema` and `TenantSchema`.
+8. Run `node ace codegen` to drop the tenant routes and `TenantTransformer` from `.adonisjs/`.
+9. In this file, delete the `tenancy` row of the module table and this section.
 
 ## Health checks
 
