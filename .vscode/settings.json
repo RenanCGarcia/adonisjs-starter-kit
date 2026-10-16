@@ -1,0 +1,13 @@
+{
+  "files.watcherExclude": {
+    "**/.adonisjs/**": true
+  },
+  "search.exclude": {
+    "**/.adonisjs/**": true
+  },
+  "files.readonlyInclude": {
+    "**/.adonisjs/**": true
+  },
+  "oxc.typeAware": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode"
+}
