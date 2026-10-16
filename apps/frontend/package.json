@@ -12,9 +12,9 @@
   "dependencies": {
     "@monorepo/ui": "workspace:*",
     "@tanstack/react-router": "^1.170.44",
-    "@tuyau/core": "^1.2.2",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "@tuyau/core": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@monorepo/backend": "workspace:*",
@@ -22,12 +22,12 @@
     "@tanstack/react-router-devtools": "^1.167.2",
     "@tanstack/router-cli": "^1.167.44",
     "@tanstack/router-plugin": "^1.168.46",
-    "@types/node": "~26.6.5",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^6.1.2",
-    "tailwindcss": "^4",
-    "typescript": "~6.0.3",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
     "vite": "^8.3.4"
   }
 }
