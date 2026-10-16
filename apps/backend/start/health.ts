@@ -1,4 +1,6 @@
 import db from '@adonisjs/lucid/services/db'
+import redis from '@adonisjs/redis/services/main'
+import { RedisCheck } from '@adonisjs/redis'
 import { DbCheck, DbConnectionCountCheck } from '@adonisjs/lucid/database'
 import { StorageCheck } from '#core/health_checks/storage_check'
 import {
@@ -17,4 +19,5 @@ export const healthChecks = new HealthChecks().register([
   // thresholds sit below Postgres' default max_connections of 100.
   new DbConnectionCountCheck(db.connection()).warnWhenExceeds(70).failWhenExceeds(90),
   new StorageCheck(),
+  new RedisCheck(redis.connection()),
 ])

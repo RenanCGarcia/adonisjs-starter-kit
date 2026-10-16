@@ -50,4 +50,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   S3_BUCKET: Env.schema.string(),
   S3_ENDPOINT: Env.schema.string.optional({ format: 'url', tld: false }),
   S3_FORCE_PATH_STYLE: Env.schema.boolean.optional(),
+
+  // Redis
+  REDIS_HOST: Env.schema.string({ format: 'host' }),
+  REDIS_PORT: Env.schema.number(),
+  REDIS_PASSWORD: Env.schema.secret.optional(),
 })

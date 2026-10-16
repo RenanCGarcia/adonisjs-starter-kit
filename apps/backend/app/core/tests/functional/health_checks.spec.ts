@@ -26,6 +26,7 @@ test.group('Core | health checks', () => {
         'Database health check (pg)',
         'Connection count health check (pg)',
         'Storage check',
+        'Redis health check (main)',
       ],
     )
   })

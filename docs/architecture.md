@@ -95,6 +95,7 @@ Two endpoints, outside `/api/v1`:
 | `Database health check (pg)`         | Postgres refuses the connection.                                              |                          |
 | `Connection count health check (pg)` | Connections on the whole server (`pg_stat_activity`) cross.                   | 70 / 90                  |
 | `Storage check`                      | The S3 bucket can't be listed (unreachable, bad credentials, missing bucket). |                          |
+| `Redis health check (main)`          | Redis doesn't answer on the `main` connection.                                |                          |
 
 A new dependency the app can't serve without gets its own check, registered in `start/health.ts`; a custom one extends `BaseCheck` in `app/core/health_checks/`.
 

@@ -36,6 +36,7 @@
     "@adonisjs/drive": "catalog:",
     "@adonisjs/lucid": "^22.4.2",
     "@adonisjs/mail": "catalog:",
+    "@adonisjs/redis": "catalog:",
     "@adonisjs/session": "^8.1.0",
     "@adonisjs/shield": "^9.0.0",
     "@aws-sdk/client-s3": "catalog:",

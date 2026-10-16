@@ -88,7 +88,7 @@ Do `apps/backend`, `node ace` dá acesso aos geradores, migrations (`migration:r
 - **Validação** com VineJS: `request.validateUsing()` em todo controller.
 - **Arquivos (attachments)** via Drive/S3: upload em duas etapas, URLs assinadas de uma hora, regras por caso de uso e limpeza de órfãos com `node ace attachments:prune`. Em dev, o S3 é o RustFS do Compose e o bucket é criado sozinho.
 - **E-mail** com `@adonisjs/mail` por SMTP; em dev tudo cai no Mailpit.
-- **Health checks:** `GET /health/live` (liveness, sem dependências) e `GET /health/ready` (disco, memória, Postgres, conexões, storage), protegido pelo header `x-monitoring-secret`.
+- **Health checks:** `GET /health/live` (liveness, sem dependências) e `GET /health/ready` (disco, memória, Postgres, conexões, storage, Redis), protegido pelo header `x-monitoring-secret`.
 - **Segurança:** Shield, sessão em cookie `httpOnly`/`secure` em produção, CORS liberado em dev e restrito à allowlist `CORS_ORIGIN` fora dele.
 - **Env validado no boot** (`start/env.ts`): uma variável faltando derruba o processo na hora, não em runtime.
 - **Testes** com Japa: suítes `unit` e `functional` dentro de cada módulo, cliente de API tipado pelas rotas, banco de teste separado e migrado antes da suíte.
