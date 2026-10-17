@@ -11,7 +11,6 @@ import { can, permissionLabel } from '@/lib/permissions'
 import type { Permission } from '@/lib/permissions'
 import { useTenant } from '@/lib/tenant'
 
-/** Renders its children only for members holding `permission`; others get an explanation instead of a broken page. */
 export function RequirePermission({
   permission,
   children,

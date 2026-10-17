@@ -4,10 +4,6 @@ import type { FormEvent } from 'react'
 import { formErrors, NO_FORM_ERRORS } from '@/lib/errors'
 import type { FormErrors } from '@/lib/errors'
 
-/**
- * Wires a form's submit: a pending flag for the button, and the errors to render.
- * `submit` resolves to the failed call's error or a message for the whole form, or to null on success.
- */
 export function useFormSubmit(submit: (form: FormData) => Promise<TuyauError | string | null>) {
   const [pending, setPending] = useState(false)
   const [errors, setErrors] = useState<FormErrors>(NO_FORM_ERRORS)

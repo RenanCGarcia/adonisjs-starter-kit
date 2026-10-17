@@ -17,7 +17,6 @@ import type { AssignablePermission, Permission, PermissionGroup } from '@/lib/pe
 
 type Role = { id: string; name: string; permissions: Permission[] }
 
-/** Create when `role` is undefined, otherwise rename and re-permission it. */
 export function RoleDialog({
   role,
   groups,

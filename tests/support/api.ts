@@ -63,7 +63,6 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   return ((await response.json()) as { data: T }).data
 }
 
-/** A fresh account, signed up through the API. */
 export async function signUp(fullName = 'E2E Member'): Promise<Account> {
   const email = uniqueEmail()
   const password = randomUUID().slice(0, 24)
@@ -83,7 +82,6 @@ export function createTenant(account: Account, name = unique('Workspace')) {
 
 export type Role = { id: string; name: string; permissions: string[] }
 
-/** A role in `tenant`, created by `owner` through the API. */
 export function createRole(
   owner: Account,
   tenant: Tenant,
@@ -98,7 +96,6 @@ export function createRole(
   })
 }
 
-/** Replaces a member's role in `tenant`; `roleId: null` leaves them without one. */
 export function assignRole(owner: Account, tenant: Tenant, userId: string, roleId: string | null) {
   return api(`/members/${userId}/role`, {
     method: 'PUT',
@@ -175,7 +172,6 @@ async function readInvitationToken(email: string) {
   return token
 }
 
-/** The token in the newest invitation link mailed to `email`, waiting for the mail to reach Mailpit. */
 export async function invitationToken(email: string) {
   let token = ''
 

@@ -9,7 +9,6 @@ import {
 import type { ReactNode } from 'react'
 import { AppMark } from '@/components/app-mark'
 
-/** The centered card that public pages (sign in, sign up, invitations) sit in. */
 export function AuthCard({
   title,
   description,

@@ -11,7 +11,6 @@ export type NavItem = {
   label: string
   description: string
   icon: LucideIcon
-  /** The permission a member needs to reach the page; null when every member can. */
   requires: Permission | null
 }
 

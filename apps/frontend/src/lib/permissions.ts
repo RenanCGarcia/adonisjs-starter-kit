@@ -47,7 +47,6 @@ function isLabelled(key: string): key is keyof typeof LABELS {
   return key in LABELS
 }
 
-/** The human label for a permission or catalog group key; a key the table doesn't know shows as is. */
 export function permissionLabel(key: string): Label {
   return isLabelled(key) ? LABELS[key] : { label: key }
 }

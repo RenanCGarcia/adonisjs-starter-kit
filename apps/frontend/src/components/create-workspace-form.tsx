@@ -6,7 +6,6 @@ import { api } from '@/lib/api'
 import { textValue, useFormSubmit } from '@/lib/form'
 import { lastTenant } from '@/lib/last-tenant'
 
-/** Creates a workspace and opens it. */
 export function CreateWorkspaceForm({ onCreated }: { onCreated?: () => void }) {
   const router = useRouter()
   const navigate = useNavigate()

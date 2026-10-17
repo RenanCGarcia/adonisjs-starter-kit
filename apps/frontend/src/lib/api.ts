@@ -18,7 +18,6 @@ export const client = createTuyau({
 
 export const api = client.api
 
-/** Request options that scope a call to one workspace: spread into any tenant route's arguments. */
 export function tenantHeaders(tenantId: string) {
   return { headers: { 'X-Tenant-Id': tenantId } }
 }

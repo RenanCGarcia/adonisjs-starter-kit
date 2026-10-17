@@ -88,7 +88,6 @@ test('a role in use cannot be deleted', async ({ app, screen, browser }) => {
     screen.getByText('Move this role’s members to another role before deleting it.'),
   ).toBeVisible()
 
-  // The dialog stays open on a refused delete; the row behind it is inert until it's dismissed.
   await screen.getByRole('alertdialog').getByRole('button', 'Cancel').tap()
   await expect(screen.getByRole('row').filter({ hasText: role.name })).toBeVisible()
 })

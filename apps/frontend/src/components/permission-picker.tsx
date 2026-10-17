@@ -12,7 +12,6 @@ import { useId } from 'react'
 import { permissionLabel } from '@/lib/permissions'
 import type { AssignablePermission, PermissionGroup } from '@/lib/permissions'
 
-/** Grouped checkboxes over the permission catalog; the caller owns the selected set. */
 export function PermissionPicker({
   groups,
   value,

@@ -14,7 +14,6 @@ type TextFieldProps = Omit<ComponentProps<typeof Input>, 'id' | 'name'> & {
   description?: ReactNode
 }
 
-/** A labelled input that shows the server's 422 message for its `name` inline. */
 export function TextField({ name, label, errors, description, ...props }: TextFieldProps) {
   const id = useId()
   const error = errors.fields.get(name)
@@ -29,7 +28,6 @@ export function TextField({ name, label, errors, description, ...props }: TextFi
   )
 }
 
-/** The form-level message: anything that isn't about one field. */
 export function FormAlert({ errors }: { errors: FormErrors }) {
   if (!errors.form) return null
 
@@ -41,7 +39,6 @@ export function FormAlert({ errors }: { errors: FormErrors }) {
   )
 }
 
-/** A button that shows a spinner and blocks resubmission while its action runs. */
 export function PendingButton({
   pending,
   children,

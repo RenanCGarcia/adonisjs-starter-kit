@@ -41,7 +41,6 @@ test('a member signs in, returns to the page they asked for, and logs out', asyn
 }) => {
   const member = await signUp('Grace Hopper')
 
-  // The profile is protected: a signed-out visit lands on the login form, remembering the page.
   await app.open('/profile')
   await expect(browser).toHaveURL('/login?redirect=%2Fprofile')
 

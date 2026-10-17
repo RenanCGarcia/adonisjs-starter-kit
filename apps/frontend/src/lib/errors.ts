@@ -70,7 +70,6 @@ function isKnownCode(code: string): code is ApiErrorCode {
   return code in API_ERROR_MESSAGES
 }
 
-/** The error's code (`E_ROLE_IN_USE`...) when it is one the UI knows. */
 export function apiErrorCode(error: TuyauError): ApiErrorCode | null {
   const { code, key } = errorBody(error)
   const value = code ?? key
@@ -78,7 +77,6 @@ export function apiErrorCode(error: TuyauError): ApiErrorCode | null {
   return value !== undefined && isKnownCode(value) ? value : null
 }
 
-/** One sentence to show a user for any failed call: a toast, an alert, an error state. */
 export function errorMessage(error: TuyauError): string {
   if (error.kind === 'network') return NETWORK_MESSAGE
 
@@ -91,7 +89,6 @@ export function errorMessage(error: TuyauError): string {
   return body.errors?.[0]?.message ?? body.message ?? FALLBACK_MESSAGE
 }
 
-/** Splits a failed form submission into inline field errors (422) and a form-level message. */
 export function formErrors(error: TuyauError): FormErrors {
   const fields = new Map<string, string>()
 

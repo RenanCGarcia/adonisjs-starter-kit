@@ -4,7 +4,6 @@ import type { ComponentProps } from 'react'
 
 type AvatarUser = Pick<Data.Users.User, 'initials' | 'avatar'>
 
-/** A user's photo, or their initials until one is set or while it loads. */
 export function UserAvatar({
   user,
   alt = '',

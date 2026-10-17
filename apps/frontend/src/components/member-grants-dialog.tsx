@@ -17,7 +17,6 @@ import type { AssignablePermission, Permission, PermissionGroup } from '@/lib/pe
 
 type Member = { userId: string; name: string; permissions: Permission[] }
 
-/** Permissions granted to one member directly, on top of whatever their role gives them. */
 export function MemberGrantsDialog({
   member,
   groups,
