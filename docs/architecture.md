@@ -164,17 +164,29 @@ The permissions load on the first check of a request and are memoized on the req
 
 ### Endpoints
 
-Every route below needs `auth` and `tenant`, and acts in the tenant of `X-Tenant-Id`: its roles and its members.
+Every route below needs `auth` and `tenant`, and acts in the tenant of `X-Tenant-Id`: its roles and its members, except `POST /api/v1/invitations/accept`, which needs only `auth` since the invited user isn't a member yet.
 
-| Route                                                          | Needs            | Does                                                                                                                 |
-| -------------------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/v1/access/me`                                        | any member       | `{ permissions }`: what the user passes, in catalog order, for the frontend to gate its UI.                          |
-| `GET`, `POST /api/v1/roles`; `PUT`, `DELETE /api/v1/roles/:id` | `roles.manage`   | Lists, creates, renames and re-permissions roles. `DELETE` answers 409 `E_ROLE_IN_USE` while someone holds the role. |
-| `PUT /api/v1/members/:userId/role` (`{ roleId }`)              | `members.manage` | Replaces the member's role; `null` removes it.                                                                       |
-| `PUT /api/v1/members/:userId/permissions` (`{ permissions }`)  | `members.manage` | Replaces the member's grants.                                                                                        |
+| Route                                                               | Needs                                       | Does                                                                                                                                                           |
+| ------------------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/access/me`                                             | any member                                  | `{ permissions }`: what the user passes, in catalog order, for the frontend to gate its UI.                                                                    |
+| `GET /api/v1/access/permissions`                                    | any member                                  | `{ groups }`: the assignable permissions grouped by their `<group>.` prefix, in catalog order, for the frontend to render organized.                           |
+| `GET`, `POST /api/v1/roles`; `PUT`, `DELETE /api/v1/roles/:id`      | `roles.manage`, `GET` also `members.manage` | Lists, creates, renames and re-permissions roles. `DELETE` answers 409 `E_ROLE_IN_USE` while someone holds the role, or while a pending invitation carries it. |
+| `GET /api/v1/members`                                               | `members.manage`                            | Every member of the tenant, with their role and their individual grants.                                                                                       |
+| `PUT /api/v1/members/:userId/role` (`{ roleId }`)                   | `members.manage`                            | Replaces the member's role; `null` removes it.                                                                                                                 |
+| `PUT /api/v1/members/:userId/permissions` (`{ permissions }`)       | `members.manage`                            | Replaces the member's grants.                                                                                                                                  |
+| `GET`, `POST /api/v1/invitations`; `DELETE /api/v1/invitations/:id` | `members.manage`                            | Lists (pending and expired), sends, and revokes invitations. See "Invitations" below.                                                                          |
+| `POST /api/v1/invitations/accept` (`{ token }`)                     | `auth` only                                 | Accepts an invitation by its raw token. See "Invitations" below.                                                                                               |
 
 - A `userId` that isn't a member of the tenant answers 404 `E_MEMBER_NOT_FOUND`, and a `roleId` of another tenant answers 422.
 - A change that would leave no one holding `members.manage`, when someone held it, answers 409 `E_LAST_MANAGER`: a member can't demote or strip the last manager, themselves included.
+
+### Invitations
+
+A member holding `members.manage` invites someone by email; the `access` module owns the `invitations` table alongside the role an invitation carries. `POST /api/v1/invitations` (`{ email, roleId }`) upserts on `(tenantId, email)`: inviting an email that's already pending refreshes its token, role, inviter and expiry (7 days) and resends the mail, rather than failing. An email already belonging to a member of the tenant answers 409 `E_ALREADY_MEMBER`. The raw token is only ever in the mailed link (`${FRONTEND_URL}/invitations/:token`); the table stores its SHA-256 hash.
+
+`POST /api/v1/invitations/accept` looks the hash up across every tenant (`runAsSystem`), outside the `tenant` middleware since the invited user isn't a member yet. An unknown or expired token answers 404 `E_INVITATION_NOT_FOUND` (the same body for both, so a token can't be probed to tell a stale one from a wrong one); a signed-in email that doesn't match the invitation's answers 403 `E_INVITATION_EMAIL_MISMATCH`. Otherwise it creates the membership (and the invitation's role, if the user doesn't already hold one) and deletes the invitation, all inside `runInTenant`. Already a member: the invitation is just deleted. Both branches make accept safe to retry with the same token.
+
+An invitation's `roleId` has no `ON DELETE`, like a role assignment's: deleting a role a pending invitation carries answers 409 `E_ROLE_IN_USE` through `DeleteRole`'s existing mapping. `FRONTEND_URL` (the frontend's own origin, for the link in the mail) is required config; see `.env.example`.
 
 ### Platform admins
 
