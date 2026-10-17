@@ -14,7 +14,7 @@ export interface InviteMemberInput {
   locale: string
 }
 
-const EXPIRY = { days: 7 }
+export const EXPIRY = { days: 7 }
 
 export default class InviteMember {
   /**

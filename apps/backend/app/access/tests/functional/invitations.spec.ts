@@ -23,7 +23,6 @@ function lastToken(fake: ReturnType<typeof mail.fake>) {
   if (!html) throw new Error('The sent mail has no HTML body')
 
   // SAFETY: InvitationMail only ever calls message.htmlView(), which always renders to a string.
-  // Matches the MJML button's rendered href, proving the compiled HTML is genuine MJML output.
   const match = (html as string).match(/href="[^"]*\/invitations\/([a-f0-9]+)"/)
   const token = match?.[1]
 

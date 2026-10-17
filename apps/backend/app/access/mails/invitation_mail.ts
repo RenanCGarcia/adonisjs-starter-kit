@@ -1,6 +1,7 @@
 import env from '#start/env'
 import { BaseMail } from '@adonisjs/mail'
 import i18nManager from '@adonisjs/i18n/services/main'
+import { EXPIRY } from '#access/actions/invite_member'
 
 export interface InvitationMailInput {
   email: string
@@ -24,7 +25,8 @@ export default class InvitationMail extends BaseMail {
       appName,
       subject,
       preview: i18n.t('access.invitation_mail.preview', { appName }),
-      footer: i18n.t('mail.footer'),
+      footer: i18n.t('access.invitation_mail.footer'),
+      days: EXPIRY.days,
       t: i18n.t.bind(i18n),
     }
 

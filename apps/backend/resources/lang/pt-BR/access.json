@@ -4,9 +4,10 @@
     "subject": "Você recebeu um convite",
     "preview": "Aceite seu convite para entrar no {appName}",
     "heading": "Você recebeu um convite",
-    "intro": "Você recebeu um convite para entrar em um espaço de trabalho no {appName}.",
+    "intro": "Alguém convidou você para entrar em um espaço de trabalho no {appName}.",
     "open_link": "Abra este link para aceitar:",
     "accept": "Aceitar o convite",
-    "expires": "Este convite expira em 7 dias."
+    "expires": "Este convite expira em {days} dias.",
+    "footer": "Você recebeu este e-mail porque alguém te convidou para um espaço de trabalho. Se não esperava por ele, ignore esta mensagem."
   }
 }

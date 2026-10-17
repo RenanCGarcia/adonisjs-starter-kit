@@ -4,9 +4,10 @@
     "subject": "You’ve been invited",
     "preview": "Accept your invitation to join {appName}",
     "heading": "You’ve been invited",
-    "intro": "You’ve been invited to join a workspace on {appName}.",
+    "intro": "Someone invited you to join a workspace on {appName}.",
     "open_link": "Open this link to accept:",
     "accept": "Accept the invitation",
-    "expires": "This invitation expires in 7 days."
+    "expires": "This invitation expires in {days} days.",
+    "footer": "You received this because you were invited to a workspace. Ignore this email if you weren’t expecting it."
   }
 }
