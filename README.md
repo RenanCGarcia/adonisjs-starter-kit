@@ -1,6 +1,6 @@
 <div align="center">
 
-# Starter
+# AdonisJS Starter Kit
 
 **Full-stack TypeScript monorepo template: AdonisJS 7 API + React SPA, typed end to end.**
 
