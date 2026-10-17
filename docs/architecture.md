@@ -38,6 +38,7 @@ app/<module>/
   queries/            # one read use case per file
   services/           # behavior with side effects shared by several actions
   jobs/               # background work run by the queue worker
+  mails/              # BaseMail subclasses, one per mail
   models/, transformers/, validators/, middleware/, exceptions/, enums/
   database/factories/
   types/events.ts     # EventsList declaration merge, when the module emits events
@@ -187,6 +188,8 @@ A member holding `members.manage` invites someone by email; the `access` module 
 `POST /api/v1/invitations/accept` looks the hash up across every tenant (`runAsSystem`), outside the `tenant` middleware since the invited user isn't a member yet. An unknown or expired token answers 404 `E_INVITATION_NOT_FOUND` (the same body for both, so a token can't be probed to tell a stale one from a wrong one); a signed-in email that doesn't match the invitation's answers 403 `E_INVITATION_EMAIL_MISMATCH`. Otherwise it creates the membership (and the invitation's role, if the user doesn't already hold one) and deletes the invitation, all inside `runInTenant`. Already a member: the invitation is just deleted. Both branches make accept safe to retry with the same token.
 
 An invitation's `roleId` has no `ON DELETE`, like a role assignment's: deleting a role a pending invitation carries answers 409 `E_ROLE_IN_USE` through `DeleteRole`'s existing mapping. `FRONTEND_URL` (the frontend's own origin, for the link in the mail) is required config; see `.env.example`.
+
+The invitation mail is a class-based `BaseMail` (`access/mails/invitation_mail.ts`) that renders `resources/views/emails/invitation_html.edge` and `invitation_text.edge` through the `@adonisjs/core/providers/edge_provider`. The HTML view wraps its content in the shared `resources/views/components/email/layout.edge` component (invoked as `@email.layout(...)`), which compiles to responsive markup via the `@mjml` Edge tag `@adonisjs/mail` registers. The mail class resolves `i18n.locale(locale)` itself and passes translated strings and a bound `t()` into the view data, the same locale-through-payload pattern as the tenant-owner listener. In dev, Mailpit (http://localhost:8025) shows every sent mail, HTML and text.
 
 ### Platform admins
 
