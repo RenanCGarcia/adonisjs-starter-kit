@@ -3,7 +3,7 @@ import vine from '@vinejs/vine'
 /**
  * Shared rules for email and password.
  */
-const email = () => vine.string().email().maxLength(254)
+const email = () => vine.string().email().maxLength(254).toLowerCase()
 const password = () => vine.string().minLength(8).maxLength(32)
 
 /**

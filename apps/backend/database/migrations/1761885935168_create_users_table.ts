@@ -8,6 +8,7 @@ export default class extends BaseSchema {
       table.uuid('id').primary().defaultTo(this.raw('uuidv7()'))
       table.string('full_name').nullable()
       table.string('email', 254).notNullable().unique()
+      table.check('email = lower(email)')
       table.string('password').notNullable()
 
       table.timestamp('created_at').notNullable()
