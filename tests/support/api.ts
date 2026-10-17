@@ -77,6 +77,15 @@ export async function signUp(fullName = 'E2E Member'): Promise<Account> {
   return { id: user.id, initials: user.initials, fullName, email, password, token }
 }
 
+/** A second token for `account`, as a second device signing in would get, without touching its first. */
+export async function login(account: Pick<Account, 'email' | 'password'>): Promise<string> {
+  const { token } = await api<{ token: string }>('/auth/login', {
+    body: { email: account.email, password: account.password },
+  })
+
+  return token
+}
+
 /** A workspace owned by `account`, which holds every permission in it. */
 export function createTenant(account: Account, name = unique('Workspace')) {
   return api<Tenant>('/tenants', { token: account.token, body: { name } })

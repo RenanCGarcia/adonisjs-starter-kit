@@ -4,32 +4,12 @@ import { CogIcon, ShieldAlertIcon } from 'lucide-react'
 import { describeEvent } from '@/features/audit/event-text'
 import type { AuditEventRow, PermissionLabel } from '@/features/audit/event-text'
 import { locale, t } from '@/features/core/i18n'
+import { relativeTime } from '@/features/core/relative-time'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
 type Actor = NonNullable<AuditEventRow['actor']>
 
 const absoluteFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'medium' })
-
-const relativeFormat = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
-
-const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
-  ['year', 365 * 24 * 60 * 60],
-  ['month', 30 * 24 * 60 * 60],
-  ['week', 7 * 24 * 60 * 60],
-  ['day', 24 * 60 * 60],
-  ['hour', 60 * 60],
-  ['minute', 60],
-]
-
-function relativeTime(date: Date) {
-  const seconds = (date.getTime() - Date.now()) / 1000
-
-  for (const [unit, size] of UNITS) {
-    if (Math.abs(seconds) >= size) return relativeFormat.format(Math.round(seconds / size), unit)
-  }
-
-  return relativeFormat.format(0, 'second')
-}
 
 const actorName = (actor: Actor) => actor.fullName ?? actor.email
 
