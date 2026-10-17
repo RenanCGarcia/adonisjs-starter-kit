@@ -101,7 +101,7 @@ Background work runs as jobs on `@adonisjs/queue`, backed by Redis through the `
 
 ## Rate limiting
 
-Every named throttle lives in `start/limiter.ts`, backed by `@adonisjs/limiter` on the Redis store (`memory` in tests, via `LIMITER_STORE=memory` in `.env.test`). Apply one to a route with `.use(someThrottle)`, next to the other route middleware; a login-style endpoint that must only penalize failures uses the limiter directly in its controller (`loginFailureLimiter().penalize(key, callback)`) instead of the HTTP middleware. A throttle that rejects a request throws `@adonisjs/limiter`'s `E_TOO_MANY_REQUESTS`, which `app/core/exceptions/handler.ts` renders like every other exception (`{ code, message }`, translated from `errors.E_TOO_MANY_REQUESTS`) and with the limiter's own `Retry-After` header.
+Every named throttle lives in `start/limiter.ts`, enforced everywhere but development (the e2e suite signs up far more often than any limit allows), backed by `@adonisjs/limiter` on the Redis store (`memory` in tests, via `LIMITER_STORE=memory` in `.env.test`). Apply one to a route with `.use(someThrottle)`, next to the other route middleware; a login-style endpoint that must only penalize failures uses the limiter directly in its controller (`penalizeLoginFailure(email, ip, check)`) instead of the HTTP middleware. A throttle that rejects a request throws `@adonisjs/limiter`'s `E_TOO_MANY_REQUESTS`, which `app/core/exceptions/handler.ts` renders like every other exception (`{ code, message }`, translated from `errors.E_TOO_MANY_REQUESTS`) and with the limiter's own `Retry-After` header.
 
 ## Tenancy
 

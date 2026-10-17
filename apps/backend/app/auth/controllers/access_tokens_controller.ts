@@ -6,26 +6,19 @@ import { loginValidator } from '#auth/validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
 import { errors as limiterErrors } from '@adonisjs/limiter'
 import UserTransformer from '#users/transformers/user_transformer'
-import { loginFailureKey, loginFailureLimiter } from '#start/limiter'
+import { penalizeLoginFailure } from '#start/limiter'
 import AccountDisabledException from '#auth/exceptions/account_disabled_exception'
 
 export default class AccessTokensController {
   async store({ request, serialize }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
 
-    const key = loginFailureKey(email, request.ip())
-
     let user: User
 
     try {
-      // penalize returns an already-blocked state as a value, but rethrows the callback's own
-      // error, so both come through this one catch.
-      const [blocked, verified] = await loginFailureLimiter().penalize(key, () => {
+      user = await penalizeLoginFailure(email, request.ip(), () => {
         return User.verifyCredentials(email, password)
       })
-
-      if (blocked) throw blocked
-      user = verified
     } catch (error) {
       // A throttle rejection isn't a credential attempt: nothing to audit, just rethrow for the
       // exception handler to turn into a 429.
