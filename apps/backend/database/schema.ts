@@ -70,6 +70,39 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class InvitationSchema extends BaseModel {
+  static $columns = [
+    'createdAt',
+    'email',
+    'expiresAt',
+    'id',
+    'invitedById',
+    'roleId',
+    'tenantId',
+    'tokenHash',
+    'updatedAt',
+  ] as const
+  $columns = InvitationSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare email: string
+  @column.dateTime()
+  declare expiresAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare invitedById: string | null
+  @column()
+  declare roleId: string | null
+  @column()
+  declare tenantId: string
+  @column()
+  declare tokenHash: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class PermissionGrantSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'permission', 'tenantId', 'userId'] as const
   $columns = PermissionGrantSchema.$columns
