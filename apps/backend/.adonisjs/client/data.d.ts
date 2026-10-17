@@ -13,6 +13,7 @@ import type AdminAdminTenantTransformer from '#app/admin/transformers/admin_tena
 import type AdminAdminUserTransformer from '#app/admin/transformers/admin_user_transformer'
 import type AttachmentsAttachmentTransformer from '#app/attachments/transformers/attachment_transformer'
 import type AuditAuditEventTransformer from '#app/audit/transformers/audit_event_transformer'
+import type AuthSessionTransformer from '#app/auth/transformers/session_transformer'
 import type TenancyTenantTransformer from '#app/tenancy/transformers/tenant_transformer'
 import type UsersUserTransformer from '#app/users/transformers/user_transformer'
 
@@ -55,6 +56,12 @@ export namespace Data {
     export type AuditEvent = InferData<AuditAuditEventTransformer>
     export namespace AuditEvent {
       export type Variants = InferVariants<AuditAuditEventTransformer>
+    }
+  }
+  export namespace Auth {
+    export type Session = InferData<AuthSessionTransformer>
+    export namespace Session {
+      export type Variants = InferVariants<AuthSessionTransformer>
     }
   }
   export namespace Tenancy {

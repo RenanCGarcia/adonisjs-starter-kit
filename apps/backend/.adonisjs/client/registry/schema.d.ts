@@ -295,6 +295,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['destroy']>>>
     }
   }
+  'profile.sessions.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/account/sessions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['index']>>>
+    }
+  }
+  'profile.sessions.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/account/sessions/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/session').sessionParamsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/session').sessionParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.sessions.destroy_all': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/account/sessions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['destroyAll']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['destroyAll']>>>
+    }
+  }
   'access.my_permissions.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/access/me'

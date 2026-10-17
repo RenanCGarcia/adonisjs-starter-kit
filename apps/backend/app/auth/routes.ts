@@ -4,7 +4,7 @@ import { apiRoutes } from '#core/api_routes'
 import { controllers } from '#generated/controllers'
 import { loginIpThrottle, signupThrottle } from '#start/limiter'
 
-const { NewAccount, AccessTokens } = controllers.auth
+const { NewAccount, AccessTokens, Sessions } = controllers.auth
 
 apiRoutes(() => {
   router
@@ -18,6 +18,9 @@ apiRoutes(() => {
   router
     .group(() => {
       router.post('logout', [AccessTokens, 'destroy'])
+      router.get('sessions', [Sessions, 'index'])
+      router.delete('sessions/:id', [Sessions, 'destroy'])
+      router.delete('sessions', [Sessions, 'destroyAll'])
     })
     .prefix('account')
     .as('profile')

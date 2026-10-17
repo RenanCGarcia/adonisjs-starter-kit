@@ -33,6 +33,7 @@ export const controllers = {
   auth: {
     AccessTokens: () => import('#app/auth/controllers/access_tokens_controller'),
     NewAccount: () => import('#app/auth/controllers/new_account_controller'),
+    Sessions: () => import('#app/auth/controllers/sessions_controller'),
   },
   core: {
     HealthChecks: () => import('#app/core/controllers/health_checks_controller'),

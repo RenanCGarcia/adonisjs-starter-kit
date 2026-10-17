@@ -28,6 +28,9 @@ export type ScannedRoutes = {
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
     'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
+    'profile.sessions.index': { paramsTuple?: []; params?: {} }
+    'profile.sessions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'profile.sessions.destroy_all': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'access.permission_catalog.show': { paramsTuple?: []; params?: {} }
     'access.roles.index': { paramsTuple?: []; params?: {} }
@@ -53,6 +56,7 @@ export type ScannedRoutes = {
     'admin.users.index': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
+    'profile.sessions.index': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'access.permission_catalog.show': { paramsTuple?: []; params?: {} }
     'access.roles.index': { paramsTuple?: []; params?: {} }
@@ -70,6 +74,7 @@ export type ScannedRoutes = {
     'admin.users.index': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
+    'profile.sessions.index': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'access.permission_catalog.show': { paramsTuple?: []; params?: {} }
     'access.roles.index': { paramsTuple?: []; params?: {} }
@@ -101,6 +106,8 @@ export type ScannedRoutes = {
     'admin.tenant_suspensions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.user_suspensions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.platform_admins.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'profile.sessions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'profile.sessions.destroy_all': { paramsTuple?: []; params?: {} }
     'access.roles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'access.invitations.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }

@@ -150,6 +150,24 @@ const routes = {
     tokens: [{"old":"/api/v1/account/logout","type":0,"val":"api","end":""},{"old":"/api/v1/account/logout","type":0,"val":"v1","end":""},{"old":"/api/v1/account/logout","type":0,"val":"account","end":""},{"old":"/api/v1/account/logout","type":0,"val":"logout","end":""}],
     types: placeholder as Registry['profile.access_tokens.destroy']['types'],
   },
+  'profile.sessions.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/account/sessions',
+    tokens: [{"old":"/api/v1/account/sessions","type":0,"val":"api","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"v1","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"account","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"sessions","end":""}],
+    types: placeholder as Registry['profile.sessions.index']['types'],
+  },
+  'profile.sessions.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/account/sessions/:id',
+    tokens: [{"old":"/api/v1/account/sessions/:id","type":0,"val":"api","end":""},{"old":"/api/v1/account/sessions/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/account/sessions/:id","type":0,"val":"account","end":""},{"old":"/api/v1/account/sessions/:id","type":0,"val":"sessions","end":""},{"old":"/api/v1/account/sessions/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['profile.sessions.destroy']['types'],
+  },
+  'profile.sessions.destroy_all': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/account/sessions',
+    tokens: [{"old":"/api/v1/account/sessions","type":0,"val":"api","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"v1","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"account","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"sessions","end":""}],
+    types: placeholder as Registry['profile.sessions.destroy_all']['types'],
+  },
   'access.my_permissions.show': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/access/me',

@@ -1,6 +1,7 @@
 import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
+import OpenSession from '#auth/actions/open_session'
 import type {} from '#auth/types/audit'
 import { signupValidator } from '#auth/validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -23,7 +24,11 @@ export default class NewAccountController {
       return created
     })
 
-    const token = await User.accessTokens.create(user)
+    const token = await new OpenSession().handle({
+      user,
+      userAgent: request.header('user-agent'),
+      ipAddress: request.ip(),
+    })
 
     return serialize({
       user: UserTransformer.transform(user),

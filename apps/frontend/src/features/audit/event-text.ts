@@ -183,6 +183,9 @@ const ACCOUNT_EVENTS: EventTexts<Exclude<AuditEventType, TenantEventType>> = {
   'auth.logged_out': {
     describe: () => ({ sentence: t('audit.events.loggedOut') }),
   },
+  'auth.session_revoked': {
+    describe: () => ({ sentence: t('audit.events.sessionRevoked') }),
+  },
   'user.avatar_changed': {
     describe: ({ data: { changes } }) => {
       if (!changes.avatarAttachmentId?.to) return { sentence: t('audit.events.avatarRemoved') }

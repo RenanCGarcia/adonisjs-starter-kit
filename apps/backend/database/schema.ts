@@ -87,11 +87,13 @@ export class AuthAccessTokenSchema extends BaseModel {
     'hash',
     'id',
     'impersonatorId',
+    'ipAddress',
     'lastUsedAt',
     'name',
     'tokenableId',
     'type',
     'updatedAt',
+    'userAgent',
   ] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
@@ -106,6 +108,8 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare id: string
   @column()
   declare impersonatorId: string | null
+  @column()
+  declare ipAddress: string | null
   @column.dateTime()
   declare lastUsedAt: DateTime | null
   @column()
@@ -116,6 +120,8 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare type: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare userAgent: string | null
 }
 
 export class InvitationSchema extends BaseModel {

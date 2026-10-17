@@ -1,5 +1,6 @@
 import User from '#users/models/user'
 import { audit } from '#core/audit/main'
+import OpenSession from '#auth/actions/open_session'
 import type {} from '#auth/types/audit'
 import { loginValidator } from '#auth/validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -44,7 +45,11 @@ export default class AccessTokensController {
     // After the password check, so the answer doesn't tell whether an email is disabled.
     if (user.disabledAt) throw new AccountDisabledException()
 
-    const token = await User.accessTokens.create(user)
+    const token = await new OpenSession().handle({
+      user,
+      userAgent: request.header('user-agent'),
+      ipAddress: request.ip(),
+    })
 
     // A disable committing since the check above may have deleted the tokens before this one existed.
     await user.refresh()

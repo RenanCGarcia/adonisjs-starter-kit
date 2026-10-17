@@ -45,6 +45,7 @@
     "loggedIn": "entrou",
     "loginFailed": "Alguém tentou entrar como {email} com uma senha errada",
     "loggedOut": "saiu",
+    "sessionRevoked": "encerrou uma sessão",
     "avatarAdded": "adicionou uma foto",
     "avatarChanged": "trocou a foto",
     "avatarRemoved": "removeu a foto",

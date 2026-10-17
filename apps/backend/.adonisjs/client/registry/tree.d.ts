@@ -12,6 +12,11 @@ export interface ApiDefinition {
     accessTokens: {
       destroy: typeof routes['profile.access_tokens.destroy']
     }
+    sessions: {
+      index: typeof routes['profile.sessions.index']
+      destroy: typeof routes['profile.sessions.destroy']
+      destroyAll: typeof routes['profile.sessions.destroy_all']
+    }
   }
   attachments: {
     attachments: {

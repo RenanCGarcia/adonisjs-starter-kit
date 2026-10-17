@@ -7,5 +7,6 @@ declare module '#core/audit/types' {
     // The subject is the account the email belongs to, if any, so its owner sees the attempt.
     'auth.login_failed': AccountEvent<'user' | null, { email: string }>
     'auth.logged_out': AccountEvent<'user', { email: string }>
+    'auth.session_revoked': AccountEvent<'user', { email: string }>
   }
 }
