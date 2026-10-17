@@ -77,12 +77,9 @@ function RolesPage() {
             onDelete={setDeleting}
           />
 
-          <RoleDialog
-            groups={data.groups}
-            tenantId={tenantId}
-            open={creating}
-            onOpenChange={setCreating}
-          />
+          {creating && (
+            <RoleDialog groups={data.groups} tenantId={tenantId} open onOpenChange={setCreating} />
+          )}
 
           {editing && (
             <RoleDialog

@@ -32,9 +32,11 @@ export function MemberGrantsDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const router = useRouter()
+
   // SAFETY: a member's direct grants are always assignable; platform.admin never comes from one.
-  const seed = () => new Set(member.permissions as AssignablePermission[])
-  const [permissions, setPermissions] = useState(seed)
+  const [permissions, setPermissions] = useState(
+    () => new Set(member.permissions as AssignablePermission[]),
+  )
 
   const { pending, errors, onSubmit } = useFormSubmit(async () => {
     const [, error] = await api.access.memberPermissions
@@ -55,13 +57,7 @@ export function MemberGrantsDialog({
   })
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={next => {
-        if (next) setPermissions(seed())
-        onOpenChange(next)
-      }}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit permissions</DialogTitle>

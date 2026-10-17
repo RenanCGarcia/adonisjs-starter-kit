@@ -32,9 +32,11 @@ export function RoleDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const router = useRouter()
+
   // SAFETY: a role's stored permissions are always assignable; platform.admin never comes from one.
-  const seed = () => new Set(role?.permissions as AssignablePermission[] | undefined)
-  const [permissions, setPermissions] = useState(seed)
+  const [permissions, setPermissions] = useState(
+    () => new Set(role?.permissions as AssignablePermission[] | undefined),
+  )
 
   const { pending, errors, onSubmit } = useFormSubmit(async form => {
     const body = { name: textValue(form, 'name'), permissions: [...permissions] }
@@ -55,13 +57,7 @@ export function RoleDialog({
   })
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={next => {
-        if (next) setPermissions(seed())
-        onOpenChange(next)
-      }}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{role ? 'Edit role' : 'New role'}</DialogTitle>
