@@ -140,6 +140,22 @@ export async function signInAs(browser: Browser, account: Account) {
   }, account.token)
 }
 
+/**
+ * Switches an already-open page to `account`'s token, for a flow that moves between identities
+ * (inviter, invitee) in one test. Unlike `signInAs`, it acts immediately and isn't a one-time seed.
+ */
+export async function switchAccount(browser: Browser, account: Account) {
+  await browser.evaluate(token => localStorage.setItem('token', token), account.token)
+}
+
+/**
+ * Drops the browser's token directly, leaving a page that renders signed out, without revoking it
+ * server-side the way the UI's "Log out" does: a token this test switches back to later still works.
+ */
+export async function signOut(browser: Browser) {
+  await browser.evaluate(() => localStorage.removeItem('token'))
+}
+
 /** Reads the newest invitation mailed to `email`; throws until the queue worker has sent it. */
 async function readInvitationToken(email: string) {
   const search = await fetch(`${MAILPIT_URL}/search?query=${encodeURIComponent(`to:"${email}"`)}`)
