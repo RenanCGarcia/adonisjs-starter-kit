@@ -50,3 +50,26 @@ test.group('Access | effective permissions', group => {
     ])
   })
 })
+
+test.group('Access | permission catalog', group => {
+  group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
+
+  test('groups assignable permissions in catalog order, without platform.admin', async ({
+    client,
+    assert,
+  }) => {
+    const acme = await workspace()
+    const member = await acme.member()
+
+    const response = await client
+      .visit('access.permission_catalog.show')
+      .headers(acme.headers)
+      .loginAs(member)
+
+    response.assertStatus(200)
+    assert.deepEqual(response.body().data.groups, [
+      { key: 'roles', permissions: ['roles.manage'] },
+      { key: 'members', permissions: ['members.manage'] },
+    ])
+  })
+})

@@ -115,4 +115,22 @@ test.group('Access | members', group => {
     lastGrant.assertStatus(409)
     assert.deepEqual(await permissionsOf(client, acme, deputy), ['members.manage'])
   })
+
+  test('lists members with their role and permissions', async ({ client, assert }) => {
+    const { acme, owner } = await setup()
+    const editor = await acme.role('Editor', ['roles.manage'])
+    const member = await acme.member()
+    await acme.assign(member, editor)
+    await acme.grant(member, 'members.manage')
+
+    const response = await client.visit('access.members.index').headers(acme.headers).loginAs(owner)
+
+    response.assertStatus(200)
+    const row = response.body().data.members.find(entry => entry.user.id === member.id)
+
+    assert.isDefined(row)
+    assert.equal(row?.roleId, editor.id)
+    assert.deepEqual(row?.permissions, ['members.manage'])
+    assert.equal(row?.user.email, member.email)
+  })
 })

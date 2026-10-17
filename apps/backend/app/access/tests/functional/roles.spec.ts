@@ -41,6 +41,26 @@ test.group('Access | roles', group => {
     for (const response of responses) response.assertStatus(403)
   })
 
+  test('lets a members manager list roles, but not write them', async ({ client }) => {
+    const { acme } = await setup()
+    const membersManager = await acme.member()
+    await acme.grant(membersManager, 'members.manage')
+
+    const listed = await client
+      .visit('access.roles.index')
+      .headers(acme.headers)
+      .loginAs(membersManager)
+
+    const created = await client
+      .visit('access.roles.store')
+      .json({ name: 'New', permissions: [] })
+      .headers(acme.headers)
+      .loginAs(membersManager)
+
+    listed.assertStatus(200)
+    created.assertStatus(403)
+  })
+
   test('creates, lists and updates roles', async ({ client, assert }) => {
     const { acme, owner } = await setup()
 

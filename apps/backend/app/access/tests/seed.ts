@@ -14,6 +14,9 @@ function user() {
   return User.create({ email: `user${users}@example.com`, password: 'password123' })
 }
 
+/** A signed-up user who hasn't joined any tenant yet, e.g. to accept an invitation. */
+export const createUser = user
+
 export function makePlatformAdmin(holder: User) {
   return PlatformAdmin.create({ userId: holder.id })
 }
