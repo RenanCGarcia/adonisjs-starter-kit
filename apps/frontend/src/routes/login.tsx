@@ -1,54 +1,81 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import type { FormEvent } from 'react'
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
+import { FieldGroup } from '@monorepo/ui/components/field'
+import { AuthCard } from '@/components/auth-card'
+import { FormAlert, PendingButton, TextField } from '@/components/form-fields'
 import { api } from '@/lib/api'
-
-type LoginSearch = { redirect?: string }
+import { textValue, useFormSubmit } from '@/lib/form'
+import { validateRedirectSearch } from '@/lib/redirect'
 
 export const Route = createFileRoute('/login')({
-  validateSearch: (search): LoginSearch => ({
-    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- the URL is the parse boundary; a single optional string needs no schema.
-    redirect: typeof search.redirect === 'string' ? search.redirect : undefined,
-  }),
+  validateSearch: validateRedirectSearch,
+  beforeLoad: ({ context, search }) => {
+    if (context.auth.isAuthenticated()) throw redirect({ to: search.redirect ?? '/' })
+  },
   component: LoginComponent,
 })
 
 function LoginComponent() {
   const { auth } = Route.useRouteContext()
-  const { redirect } = Route.useSearch()
+  const { redirect: redirectTo } = Route.useSearch()
   const navigate = useNavigate()
-  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-
-    const [data, err] = await api.auth.accessTokens
-      .store({
-        // SAFETY: both inputs are required text fields, so the form holds a string for each.
-        body: {
-          email: form.get('email') as string,
-          password: form.get('password') as string,
-        },
-      })
+  const { pending, errors, onSubmit } = useFormSubmit(async form => {
+    const [data, error] = await api.auth.accessTokens
+      .store({ body: { email: textValue(form, 'email'), password: textValue(form, 'password') } })
       .safe()
 
-    if (err) {
-      setError('Invalid credentials')
+    // The API answers a wrong email or password with a 400 that names neither.
+    if (error?.status === 400) return 'Invalid email or password.'
 
-      return
-    }
+    if (error) return error
 
     auth.setToken(data.data.token)
-    await navigate({ to: redirect ?? '/profile' })
-  }
+    await navigate({ to: redirectTo ?? '/' })
+
+    return null
+  })
 
   return (
-    <form onSubmit={handleSubmit} className="grid max-w-80 gap-2">
-      <input name="email" type="email" placeholder="Email" required />
-      <input name="password" type="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-      {error && <p role="alert">{error}</p>}
-    </form>
+    <AuthCard
+      title="Sign in"
+      description="Welcome back. Sign in to your account."
+      footer={
+        <p className="text-xs text-muted-foreground">
+          No account yet?{' '}
+          <Link
+            to="/signup"
+            search={{ redirect: redirectTo }}
+            className="text-foreground underline underline-offset-4"
+          >
+            Create one
+          </Link>
+        </p>
+      }
+    >
+      <form onSubmit={onSubmit}>
+        <FieldGroup>
+          <FormAlert errors={errors} />
+          <TextField
+            name="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            required
+            errors={errors}
+          />
+          <TextField
+            name="password"
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+            required
+            errors={errors}
+          />
+          <PendingButton type="submit" size="lg" pending={pending}>
+            Sign in
+          </PendingButton>
+        </FieldGroup>
+      </form>
+    </AuthCard>
   )
 }

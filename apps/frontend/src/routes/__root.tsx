@@ -1,4 +1,5 @@
-import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
+import { Toaster } from '@monorepo/ui/components/sonner'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import type { Auth } from '@/lib/auth'
 
@@ -13,13 +14,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   return (
     <>
-      <nav className="flex gap-3">
-        <Link to="/">Home</Link>
-        <Link to="/profile">Profile</Link>
-        <Link to="/login">Login</Link>
-      </nav>
-      <hr />
       <Outlet />
+      <Toaster position="top-center" />
       <TanStackRouterDevtools />
     </>
   )
