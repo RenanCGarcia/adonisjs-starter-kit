@@ -1,0 +1,140 @@
+{
+  "permissions": {
+    "roles": "Papéis",
+    "members": "Membros",
+    "manageRoles": "Gerenciar papéis",
+    "manageRolesDescription": "Crie, renomeie e exclua papéis, e escolha o que cada um pode fazer.",
+    "manageMembers": "Gerenciar membros",
+    "manageMembersDescription": "Convide pessoas, altere seu papel e conceda permissões extras.",
+    "platformAdmin": "Administrador da plataforma",
+    "platformAdminDescription": "Todas as permissões em todos os espaços de trabalho."
+  },
+  "nav": {
+    "overview": "Visão geral",
+    "overviewDescription": "Visão rápida deste espaço de trabalho.",
+    "members": "Membros",
+    "membersDescription": "Veja quem faz parte do espaço de trabalho, altere seu papel e permissões extras.",
+    "invitations": "Convites",
+    "invitationsDescription": "Convide pessoas por e-mail e revogue convites pendentes.",
+    "roles": "Papéis",
+    "rolesDescription": "Defina papéis e as permissões que cada um concede."
+  },
+  "membersPage": {
+    "title": "Membros",
+    "description": "Pessoas neste espaço de trabalho, seu papel e permissões extras.",
+    "member": "Membro",
+    "role": "Papel",
+    "extraPermissions": "Permissões extras",
+    "you": "Você",
+    "none": "Nenhuma",
+    "editPermissionsFor": "Editar permissões de {name}",
+    "actions": "Ações"
+  },
+  "roleDialog": {
+    "editTitle": "Editar papel",
+    "newTitle": "Novo papel",
+    "editDescription": "Renomeie este papel ou altere o que ele concede a seus membros.",
+    "newDescription": "Dê um nome e as permissões que seus membros terão.",
+    "roleName": "Nome do papel",
+    "roleNamePlaceholder": "Editor",
+    "save": "Salvar",
+    "createRole": "Criar papel",
+    "updated": "Papel “{name}” atualizado",
+    "created": "Papel “{name}” criado",
+    "close": "Fechar"
+  },
+  "rolesPage": {
+    "title": "Papéis",
+    "description": "O que cada papel permite que seus membros façam.",
+    "newRole": "Novo papel",
+    "role": "Papel",
+    "permissions": "Permissões",
+    "members": "Membros",
+    "noPermissions": "Nenhuma permissão",
+    "actions": "Ações",
+    "editRole": "Editar {name}",
+    "deleteRole": "Excluir {name}",
+    "deleted": "Papel “{name}” excluído",
+    "deleteTitle": "Excluir “{name}”?",
+    "deleteDescription": "Membros com este papel mantêm a conta, mas perdem o que ele concedia. Isso não pode ser desfeito.",
+    "deleteConfirm": "Excluir papel"
+  },
+  "permissionPicker": {
+    "legend": "Permissões"
+  },
+  "overviewPage": {
+    "description": "Visão geral do espaço de trabalho",
+    "yourPermissions": "Suas permissões",
+    "withPermissions": "O que seu papel e suas permissões concedem a você aqui.",
+    "withoutPermissions": "Você pode ver este espaço de trabalho. Peça a quem gerencia membros mais acesso.",
+    "manage": "Gerenciar"
+  },
+  "inviteMemberDialog": {
+    "title": "Convidar membro",
+    "description": "A pessoa receberá um e-mail com um link para entrar neste espaço de trabalho.",
+    "email": "E-mail",
+    "role": "Papel",
+    "noRole": "Nenhum papel",
+    "submit": "Enviar convite",
+    "resent": "Convite para {email} reenviado",
+    "sent": "Convite enviado para {email}",
+    "close": "Fechar"
+  },
+  "acceptInvitationPage": {
+    "joined": "Você entrou em “{name}”",
+    "invitedTitle": "Você recebeu um convite",
+    "invitedDescription": "Entre ou crie uma conta para aceitar este convite.",
+    "signIn": "Entrar",
+    "createAccount": "Criar conta",
+    "somethingWrong": "Algo deu errado",
+    "tryAgain": "Tentar novamente",
+    "notFoundTitle": "Convite não encontrado",
+    "notFoundDescription": "Este convite não existe ou expirou.",
+    "goHome": "Ir para o início",
+    "wrongAccountTitle": "Conta errada",
+    "wrongAccountDescription": "Você está conectado como {email}, mas este convite foi enviado para um endereço de e-mail diferente.",
+    "signInWithAnotherAccount": "Entrar com outra conta",
+    "acceptTitle": "Aceitar convite",
+    "signedInAs": "Conectado como {email}.",
+    "acceptInvitation": "Aceitar convite"
+  },
+  "memberGrantsDialog": {
+    "title": "Editar permissões",
+    "description": "Permissões extras para {name}, além do que o papel concede.",
+    "permissionsUpdated": "Permissões de {name} atualizadas",
+    "save": "Salvar",
+    "close": "Fechar"
+  },
+  "memberRoleSelect": {
+    "roleUpdated": "Papel de {name} atualizado",
+    "noRole": "Nenhum papel",
+    "roleFor": "Papel de {name}"
+  },
+  "invitationsPage": {
+    "title": "Convites",
+    "description": "Pessoas que você convidou e que ainda não entraram.",
+    "inviteMember": "Convidar membro",
+    "noPending": "Nenhum convite pendente",
+    "noPendingDescription": "Convide alguém por e-mail para entrar neste espaço de trabalho.",
+    "inviteFirstMember": "Convide seu primeiro membro",
+    "email": "E-mail",
+    "role": "Papel",
+    "sent": "Enviado",
+    "expires": "Expira",
+    "status": "Status",
+    "actions": "Ações",
+    "noRole": "Nenhum papel",
+    "noDate": "—",
+    "expired": "Expirado",
+    "pending": "Pendente",
+    "revokeInvitationTo": "Revogar convite para {email}",
+    "revoked": "Convite para {email} revogado",
+    "revokeTitle": "Revogar o convite para {email}?",
+    "revokeDescription": "A pessoa precisará de um novo convite para entrar neste espaço de trabalho.",
+    "revokeConfirm": "Revogar convite"
+  },
+  "requirePermission": {
+    "title": "Você não tem acesso",
+    "description": "Esta página exige a permissão “{label}”. Peça a quem gerencia membros neste espaço de trabalho para concedê-la."
+  }
+}

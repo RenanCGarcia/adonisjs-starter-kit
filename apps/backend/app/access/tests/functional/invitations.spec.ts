@@ -78,6 +78,21 @@ test.group('Access | invitations', group => {
     for (const response of responses) response.assertStatus(401)
   })
 
+  test('mails the invitation in the inviter’s locale', async ({ client, assert }) => {
+    using fake = mail.fake()
+    const { acme, owner } = await setup()
+
+    await client
+      .visit('access.invitations.store')
+      .header('accept-language', 'pt-BR')
+      .json({ email: 'guest@example.com', roleId: null })
+      .headers(acme.headers)
+      .loginAs(owner)
+
+    const sent = fake.messages.sent()
+    assert.equal(sent[sent.length - 1]?.toJSON().message.subject, 'Você recebeu um convite')
+  })
+
   test('invites, lists, and revokes', async ({ client, assert }) => {
     using fake = mail.fake()
     const { acme, owner } = await setup()

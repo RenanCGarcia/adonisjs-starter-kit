@@ -3,6 +3,7 @@ import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router'
 import { reachableNav } from '@/features/access/nav'
 import { usePermissions } from '@/features/access/permissions'
 import { myPermissionsQuery } from '@/features/access/queries'
+import { t } from '@/features/core/i18n'
 import { resolveTabWorkspace, tenantsQuery } from '@/features/tenancy/workspace'
 
 /** Pages about one workspace, the one chosen in the switcher; the URL never names it. */
@@ -26,7 +27,7 @@ function WorkspaceLayout() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 md:flex-row md:gap-8 md:p-6">
       <nav
-        aria-label="Workspace"
+        aria-label={t('routes.workspace.nav')}
         className="-mx-1 flex shrink-0 gap-1 overflow-x-auto px-1 md:w-48 md:flex-col"
       >
         {reachableNav(permissions).map(item => (

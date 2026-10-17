@@ -1,6 +1,8 @@
 export interface TenantCreated {
   tenantId: string
   creatorId: string
+  /** The creator's locale, for anything the tenant starts with that people read. */
+  locale: string
 }
 
 declare module '@adonisjs/core/types' {

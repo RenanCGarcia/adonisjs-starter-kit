@@ -7,6 +7,7 @@ catalogMode: strict
 catalog:
   '@adonisjs/bouncer': ^4.0.1
   '@adonisjs/drive': ^4.0.0
+  '@adonisjs/i18n': ^3.0.1
   '@adonisjs/mail': ^10.4.0
   '@adonisjs/queue': ^0.6.2
   '@adonisjs/redis': ^11.0.0
@@ -21,6 +22,7 @@ catalog:
   '@types/node': '~26.6.5'
   '@types/react': '^19.3.0'
   '@types/react-dom': '^19.3.0'
+  intl-messageformat: ^11.2.15
   lucide-react: ^1.57.0
   next-themes: ^0.4.6
   pg: ^8.23.1

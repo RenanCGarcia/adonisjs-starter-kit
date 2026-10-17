@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "network": "Não foi possível falar com o servidor. Verifique sua conexão e tente novamente.",
+    "fallback": "Algo deu errado. Tente novamente."
+  },
+  "confirmDialog": {
+    "cancel": "Cancelar",
+    "delete": "Excluir"
+  }
+}

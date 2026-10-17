@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import type { api } from '@/features/core/api'
 import { myPermissionsQuery } from '@/features/access/queries'
+import { t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 
 type MyPermissions = Awaited<ReturnType<typeof api.access.myPermissions.show>>['data']
@@ -36,19 +37,19 @@ export function can(permissions: readonly Permission[], permission: Permission) 
 type Label = { label: string; description?: string }
 
 const LABELS: Record<Permission | PermissionGroupKey, Label> = {
-  'roles': { label: 'Roles' },
-  'members': { label: 'Members' },
+  'roles': { label: t('access.permissions.roles') },
+  'members': { label: t('access.permissions.members') },
   'roles.manage': {
-    label: 'Manage roles',
-    description: 'Create, rename and delete roles, and choose what each role can do.',
+    label: t('access.permissions.manageRoles'),
+    description: t('access.permissions.manageRolesDescription'),
   },
   'members.manage': {
-    label: 'Manage members',
-    description: 'Invite people, change their role, and grant them extra permissions.',
+    label: t('access.permissions.manageMembers'),
+    description: t('access.permissions.manageMembersDescription'),
   },
   'platform.admin': {
-    label: 'Platform admin',
-    description: 'Every permission in every workspace.',
+    label: t('access.permissions.platformAdmin'),
+    description: t('access.permissions.platformAdminDescription'),
   },
 }
 

@@ -4,8 +4,11 @@ import { ThemeProvider } from 'next-themes'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@monorepo/ui/globals.css'
+import { locale } from '@/features/core/i18n'
 import { queryClient } from '@/features/core/query-client'
 import { router } from '@/router'
+
+document.documentElement.lang = locale
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

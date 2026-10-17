@@ -156,7 +156,7 @@ async destroy({ bouncer, request, serialize }: HttpContext) {
 }
 ```
 
-A denial answers 403 with `{ errors: [{ message: 'Access denied' }] }`.
+A denial answers 403 with `{ errors: [{ message }] }`, the `errors.E_AUTHORIZATION_FAILURE` translation.
 
 A check reads the tenant context: inside `middleware.tenant()` it uses that tenant's role and grants. Outside any tenant (no context, or `runAsSystem()`) only a platform admin passes, so a route that forgets `middleware.tenant()` denies everyone else.
 
@@ -200,15 +200,27 @@ await import('#access/models/platform_admin').then(({ default: PlatformAdmin }) 
 
 ### Tenant owner
 
-`access` listens to `tenancy:tenant_created`: it creates the tenant's "Owner" role with every permission but `platform.admin`, and assigns it to the creator. Both steps keep what exists, so the listener is safe to run again. A permission added to the catalog later doesn't reach existing Owner roles: add it through `PUT /api/v1/roles/:id`.
+`access` listens to `tenancy:tenant_created`: it creates the tenant's "Owner" role, named in the creator's locale (`access.owner_role`), with every permission but `platform.admin`, and assigns it to the creator. Both steps keep what exists, so the listener is safe to run again. A permission added to the catalog later doesn't reach existing Owner roles: add it through `PUT /api/v1/roles/:id`.
 
 `POST /api/v1/tenants` awaits the listener. If it throws, the request answers 500 with the tenant and the membership already committed, and the tenant has no Owner. Finish it from `node ace repl`:
 
 ```ts
 await import('#access/actions/seed_tenant_owner').then(({ default: SeedTenantOwner }) =>
-  new SeedTenantOwner().handle({ tenantId, creatorId }),
+  new SeedTenantOwner().handle({ tenantId, creatorId, locale: 'en-US' }),
 )
 ```
+
+## Translations
+
+Every message a person reads comes from `resources/lang/<locale>/*.json`, in en-US (the default) and pt-BR. `config/i18n.ts` lists the supported locales. A request's locale is the first `Accept-Language` language whose primary subtag a supported locale shares (`pt-PT` reads pt-BR), else en-US; `ctx.i18n` holds it.
+
+- **Exceptions**: give the exception a `code` and add `errors.<code>` to every locale. The exception handler translates it; the frameworks' own (`E_INVALID_CREDENTIALS`, `E_AUTHORIZATION_FAILURE`...) read the same keys. The class's `message` stays the English fallback for logs.
+- **Responses built in code**: `ctx.i18n.t('<file>.<key>')`, as the tenant middleware does.
+- **Validation**: `validator.json` holds one message per rule, written to read under any field label; the frontend shows it unchanged.
+- **Work after the request** (mail, listeners, jobs): carry the request's `i18n.locale` in the event or job payload and translate with `i18nManager.locale(locale)`. `access:member_invited` is the reference.
+- **Values**: ICU syntax (`{min}`); write apostrophes as `’`, since `'` escapes in ICU, and build HTML around the translated text instead of putting tags in it.
+
+A unit test fails when a locale misses or adds a key.
 
 ## Health checks
 

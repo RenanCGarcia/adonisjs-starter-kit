@@ -10,6 +10,7 @@ import { Link } from '@tanstack/react-router'
 import { reachableNav } from '@/features/access/nav'
 import { permissionLabel, usePermissions } from '@/features/access/permissions'
 import { PageHeader } from '@/features/core/components/page-header'
+import { t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 
 export function OverviewPage() {
@@ -19,22 +20,25 @@ export function OverviewPage() {
 
   return (
     <>
-      <PageHeader title={tenant.name} description="Workspace overview" />
+      <PageHeader title={tenant.name} description={t('access.overviewPage.description')} />
 
       <Card>
         <CardHeader>
           <CardTitle>
-            <h2>Your permissions</h2>
+            <h2>{t('access.overviewPage.yourPermissions')}</h2>
           </CardTitle>
           <CardDescription>
             {permissions.length > 0
-              ? 'What your role and grants let you do here.'
-              : 'You can see this workspace. Ask someone who manages members for more access.'}
+              ? t('access.overviewPage.withPermissions')
+              : t('access.overviewPage.withoutPermissions')}
           </CardDescription>
         </CardHeader>
         {permissions.length > 0 && (
           <CardContent>
-            <ul aria-label="Your permissions" className="flex flex-wrap gap-2">
+            <ul
+              aria-label={t('access.overviewPage.yourPermissions')}
+              className="flex flex-wrap gap-2"
+            >
               {permissions.map(permission => (
                 <li key={permission}>
                   <Badge variant="secondary">{permissionLabel(permission).label}</Badge>
@@ -48,7 +52,7 @@ export function OverviewPage() {
       {sections.length > 0 && (
         <section aria-labelledby="sections-heading" className="flex flex-col gap-3">
           <h2 id="sections-heading" className="text-sm font-medium">
-            Manage
+            {t('access.overviewPage.manage')}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {sections.map(item => (

@@ -1,0 +1,20 @@
+{
+  "createWorkspaceForm": {
+    "created": "Workspace “{name}” created",
+    "name": "Workspace name",
+    "namePlaceholder": "Acme Inc.",
+    "submit": "Create workspace"
+  },
+  "onboardingPage": {
+    "title": "Create your workspace",
+    "description": "A workspace holds your team: its members, their roles and invitations. Invited to an existing one? Open the link in your invitation email instead."
+  },
+  "workspaceSwitcher": {
+    "workspaceLabel": "Workspace: ",
+    "selectWorkspace": "Select a workspace",
+    "workspaces": "Workspaces",
+    "newWorkspace": "New workspace",
+    "newWorkspaceDescription": "You’ll be its owner, with every permission. You can invite people next.",
+    "close": "Close"
+  }
+}

@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { queries } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
+import { t } from '@/features/core/i18n'
 import { selectWorkspace } from '@/features/tenancy/workspace'
 
 export function CreateWorkspaceForm({ onCreated }: { onCreated?: () => void }) {
@@ -20,7 +21,7 @@ export function CreateWorkspaceForm({ onCreated }: { onCreated?: () => void }) {
       selectWorkspace(created.data.id)
       onCreated?.()
       await navigate({ to: '/' })
-      toast.success(`Workspace “${created.data.name}” created`)
+      toast.success(t('tenancy.createWorkspaceForm.created', { name: created.data.name }))
     },
   })
 
@@ -32,15 +33,15 @@ export function CreateWorkspaceForm({ onCreated }: { onCreated?: () => void }) {
           <form.AppField name="name">
             {field => (
               <field.TextField
-                label="Workspace name"
-                placeholder="Acme Inc."
+                label={t('tenancy.createWorkspaceForm.name')}
+                placeholder={t('tenancy.createWorkspaceForm.namePlaceholder')}
                 autoComplete="organization"
                 required
                 maxLength={255}
               />
             )}
           </form.AppField>
-          <form.SubmitButton>Create workspace</form.SubmitButton>
+          <form.SubmitButton>{t('tenancy.createWorkspaceForm.submit')}</form.SubmitButton>
         </FieldGroup>
       </form.Form>
     </form.AppForm>

@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "network": "Can’t reach the server. Check your connection and try again.",
+    "fallback": "Something went wrong. Try again."
+  },
+  "confirmDialog": {
+    "cancel": "Cancel",
+    "delete": "Delete"
+  }
+}

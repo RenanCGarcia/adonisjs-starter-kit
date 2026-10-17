@@ -6,11 +6,12 @@ import type { TenantCreated } from '#tenancy/types/events'
 export interface CreateTenantInput {
   name: string
   creatorId: string
+  locale: string
 }
 
 export default class CreateTenant {
   /** Awaits the listeners: a failing one fails the request, after the tenant is committed. */
-  async handle({ name, creatorId }: CreateTenantInput) {
+  async handle({ name, creatorId, locale }: CreateTenantInput) {
     const tenant = await db.transaction(async trx => {
       const created = await Tenant.create({ name }, { client: trx })
       await created.related('memberships').create({ userId: creatorId })
@@ -21,6 +22,7 @@ export default class CreateTenant {
     await emitter.emit('tenancy:tenant_created', {
       tenantId: tenant.id,
       creatorId,
+      locale,
     } satisfies TenantCreated)
 
     return tenant

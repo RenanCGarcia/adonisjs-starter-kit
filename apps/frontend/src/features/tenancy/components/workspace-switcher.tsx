@@ -19,6 +19,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
+import { t } from '@/features/core/i18n'
 import { CreateWorkspaceForm } from '@/features/tenancy/components/create-workspace-form'
 import {
   activeTenant,
@@ -55,14 +56,16 @@ export function WorkspaceSwitcher() {
       <DropdownMenu>
         <DropdownMenuTrigger render={<Button variant="ghost" className="max-w-56 min-w-0" />}>
           {current && <WorkspaceInitial name={current.name} />}
-          <span className="sr-only">Workspace: </span>
-          <span className="truncate">{current?.name ?? 'Select a workspace'}</span>
+          <span className="sr-only">{t('tenancy.workspaceSwitcher.workspaceLabel')}</span>
+          <span className="truncate">
+            {current?.name ?? t('tenancy.workspaceSwitcher.selectWorkspace')}
+          </span>
           <ChevronsUpDownIcon data-icon="inline-end" className="text-muted-foreground" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-60">
           {tenants.data.length > 0 && (
             <DropdownMenuGroup>
-              <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('tenancy.workspaceSwitcher.workspaces')}</DropdownMenuLabel>
               {tenants.data.map(tenant => (
                 <DropdownMenuItem key={tenant.id} onClick={() => open(tenant.id)}>
                   <WorkspaceInitial name={tenant.name} />
@@ -75,17 +78,17 @@ export function WorkspaceSwitcher() {
           {tenants.data.length > 0 && <DropdownMenuSeparator />}
           <DropdownMenuItem onClick={() => setCreating(true)}>
             <PlusIcon />
-            New workspace
+            {t('tenancy.workspaceSwitcher.newWorkspace')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent>
+        <DialogContent closeLabel={t('tenancy.workspaceSwitcher.close')}>
           <DialogHeader>
-            <DialogTitle>New workspace</DialogTitle>
+            <DialogTitle>{t('tenancy.workspaceSwitcher.newWorkspace')}</DialogTitle>
             <DialogDescription>
-              You’ll be its owner, with every permission. You can invite people next.
+              {t('tenancy.workspaceSwitcher.newWorkspaceDescription')}
             </DialogDescription>
           </DialogHeader>
           <CreateWorkspaceForm onCreated={() => setCreating(false)} />

@@ -13,12 +13,12 @@ router.get('/', () => {
 
 router.get('/health/live', [HealthChecks, 'live'])
 
-router.get('/health/ready', [HealthChecks, 'ready']).use(({ request, response }, next) => {
+router.get('/health/ready', [HealthChecks, 'ready']).use(({ request, response, i18n }, next) => {
   const secret = request.header('x-monitoring-secret') ?? ''
 
   if (safeEqual(secret, env.get('MONITORING_SECRET').release())) {
     return next()
   }
 
-  return response.unauthorized({ message: 'Unauthorized access' })
+  return response.unauthorized({ message: i18n.t('errors.E_UNAUTHORIZED_ACCESS') })
 })

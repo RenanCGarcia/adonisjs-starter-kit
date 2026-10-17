@@ -4,6 +4,7 @@ import { getRouteApi, Link } from '@tanstack/react-router'
 import { AuthCard } from '@/features/auth/components/auth-card'
 import { queries } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
+import { t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
 
 const route = getRouteApi('/signup')
@@ -27,17 +28,17 @@ export function SignupPage() {
 
   return (
     <AuthCard
-      title="Create your account"
-      description="Sign up to create a workspace or join one you were invited to."
+      title={t('auth.signupPage.title')}
+      description={t('auth.signupPage.description')}
       footer={
         <p className="text-xs text-muted-foreground">
-          Already have an account?{' '}
+          {t('auth.signupPage.haveAccount')}{' '}
           <Link
             to="/login"
             search={{ redirect: redirectTo }}
             className="text-foreground underline underline-offset-4"
           >
-            Sign in
+            {t('auth.signupPage.signIn')}
           </Link>
         </p>
       }
@@ -47,20 +48,27 @@ export function SignupPage() {
           <FieldGroup>
             <form.FormAlert />
             <form.AppField name="fullName">
-              {field => <field.TextField label="Full name" autoComplete="name" />}
+              {field => (
+                <field.TextField label={t('auth.signupPage.fullName')} autoComplete="name" />
+              )}
             </form.AppField>
             <form.AppField name="email">
               {field => (
-                <field.TextField label="Email" type="email" autoComplete="email" required />
+                <field.TextField
+                  label={t('auth.signupPage.email')}
+                  type="email"
+                  autoComplete="email"
+                  required
+                />
               )}
             </form.AppField>
             <form.AppField name="password">
               {field => (
                 <field.TextField
-                  label="Password"
+                  label={t('auth.signupPage.password')}
                   type="password"
                   autoComplete="new-password"
-                  description="8 to 32 characters."
+                  description={t('auth.signupPage.passwordDescription')}
                   required
                 />
               )}
@@ -68,14 +76,14 @@ export function SignupPage() {
             <form.AppField name="passwordConfirmation">
               {field => (
                 <field.TextField
-                  label="Confirm password"
+                  label={t('auth.signupPage.confirmPassword')}
                   type="password"
                   autoComplete="new-password"
                   required
                 />
               )}
             </form.AppField>
-            <form.SubmitButton size="lg">Create account</form.SubmitButton>
+            <form.SubmitButton size="lg">{t('auth.signupPage.submit')}</form.SubmitButton>
           </FieldGroup>
         </form.Form>
       </form.AppForm>

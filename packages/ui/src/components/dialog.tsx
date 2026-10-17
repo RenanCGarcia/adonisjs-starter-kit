@@ -37,10 +37,11 @@ function DialogOverlay({ className, ...props }: DialogPrimitive.Backdrop.Props) 
 function DialogContent({
   className,
   children,
-  showCloseButton = true,
+  closeLabel,
   ...props
 }: DialogPrimitive.Popup.Props & {
-  showCloseButton?: boolean
+  /** Shows a close button in the corner, announced with this label. */
+  closeLabel?: string
 }) {
   return (
     <DialogPortal>
@@ -54,13 +55,13 @@ function DialogContent({
         {...props}
       >
         {children}
-        {showCloseButton && (
+        {closeLabel && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
             render={<Button variant="ghost" className="absolute top-2 right-2" size="icon-sm" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{closeLabel}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>
@@ -76,11 +77,12 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
 
 function DialogFooter({
   className,
-  showCloseButton = false,
+  closeLabel,
   children,
   ...props
 }: React.ComponentProps<'div'> & {
-  showCloseButton?: boolean
+  /** Adds a close button with this text after the children. */
+  closeLabel?: string
 }) {
   return (
     <div
@@ -89,8 +91,10 @@ function DialogFooter({
       {...props}
     >
       {children}
-      {showCloseButton && (
-        <DialogPrimitive.Close render={<Button variant="outline" />}>Close</DialogPrimitive.Close>
+      {closeLabel && (
+        <DialogPrimitive.Close render={<Button variant="outline" />}>
+          {closeLabel}
+        </DialogPrimitive.Close>
       )}
     </div>
   )

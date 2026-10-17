@@ -9,6 +9,7 @@ import { LockIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { can, permissionLabel, usePermissions } from '@/features/access/permissions'
 import type { Permission } from '@/features/access/permissions'
+import { t } from '@/features/core/i18n'
 
 export function RequirePermission({
   permission,
@@ -29,11 +30,12 @@ export function RequirePermission({
             <LockIcon />
           </EmptyMedia>
           <EmptyTitle>
-            <h1>You don’t have access</h1>
+            <h1>{t('access.requirePermission.title')}</h1>
           </EmptyTitle>
           <EmptyDescription>
-            This page needs the “{permissionLabel(permission).label}” permission. Ask someone who
-            manages members in this workspace to grant it.
+            {t('access.requirePermission.description', {
+              label: permissionLabel(permission).label,
+            })}
           </EmptyDescription>
         </EmptyHeader>
       </Empty>

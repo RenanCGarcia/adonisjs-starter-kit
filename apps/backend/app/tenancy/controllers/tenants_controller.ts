@@ -15,10 +15,14 @@ export default class TenantsController {
     return serialize(TenantTransformer.transform(tenants))
   }
 
-  async store({ request, auth, serialize }: HttpContext) {
+  async store({ request, auth, i18n, serialize }: HttpContext) {
     const { name } = await request.validateUsing(createTenantValidator)
 
-    const tenant = await new CreateTenant().handle({ name, creatorId: auth.getUserOrFail().id })
+    const tenant = await new CreateTenant().handle({
+      name,
+      creatorId: auth.getUserOrFail().id,
+      locale: i18n.locale,
+    })
 
     return serialize(TenantTransformer.transform(tenant))
   }

@@ -7,6 +7,7 @@ export function AppMark() {
       <span className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
         <BoxIcon className="size-3.5" />
       </span>
+      {/* oxlint-disable-next-line i18n/no-untranslated-text -- product name, not translated */}
       Starter
     </Link>
   )

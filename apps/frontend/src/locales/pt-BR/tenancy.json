@@ -1,0 +1,20 @@
+{
+  "createWorkspaceForm": {
+    "created": "Espaço de trabalho “{name}” criado",
+    "name": "Nome do espaço de trabalho",
+    "namePlaceholder": "Acme Inc.",
+    "submit": "Criar espaço de trabalho"
+  },
+  "onboardingPage": {
+    "title": "Crie seu espaço de trabalho",
+    "description": "Um espaço de trabalho reúne sua equipe: seus membros, papéis e convites. Recebeu convite para um que já existe? Abra o link no e-mail de convite em vez disso."
+  },
+  "workspaceSwitcher": {
+    "workspaceLabel": "Espaço de trabalho: ",
+    "selectWorkspace": "Selecione um espaço de trabalho",
+    "workspaces": "Espaços de trabalho",
+    "newWorkspace": "Novo espaço de trabalho",
+    "newWorkspaceDescription": "Você será o proprietário, com todas as permissões. Você pode convidar pessoas depois.",
+    "close": "Fechar"
+  }
+}

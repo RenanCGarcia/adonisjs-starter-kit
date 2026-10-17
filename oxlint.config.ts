@@ -104,6 +104,10 @@ const designSystem: OxlintOverride[] = [
     },
   },
   {
+    files: ['apps/frontend/src/**', 'packages/ui/src/**'],
+    rules: { 'i18n/no-untranslated-text': 'error' },
+  },
+  {
     // Components own their appearance and may need structural values such as ring-[3px].
     files: ['packages/ui/src/components/**'],
     rules: {
@@ -119,6 +123,7 @@ export default defineConfig({
   jsPlugins: [
     '@shadcn/lint',
     { name: 'anti-slop', specifier: './tools/oxlint/anti-slop/index.ts' },
+    { name: 'i18n', specifier: './tools/oxlint/i18n/index.ts' },
   ],
 
   ignorePatterns: [

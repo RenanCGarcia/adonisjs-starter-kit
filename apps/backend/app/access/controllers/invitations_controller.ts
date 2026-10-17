@@ -16,7 +16,7 @@ export default class InvitationsController {
     return serialize(InvitationTransformer.transform(invitations))
   }
 
-  async store({ bouncer, request, auth, tenant, serialize }: HttpContext) {
+  async store({ bouncer, request, auth, tenant, i18n, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)
     const { email, roleId } = await request.validateUsing(inviteMemberValidator)
 
@@ -25,6 +25,7 @@ export default class InvitationsController {
       email,
       roleId,
       invitedById: auth.getUserOrFail().id,
+      locale: i18n.locale,
     })
 
     return serialize(InvitationTransformer.transform(invitation))

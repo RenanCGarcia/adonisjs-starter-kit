@@ -21,6 +21,7 @@ import type { api } from '@/features/core/api'
 import { ConfirmDialog } from '@/features/core/components/confirm-dialog'
 import { PageHeader } from '@/features/core/components/page-header'
 import { errorMessage } from '@/features/core/errors'
+import { t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 
 type Role = Awaited<ReturnType<typeof api.access.roles.index>>['data'][number]
@@ -50,12 +51,12 @@ function Roles() {
   return (
     <>
       <PageHeader
-        title="Roles"
-        description="What each role lets its members do."
+        title={t('access.rolesPage.title')}
+        description={t('access.rolesPage.description')}
         actions={
           <Button onClick={() => setCreating(true)}>
             <PlusIcon data-icon="inline-start" />
-            New role
+            {t('access.rolesPage.newRole')}
           </Button>
         }
       />
@@ -121,11 +122,11 @@ function RolesTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Role</TableHead>
-          <TableHead>Permissions</TableHead>
-          <TableHead>Members</TableHead>
+          <TableHead>{t('access.rolesPage.role')}</TableHead>
+          <TableHead>{t('access.rolesPage.permissions')}</TableHead>
+          <TableHead>{t('access.rolesPage.members')}</TableHead>
           <TableHead>
-            <span className="sr-only">Actions</span>
+            <span className="sr-only">{t('access.rolesPage.actions')}</span>
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -145,7 +146,7 @@ function RolesTable({
                   ))}
                 </ul>
               ) : (
-                <span className="text-muted-foreground">No permissions</span>
+                <span className="text-muted-foreground">{t('access.rolesPage.noPermissions')}</span>
               )}
             </TableCell>
             <TableCell>
@@ -158,7 +159,7 @@ function RolesTable({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={`Edit ${role.name}`}
+                  aria-label={t('access.rolesPage.editRole', { name: role.name })}
                   onClick={() => onEdit(role)}
                 >
                   <PencilIcon />
@@ -166,7 +167,7 @@ function RolesTable({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={`Delete ${role.name}`}
+                  aria-label={t('access.rolesPage.deleteRole', { name: role.name })}
                   onClick={() => onDelete(role)}
                 >
                   <Trash2Icon />
@@ -195,7 +196,7 @@ function DeleteRoleDialog({
     queries.access.roles.destroy.mutationOptions({
       onSuccess: () => {
         onOpenChange(false)
-        toast.success(`Role “${role.name}” deleted`)
+        toast.success(t('access.rolesPage.deleted', { name: role.name }))
       },
       onError: error => toast.error(errorMessage(error)),
     }),
@@ -205,9 +206,9 @@ function DeleteRoleDialog({
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={`Delete “${role.name}”?`}
-      description="Members with this role keep their account, but lose what it granted. This can’t be undone."
-      confirmLabel="Delete role"
+      title={t('access.rolesPage.deleteTitle', { name: role.name })}
+      description={t('access.rolesPage.deleteDescription')}
+      confirmLabel={t('access.rolesPage.deleteConfirm')}
       pending={deleteRole.isPending}
       onConfirm={() => deleteRole.mutate({ params: { id: role.id }, ...tenantHeaders(tenantId) })}
     />

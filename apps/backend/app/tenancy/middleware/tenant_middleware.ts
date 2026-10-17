@@ -15,7 +15,7 @@ export default class TenantMiddleware {
 
     if (!tenantId || !vine.helpers.isUUID(tenantId)) {
       return ctx.response.badRequest({
-        message: 'The X-Tenant-Id header must be a tenant id',
+        message: ctx.i18n.t('errors.E_INVALID_TENANT_HEADER'),
         key: 'E_INVALID_TENANT_HEADER',
       })
     }
@@ -29,7 +29,7 @@ export default class TenantMiddleware {
 
     if (!tenant) {
       return ctx.response.forbidden({
-        message: 'You are not a member of this tenant',
+        message: ctx.i18n.t('errors.E_TENANT_ACCESS_DENIED'),
         key: 'E_TENANT_ACCESS_DENIED',
       })
     }

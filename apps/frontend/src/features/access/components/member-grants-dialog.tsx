@@ -16,6 +16,7 @@ import type {
 } from '@/features/access/permissions'
 import { queries, tenantHeaders } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
+import { t } from '@/features/core/i18n'
 
 type Member = { userId: string; name: string; permissions: Permission[] }
 
@@ -50,17 +51,17 @@ export function MemberGrantsDialog({
       if (!updated) return
 
       onOpenChange(false)
-      toast.success(`Permissions updated for ${member.name}`)
+      toast.success(t('access.memberGrantsDialog.permissionsUpdated', { name: member.name }))
     },
   })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent closeLabel={t('access.memberGrantsDialog.close')}>
         <DialogHeader>
-          <DialogTitle>Edit permissions</DialogTitle>
+          <DialogTitle>{t('access.memberGrantsDialog.title')}</DialogTitle>
           <DialogDescription>
-            Extra permissions for {member.name}, on top of what their role grants.
+            {t('access.memberGrantsDialog.description', { name: member.name })}
           </DialogDescription>
         </DialogHeader>
         <form.AppForm>
@@ -76,7 +77,7 @@ export function MemberGrantsDialog({
               )}
             </form.AppField>
             <DialogFooter>
-              <form.SubmitButton>Save</form.SubmitButton>
+              <form.SubmitButton>{t('access.memberGrantsDialog.save')}</form.SubmitButton>
             </DialogFooter>
           </form.Form>
         </form.AppForm>

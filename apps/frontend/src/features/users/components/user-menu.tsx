@@ -18,13 +18,14 @@ import { Link, useRouter } from '@tanstack/react-router'
 import { LogOutIcon, SunMoonIcon, UserIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { api } from '@/features/core/api'
+import { t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
 const THEMES = [
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'system', label: 'System' },
+  { value: 'light', label: t('users.userMenu.light') },
+  { value: 'dark', label: t('users.userMenu.dark') },
+  { value: 'system', label: t('users.userMenu.system') },
 ]
 
 export function UserMenu({ user }: { user: Data.Users.User }) {
@@ -42,12 +43,7 @@ export function UserMenu({ user }: { user: Data.Users.User }) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon-lg"
-
-            aria-label="Account menu"
-          />
+          <Button variant="ghost" size="icon-lg" aria-label={t('users.userMenu.accountMenu')} />
         }
       >
         <UserAvatar user={user} />
@@ -64,12 +60,12 @@ export function UserMenu({ user }: { user: Data.Users.User }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link to="/profile" />}>
           <UserIcon />
-          Profile
+          {t('users.userMenu.profile')}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <SunMoonIcon />
-            Theme
+            {t('users.userMenu.theme')}
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
@@ -84,7 +80,7 @@ export function UserMenu({ user }: { user: Data.Users.User }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logOut}>
           <LogOutIcon />
-          Log out
+          {t('users.userMenu.logOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

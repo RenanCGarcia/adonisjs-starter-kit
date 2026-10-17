@@ -16,7 +16,7 @@ export default class AccessTokensController {
     })
   }
 
-  async destroy({ auth, serialize }: HttpContext) {
+  async destroy({ auth, i18n, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
 
     if (user.currentAccessToken) {
@@ -24,7 +24,7 @@ export default class AccessTokensController {
     }
 
     return serialize({
-      message: 'Logged out successfully',
+      message: i18n.t('auth.logged_out'),
     })
   }
 }

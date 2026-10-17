@@ -9,6 +9,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { queries, tenantHeaders } from '@/features/core/api'
 import { errorMessage } from '@/features/core/errors'
+import { t } from '@/features/core/i18n'
 
 type Role = { id: string; name: string }
 
@@ -34,7 +35,7 @@ export function MemberRoleSelect({
 }) {
   const updateRole = useMutation(
     queries.access.memberRoles.update.mutationOptions({
-      onSuccess: () => toast.success(`Role updated for ${name}`),
+      onSuccess: () => toast.success(t('access.memberRoleSelect.roleUpdated', { name })),
       onError: error => toast.error(errorMessage(error)),
     }),
   )
@@ -50,7 +51,7 @@ export function MemberRoleSelect({
   }
 
   const items = [
-    { value: NO_ROLE, label: 'No role' },
+    { value: NO_ROLE, label: t('access.memberRoleSelect.noRole') },
     ...roles.map(role => ({ value: role.id, label: role.name })),
   ]
 
@@ -61,11 +62,11 @@ export function MemberRoleSelect({
       onValueChange={onValueChange}
       disabled={updateRole.isPending}
     >
-      <SelectTrigger aria-label={`Role for ${name}`}>
+      <SelectTrigger aria-label={t('access.memberRoleSelect.roleFor', { name })}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value={NO_ROLE}>No role</SelectItem>
+        <SelectItem value={NO_ROLE}>{t('access.memberRoleSelect.noRole')}</SelectItem>
         {roles.map(role => (
           <SelectItem key={role.id} value={role.id}>
             {role.name}

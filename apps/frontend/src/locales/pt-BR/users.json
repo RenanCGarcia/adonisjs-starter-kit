@@ -1,0 +1,28 @@
+{
+  "userMenu": {
+    "accountMenu": "Menu da conta",
+    "profile": "Perfil",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema",
+    "logOut": "Sair"
+  },
+  "profilePage": {
+    "title": "Perfil",
+    "description": "Como você aparece para as pessoas nos seus espaços de trabalho.",
+    "details": "Detalhes",
+    "name": "Nome",
+    "email": "E-mail",
+    "memberSince": "Membro desde",
+    "photo": "Foto",
+    "photoDescription": "Uma imagem JPG, PNG ou WebP de até 2 MB.",
+    "yourPhoto": "Sua foto",
+    "photoFile": "Arquivo da foto",
+    "replacePhoto": "Substituir foto",
+    "uploadPhoto": "Enviar foto",
+    "removePhoto": "Remover foto",
+    "photoUpdated": "Foto atualizada",
+    "photoRemoved": "Foto removida"
+  }
+}

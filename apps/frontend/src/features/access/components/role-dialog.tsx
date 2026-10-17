@@ -16,6 +16,7 @@ import type {
 } from '@/features/access/permissions'
 import { queries, tenantHeaders } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
+import { t } from '@/features/core/i18n'
 
 type Role = { id: string; name: string; permissions: Permission[] }
 
@@ -56,19 +57,23 @@ export function RoleDialog({
       if (!saved) return
 
       onOpenChange(false)
-      toast.success(role ? `Role “${value.name}” updated` : `Role “${value.name}” created`)
+      toast.success(
+        role
+          ? t('access.roleDialog.updated', { name: value.name })
+          : t('access.roleDialog.created', { name: value.name }),
+      )
     },
   })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent closeLabel={t('access.roleDialog.close')}>
         <DialogHeader>
-          <DialogTitle>{role ? 'Edit role' : 'New role'}</DialogTitle>
+          <DialogTitle>
+            {role ? t('access.roleDialog.editTitle') : t('access.roleDialog.newTitle')}
+          </DialogTitle>
           <DialogDescription>
-            {role
-              ? 'Rename this role or change what it grants its members.'
-              : 'Give it a name and the permissions its members will have.'}
+            {role ? t('access.roleDialog.editDescription') : t('access.roleDialog.newDescription')}
           </DialogDescription>
         </DialogHeader>
         <form.AppForm>
@@ -76,7 +81,12 @@ export function RoleDialog({
             <form.FormAlert />
             <form.AppField name="name">
               {field => (
-                <field.TextField label="Role name" placeholder="Editor" required maxLength={255} />
+                <field.TextField
+                  label={t('access.roleDialog.roleName')}
+                  placeholder={t('access.roleDialog.roleNamePlaceholder')}
+                  required
+                  maxLength={255}
+                />
               )}
             </form.AppField>
             <form.AppField name="permissions">
@@ -89,7 +99,9 @@ export function RoleDialog({
               )}
             </form.AppField>
             <DialogFooter>
-              <form.SubmitButton>{role ? 'Save' : 'Create role'}</form.SubmitButton>
+              <form.SubmitButton>
+                {role ? t('access.roleDialog.save') : t('access.roleDialog.createRole')}
+              </form.SubmitButton>
             </DialogFooter>
           </form.Form>
         </form.AppForm>

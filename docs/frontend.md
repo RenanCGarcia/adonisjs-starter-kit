@@ -14,6 +14,16 @@
 
 `apps/frontend/features.json` lists, per feature, the other features it may import. The lint enforces it, the same way `apps/backend/modules.json` constrains backend modules. A feature imports another only through `@/features/<feature>/...`, never through a relative path. Routes may import any feature. A new feature or a new dependency goes in `features.json` in the same change.
 
+## Translations
+
+Every string a person reads, labels and placeholders included, lives in `src/locales/<locale>/<namespace>.json` (en-US and pt-BR) and renders through `t('<namespace>.<component>.<message>')` from `@/features/core/i18n`. The namespace is the feature (`routes` for route files); a new namespace file is added to both locales' `index.ts`. Messages use the ICU syntax the backend uses: values as `{name}` (`t('access.rolesPage.deleted', { name })`), apostrophes as `’`.
+
+- A key missing from en-US fails the typecheck at the `t()` call; pt-BR with a missing or extra key fails it in `core/i18n.ts`, naming the keys.
+- Dates and numbers format with `Intl` and the exported `locale`.
+- The lint rule `i18n/no-untranslated-text` rejects text written straight into JSX, text props, and `toast()` calls.
+
+The locale is resolved once per page load from the system languages (`navigator.languages`): the first one whose primary subtag a supported locale shares, else en-US. Every API request sends it as `Accept-Language`, so error and validation messages arrive already translated: show them as they come, never re-translate them by code.
+
 ## Server state
 
 API reads and writes go through TanStack Query, with `queries` from `@/features/core/api` (`@tuyau/react-query`). Logout is the exception: it calls `api` directly, since no screen shows what it changes.

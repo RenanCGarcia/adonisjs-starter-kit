@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@monorepo/ui/components/card'
+import { t } from '@/features/core/i18n'
 import { CreateWorkspaceForm } from '@/features/tenancy/components/create-workspace-form'
 
 export function OnboardingPage() {
@@ -13,12 +14,9 @@ export function OnboardingPage() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>
-            <h1>Create your workspace</h1>
+            <h1>{t('tenancy.onboardingPage.title')}</h1>
           </CardTitle>
-          <CardDescription>
-            A workspace holds your team: its members, their roles and invitations. Invited to an
-            existing one? Open the link in your invitation email instead.
-          </CardDescription>
+          <CardDescription>{t('tenancy.onboardingPage.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <CreateWorkspaceForm />

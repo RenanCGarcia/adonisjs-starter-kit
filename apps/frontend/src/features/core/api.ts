@@ -1,6 +1,7 @@
 import { registry } from '@monorepo/backend/registry'
 import { createTuyau } from '@tuyau/core/client'
 import { createTuyauReactQueryClient } from '@tuyau/react-query'
+import { locale } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
 
 const client = createTuyau({
@@ -10,6 +11,8 @@ const client = createTuyau({
     beforeRequest: [
       request => {
         const token = session.token()
+
+        request.headers.set('Accept-Language', locale)
 
         if (token) request.headers.set('Authorization', `Bearer ${token}`)
       },

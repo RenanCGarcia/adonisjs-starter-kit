@@ -1,0 +1,16 @@
+{
+  "E_ALREADY_MEMBER": "Esta pessoa já é membro do espaço de trabalho.",
+  "E_AUTHORIZATION_FAILURE": "Você não tem permissão para fazer isso.",
+  "E_BAD_CSRF_TOKEN": "Esta página expirou. Recarregue-a e tente novamente.",
+  "E_INVALID_ATTACHMENT": "Este arquivo não pode ser usado aqui.",
+  "E_INVALID_CREDENTIALS": "E-mail ou senha inválidos.",
+  "E_INVALID_TENANT_HEADER": "Este espaço de trabalho não é válido. Escolha outro no menu de espaços de trabalho.",
+  "E_INVITATION_EMAIL_MISMATCH": "Este convite foi enviado para outro endereço de e-mail.",
+  "E_INVITATION_NOT_FOUND": "Este convite não existe ou expirou.",
+  "E_LAST_MANAGER": "Alguém precisa continuar podendo gerenciar membros. Dê essa permissão a outro membro antes.",
+  "E_MEMBER_NOT_FOUND": "Esta pessoa não é mais membro do espaço de trabalho.",
+  "E_ROLE_IN_USE": "Mova os membros deste papel para outro papel antes de excluí-lo.",
+  "E_ROW_NOT_FOUND": "Este item não existe.",
+  "E_TENANT_ACCESS_DENIED": "Você não é membro deste espaço de trabalho.",
+  "E_UNAUTHORIZED_ACCESS": "Entre para continuar."
+}

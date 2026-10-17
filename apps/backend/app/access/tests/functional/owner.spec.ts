@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import Role from '#access/models/role'
-import { workspace } from '#access/tests/seed'
+import { createUser, workspace } from '#access/tests/seed'
 import emitter from '@adonisjs/core/services/emitter'
 import RoleAssignment from '#access/models/role_assignment'
 import testUtils from '@adonisjs/core/services/test_utils'
@@ -11,7 +11,7 @@ test.group('Access | tenant owner', group => {
   test('makes the creator of a tenant its Owner, once', async ({ client, assert }) => {
     const acme = await workspace()
     const founder = await acme.member()
-    const event = { tenantId: acme.tenant.id, creatorId: founder.id }
+    const event = { tenantId: acme.tenant.id, creatorId: founder.id, locale: 'en-US' }
 
     await emitter.emit('tenancy:tenant_created', event)
     await emitter.emit('tenancy:tenant_created', event)
@@ -34,6 +34,7 @@ test.group('Access | tenant owner', group => {
     await emitter.emit('tenancy:tenant_created', {
       tenantId: acme.tenant.id,
       creatorId: founder.id,
+      locale: 'en-US',
     })
 
     const assignment = await acme.inside(() =>
@@ -41,5 +42,25 @@ test.group('Access | tenant owner', group => {
     )
 
     assert.equal(assignment.roleId, owner.id)
+  })
+
+  test('names the Owner role in the creator’s locale', async ({ client, assert }) => {
+    const founder = await createUser()
+
+    const created = await client
+      .visit('tenants.tenants.store')
+      .header('accept-language', 'pt-BR')
+      .json({ name: 'Acme' })
+      .loginAs(founder)
+
+    const roles = await client
+      .visit('access.roles.index')
+      .headers({ 'X-Tenant-Id': created.body().data.id })
+      .loginAs(founder)
+
+    assert.deepEqual(
+      roles.body().data.map((role: { name: string }) => role.name),
+      ['Proprietário'],
+    )
   })
 })

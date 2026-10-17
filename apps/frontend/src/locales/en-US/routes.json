@@ -1,0 +1,10 @@
+{
+  "app": {
+    "wentWrong": "Something went wrong",
+    "pageFailed": "The page failed to load.",
+    "tryAgain": "Try again"
+  },
+  "workspace": {
+    "nav": "Workspace"
+  }
+}

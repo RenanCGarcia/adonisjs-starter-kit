@@ -6,6 +6,7 @@ import { AuthCard } from '@/features/auth/components/auth-card'
 import { queries } from '@/features/core/api'
 import { PendingButton } from '@/features/core/components/pending-button'
 import { apiErrorCode, errorMessage } from '@/features/core/errors'
+import { t } from '@/features/core/i18n'
 import { session, useIsAuthenticated } from '@/features/core/session'
 import { selectWorkspace } from '@/features/tenancy/workspace'
 import { profileQuery } from '@/features/users/profile'
@@ -24,7 +25,7 @@ export function AcceptInvitationPage() {
     queries.invitationAccept.store.mutationOptions({
       onSuccess: async ({ data: tenant }) => {
         selectWorkspace(tenant.id)
-        toast.success(`You’ve joined “${tenant.name}”`)
+        toast.success(t('access.acceptInvitationPage.joined', { name: tenant.name }))
         await navigate({ to: '/' })
       },
       onError: error => {
@@ -36,19 +37,19 @@ export function AcceptInvitationPage() {
   if (!isAuthenticated) {
     return (
       <AuthCard
-        title="You’re invited"
-        description="Sign in or create an account to accept this invitation."
+        title={t('access.acceptInvitationPage.invitedTitle')}
+        description={t('access.acceptInvitationPage.invitedDescription')}
       >
         <div className="flex flex-col gap-2">
           <Link to="/login" search={redirectSearch} className={buttonVariants({ size: 'lg' })}>
-            Sign in
+            {t('access.acceptInvitationPage.signIn')}
           </Link>
           <Link
             to="/signup"
             search={redirectSearch}
             className={buttonVariants({ variant: 'outline', size: 'lg' })}
           >
-            Create account
+            {t('access.acceptInvitationPage.createAccount')}
           </Link>
         </div>
       </AuthCard>
@@ -57,14 +58,17 @@ export function AcceptInvitationPage() {
 
   if (profile.error) {
     return (
-      <AuthCard title="Something went wrong" description={errorMessage(profile.error)}>
+      <AuthCard
+        title={t('access.acceptInvitationPage.somethingWrong')}
+        description={errorMessage(profile.error)}
+      >
         <PendingButton
           size="lg"
           className="w-full"
           pending={profile.isFetching}
           onClick={() => profile.refetch()}
         >
-          Try again
+          {t('access.acceptInvitationPage.tryAgain')}
         </PendingButton>
       </AuthCard>
     )
@@ -79,11 +83,11 @@ export function AcceptInvitationPage() {
   if (failure === 'E_INVITATION_NOT_FOUND') {
     return (
       <AuthCard
-        title="Invitation not found"
-        description="This invitation doesn’t exist or has expired."
+        title={t('access.acceptInvitationPage.notFoundTitle')}
+        description={t('access.acceptInvitationPage.notFoundDescription')}
       >
         <Link to="/" className={buttonVariants({ size: 'lg', className: 'w-full' })}>
-          Go home
+          {t('access.acceptInvitationPage.goHome')}
         </Link>
       </AuthCard>
     )
@@ -97,8 +101,10 @@ export function AcceptInvitationPage() {
 
     return (
       <AuthCard
-        title="Wrong account"
-        description={`You’re signed in as ${user.email}, but this invitation was sent to a different email address.`}
+        title={t('access.acceptInvitationPage.wrongAccountTitle')}
+        description={t('access.acceptInvitationPage.wrongAccountDescription', {
+          email: user.email,
+        })}
       >
         <PendingButton
           size="lg"
@@ -106,21 +112,24 @@ export function AcceptInvitationPage() {
           pending={false}
           onClick={signInWithAnotherAccount}
         >
-          Sign in with another account
+          {t('access.acceptInvitationPage.signInWithAnotherAccount')}
         </PendingButton>
       </AuthCard>
     )
   }
 
   return (
-    <AuthCard title="Accept invitation" description={`Signed in as ${user.email}.`}>
+    <AuthCard
+      title={t('access.acceptInvitationPage.acceptTitle')}
+      description={t('access.acceptInvitationPage.signedInAs', { email: user.email })}
+    >
       <PendingButton
         size="lg"
         className="w-full"
         pending={accept.isPending}
         onClick={() => accept.mutate({ body: { token } })}
       >
-        Accept invitation
+        {t('access.acceptInvitationPage.acceptInvitation')}
       </PendingButton>
     </AuthCard>
   )

@@ -18,6 +18,7 @@ import { permissionLabel } from '@/features/access/permissions'
 import { membersQuery, permissionCatalogQuery, rolesQuery } from '@/features/access/queries'
 import type { api } from '@/features/core/api'
 import { PageHeader } from '@/features/core/components/page-header'
+import { t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 import { profileQuery } from '@/features/users/profile'
@@ -50,18 +51,18 @@ function Members() {
   return (
     <>
       <PageHeader
-        title="Members"
-        description="People in this workspace, their role and extra permissions."
+        title={t('access.membersPage.title')}
+        description={t('access.membersPage.description')}
       />
 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Member</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Extra permissions</TableHead>
+            <TableHead>{t('access.membersPage.member')}</TableHead>
+            <TableHead>{t('access.membersPage.role')}</TableHead>
+            <TableHead>{t('access.membersPage.extraPermissions')}</TableHead>
             <TableHead>
-              <span className="sr-only">Actions</span>
+              <span className="sr-only">{t('access.membersPage.actions')}</span>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -77,7 +78,9 @@ function Members() {
                     <div className="flex min-w-0 flex-col">
                       <span className="flex items-center gap-1.5 truncate font-medium">
                         {name}
-                        {member.user.id === user.data.id && <Badge variant="outline">You</Badge>}
+                        {member.user.id === user.data.id && (
+                          <Badge variant="outline">{t('access.membersPage.you')}</Badge>
+                        )}
                       </span>
                       <span className="truncate text-muted-foreground">{member.user.email}</span>
                     </div>
@@ -102,14 +105,14 @@ function Members() {
                       ))}
                     </ul>
                   ) : (
-                    <span className="text-muted-foreground">None</span>
+                    <span className="text-muted-foreground">{t('access.membersPage.none')}</span>
                   )}
                 </TableCell>
                 <TableCell>
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    aria-label={`Edit permissions for ${name}`}
+                    aria-label={t('access.membersPage.editPermissionsFor', { name })}
                     onClick={() => setEditing(member)}
                   >
                     <KeyRoundIcon />

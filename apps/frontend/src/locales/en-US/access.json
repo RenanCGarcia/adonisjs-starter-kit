@@ -1,0 +1,140 @@
+{
+  "permissions": {
+    "roles": "Roles",
+    "members": "Members",
+    "manageRoles": "Manage roles",
+    "manageRolesDescription": "Create, rename and delete roles, and choose what each role can do.",
+    "manageMembers": "Manage members",
+    "manageMembersDescription": "Invite people, change their role, and grant them extra permissions.",
+    "platformAdmin": "Platform admin",
+    "platformAdminDescription": "Every permission in every workspace."
+  },
+  "nav": {
+    "overview": "Overview",
+    "overviewDescription": "This workspace at a glance.",
+    "members": "Members",
+    "membersDescription": "See who belongs to the workspace, change their role and extra permissions.",
+    "invitations": "Invitations",
+    "invitationsDescription": "Invite people by email and revoke pending invitations.",
+    "roles": "Roles",
+    "rolesDescription": "Define roles and the permissions each one grants."
+  },
+  "membersPage": {
+    "title": "Members",
+    "description": "People in this workspace, their role and extra permissions.",
+    "member": "Member",
+    "role": "Role",
+    "extraPermissions": "Extra permissions",
+    "you": "You",
+    "none": "None",
+    "editPermissionsFor": "Edit permissions for {name}",
+    "actions": "Actions"
+  },
+  "roleDialog": {
+    "editTitle": "Edit role",
+    "newTitle": "New role",
+    "editDescription": "Rename this role or change what it grants its members.",
+    "newDescription": "Give it a name and the permissions its members will have.",
+    "roleName": "Role name",
+    "roleNamePlaceholder": "Editor",
+    "save": "Save",
+    "createRole": "Create role",
+    "updated": "Role “{name}” updated",
+    "created": "Role “{name}” created",
+    "close": "Close"
+  },
+  "rolesPage": {
+    "title": "Roles",
+    "description": "What each role lets its members do.",
+    "newRole": "New role",
+    "role": "Role",
+    "permissions": "Permissions",
+    "members": "Members",
+    "noPermissions": "No permissions",
+    "actions": "Actions",
+    "editRole": "Edit {name}",
+    "deleteRole": "Delete {name}",
+    "deleted": "Role “{name}” deleted",
+    "deleteTitle": "Delete “{name}”?",
+    "deleteDescription": "Members with this role keep their account, but lose what it granted. This can’t be undone.",
+    "deleteConfirm": "Delete role"
+  },
+  "permissionPicker": {
+    "legend": "Permissions"
+  },
+  "overviewPage": {
+    "description": "Workspace overview",
+    "yourPermissions": "Your permissions",
+    "withPermissions": "What your role and grants let you do here.",
+    "withoutPermissions": "You can see this workspace. Ask someone who manages members for more access.",
+    "manage": "Manage"
+  },
+  "inviteMemberDialog": {
+    "title": "Invite member",
+    "description": "They’ll get an email with a link to join this workspace.",
+    "email": "Email",
+    "role": "Role",
+    "noRole": "No role",
+    "submit": "Send invitation",
+    "resent": "Invitation to {email} resent",
+    "sent": "Invitation sent to {email}",
+    "close": "Close"
+  },
+  "acceptInvitationPage": {
+    "joined": "You’ve joined “{name}”",
+    "invitedTitle": "You’re invited",
+    "invitedDescription": "Sign in or create an account to accept this invitation.",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "somethingWrong": "Something went wrong",
+    "tryAgain": "Try again",
+    "notFoundTitle": "Invitation not found",
+    "notFoundDescription": "This invitation doesn’t exist or has expired.",
+    "goHome": "Go home",
+    "wrongAccountTitle": "Wrong account",
+    "wrongAccountDescription": "You’re signed in as {email}, but this invitation was sent to a different email address.",
+    "signInWithAnotherAccount": "Sign in with another account",
+    "acceptTitle": "Accept invitation",
+    "signedInAs": "Signed in as {email}.",
+    "acceptInvitation": "Accept invitation"
+  },
+  "memberGrantsDialog": {
+    "title": "Edit permissions",
+    "description": "Extra permissions for {name}, on top of what their role grants.",
+    "permissionsUpdated": "Permissions updated for {name}",
+    "save": "Save",
+    "close": "Close"
+  },
+  "memberRoleSelect": {
+    "roleUpdated": "Role updated for {name}",
+    "noRole": "No role",
+    "roleFor": "Role for {name}"
+  },
+  "invitationsPage": {
+    "title": "Invitations",
+    "description": "People you invited who haven’t joined yet.",
+    "inviteMember": "Invite member",
+    "noPending": "No pending invitations",
+    "noPendingDescription": "Invite someone by email to add them to this workspace.",
+    "inviteFirstMember": "Invite your first member",
+    "email": "Email",
+    "role": "Role",
+    "sent": "Sent",
+    "expires": "Expires",
+    "status": "Status",
+    "actions": "Actions",
+    "noRole": "No role",
+    "noDate": "—",
+    "expired": "Expired",
+    "pending": "Pending",
+    "revokeInvitationTo": "Revoke invitation to {email}",
+    "revoked": "Invitation to {email} revoked",
+    "revokeTitle": "Revoke the invitation to {email}?",
+    "revokeDescription": "They’ll need a new invitation to join this workspace.",
+    "revokeConfirm": "Revoke invitation"
+  },
+  "requirePermission": {
+    "title": "You don’t have access",
+    "description": "This page needs the “{label}” permission. Ask someone who manages members in this workspace to grant it."
+  }
+}

@@ -11,6 +11,7 @@ import {
 import { useId } from 'react'
 import { permissionLabel } from '@/features/access/permissions'
 import type { AssignablePermission, PermissionGroup } from '@/features/access/permissions'
+import { t } from '@/features/core/i18n'
 
 export function PermissionPicker({
   groups,
@@ -36,7 +37,7 @@ export function PermissionPicker({
 
   return (
     <FieldSet>
-      <FieldLegend variant="label">Permissions</FieldLegend>
+      <FieldLegend variant="label">{t('access.permissionPicker.legend')}</FieldLegend>
       <div className="flex flex-col gap-4">
         {groups.map(group => {
           // SAFETY: the catalog only ever lists assignable permissions, never platform.admin.

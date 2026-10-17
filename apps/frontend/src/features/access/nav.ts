@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react'
 import { LayoutDashboardIcon, MailIcon, ShieldIcon, UsersIcon } from 'lucide-react'
 import { can } from '@/features/access/permissions'
 import type { Permission } from '@/features/access/permissions'
+import { t } from '@/features/core/i18n'
 
 import type { FileRoutesByTo } from '@/routeTree.gen'
 
@@ -17,29 +18,29 @@ export type NavItem = {
 export const TENANT_NAV: readonly NavItem[] = [
   {
     to: '/',
-    label: 'Overview',
-    description: 'This workspace at a glance.',
+    label: t('access.nav.overview'),
+    description: t('access.nav.overviewDescription'),
     icon: LayoutDashboardIcon,
     requires: null,
   },
   {
     to: '/members',
-    label: 'Members',
-    description: 'See who belongs to the workspace, change their role and extra permissions.',
+    label: t('access.nav.members'),
+    description: t('access.nav.membersDescription'),
     icon: UsersIcon,
     requires: 'members.manage',
   },
   {
     to: '/invitations',
-    label: 'Invitations',
-    description: 'Invite people by email and revoke pending invitations.',
+    label: t('access.nav.invitations'),
+    description: t('access.nav.invitationsDescription'),
     icon: MailIcon,
     requires: 'members.manage',
   },
   {
     to: '/roles',
-    label: 'Roles',
-    description: 'Define roles and the permissions each one grants.',
+    label: t('access.nav.roles'),
+    description: t('access.nav.rolesDescription'),
     icon: ShieldIcon,
     requires: 'roles.manage',
   },

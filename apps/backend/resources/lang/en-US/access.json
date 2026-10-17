@@ -1,0 +1,9 @@
+{
+  "owner_role": "Owner",
+  "invitation_mail": {
+    "subject": "You’ve been invited",
+    "intro": "You’ve been invited to join a workspace.",
+    "open_link": "Open this link to accept:",
+    "accept": "Accept the invitation"
+  }
+}

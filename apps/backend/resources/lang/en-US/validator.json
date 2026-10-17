@@ -1,0 +1,22 @@
+{
+  "shared": {
+    "messages": {
+      "array": "Choose from the list.",
+      "database.exists": "This doesn’t exist.",
+      "database.unique": "This is already taken.",
+      "distinct": "Each item can appear only once.",
+      "email": "Enter a valid email address.",
+      "enum": "Choose a valid option.",
+      "file": "Choose a file.",
+      "file.extname": "This file type isn’t accepted.",
+      "file.size": "This file is too large.",
+      "maxLength": "Use at most {max} characters.",
+      "minLength": "Use at least {min} characters.",
+      "object": "This value isn’t valid.",
+      "required": "This field is required.",
+      "sameAs": "This doesn’t match.",
+      "string": "Enter text.",
+      "uuid": "This value isn’t valid."
+    }
+  }
+}

@@ -17,7 +17,8 @@ export default {
   },
   targets: [
     {
-      engine: web(),
+      // The tests assert English copy; without this they follow the machine's language.
+      engine: web({ locale: 'en-US' }),
       app: {
         url: 'http://localhost:5173',
         readyUrl: 'http://localhost:3333/',

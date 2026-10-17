@@ -28,13 +28,14 @@ import type { api } from '@/features/core/api'
 import { ConfirmDialog } from '@/features/core/components/confirm-dialog'
 import { PageHeader } from '@/features/core/components/page-header'
 import { errorMessage } from '@/features/core/errors'
+import { locale, t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 
 type Invitation = Awaited<ReturnType<typeof api.access.invitations.index>>['data'][number]
 
 type Role = Awaited<ReturnType<typeof api.access.roles.index>>['data'][number]
 
-const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
+const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' })
 
 function roleName(roles: readonly Role[], roleId: string | null) {
   return roleId ? (roles.find(role => role.id === roleId)?.name ?? null) : null
@@ -46,7 +47,7 @@ function isExpired(expiresAt: string | null) {
 }
 
 function formattedDate(value: string | null) {
-  return value ? dateFormat.format(new Date(value)) : '—'
+  return value ? dateFormat.format(new Date(value)) : t('access.invitationsPage.noDate')
 }
 
 export function InvitationsPage() {
@@ -70,12 +71,12 @@ function Invitations() {
   return (
     <>
       <PageHeader
-        title="Invitations"
-        description="People you invited who haven’t joined yet."
+        title={t('access.invitationsPage.title')}
+        description={t('access.invitationsPage.description')}
         actions={
           <Button onClick={() => setInviting(true)}>
             <MailPlusIcon data-icon="inline-start" />
-            Invite member
+            {t('access.invitationsPage.inviteMember')}
           </Button>
         }
       />
@@ -88,16 +89,16 @@ function Invitations() {
                 <MailIcon />
               </EmptyMedia>
               <EmptyTitle>
-                <h2>No pending invitations</h2>
+                <h2>{t('access.invitationsPage.noPending')}</h2>
               </EmptyTitle>
               <EmptyDescription>
-                Invite someone by email to add them to this workspace.
+                {t('access.invitationsPage.noPendingDescription')}
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
               <Button onClick={() => setInviting(true)}>
                 <MailPlusIcon data-icon="inline-start" />
-                Invite your first member
+                {t('access.invitationsPage.inviteFirstMember')}
               </Button>
             </EmptyContent>
           </Empty>
@@ -106,13 +107,15 @@ function Invitations() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead className="hidden sm:table-cell">Sent</TableHead>
-              <TableHead>Expires</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t('access.invitationsPage.email')}</TableHead>
+              <TableHead>{t('access.invitationsPage.role')}</TableHead>
+              <TableHead className="hidden sm:table-cell">
+                {t('access.invitationsPage.sent')}
+              </TableHead>
+              <TableHead>{t('access.invitationsPage.expires')}</TableHead>
+              <TableHead>{t('access.invitationsPage.status')}</TableHead>
               <TableHead>
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">{t('access.invitationsPage.actions')}</span>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -128,7 +131,9 @@ function Invitations() {
                     {name ? (
                       <Badge variant="secondary">{name}</Badge>
                     ) : (
-                      <span className="text-muted-foreground">No role</span>
+                      <span className="text-muted-foreground">
+                        {t('access.invitationsPage.noRole')}
+                      </span>
                     )}
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">
@@ -143,14 +148,18 @@ function Invitations() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={expired ? 'destructive' : 'secondary'}>
-                      {expired ? 'Expired' : 'Pending'}
+                      {expired
+                        ? t('access.invitationsPage.expired')
+                        : t('access.invitationsPage.pending')}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Revoke invitation to ${invitation.email}`}
+                      aria-label={t('access.invitationsPage.revokeInvitationTo', {
+                        email: invitation.email,
+                      })}
                       onClick={() => setRevoking(invitation)}
                     >
                       <Trash2Icon />
@@ -201,7 +210,7 @@ function RevokeInvitationDialog({
     queries.access.invitations.destroy.mutationOptions({
       onSuccess: () => {
         onOpenChange(false)
-        toast.success(`Invitation to ${invitation.email} revoked`)
+        toast.success(t('access.invitationsPage.revoked', { email: invitation.email }))
       },
       onError: error => toast.error(errorMessage(error)),
     }),
@@ -211,9 +220,9 @@ function RevokeInvitationDialog({
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={`Revoke the invitation to ${invitation.email}?`}
-      description="They’ll need a new invitation to join this workspace."
-      confirmLabel="Revoke invitation"
+      title={t('access.invitationsPage.revokeTitle', { email: invitation.email })}
+      description={t('access.invitationsPage.revokeDescription')}
+      confirmLabel={t('access.invitationsPage.revokeConfirm')}
       pending={revokeInvitation.isPending}
       onConfirm={() =>
         revokeInvitation.mutate({ params: { id: invitation.id }, ...tenantHeaders(tenantId) })

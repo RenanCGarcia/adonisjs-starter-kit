@@ -1,0 +1,28 @@
+{
+  "userMenu": {
+    "accountMenu": "Account menu",
+    "profile": "Profile",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "logOut": "Log out"
+  },
+  "profilePage": {
+    "title": "Profile",
+    "description": "How you appear to the people in your workspaces.",
+    "details": "Details",
+    "name": "Name",
+    "email": "Email",
+    "memberSince": "Member since",
+    "photo": "Photo",
+    "photoDescription": "A JPG, PNG or WebP image up to 2 MB.",
+    "yourPhoto": "Your photo",
+    "photoFile": "Photo file",
+    "replacePhoto": "Replace photo",
+    "uploadPhoto": "Upload photo",
+    "removePhoto": "Remove photo",
+    "photoUpdated": "Photo updated",
+    "photoRemoved": "Photo removed"
+  }
+}

@@ -14,31 +14,35 @@ import { queries } from '@/features/core/api'
 import { PageHeader } from '@/features/core/components/page-header'
 import { PendingButton } from '@/features/core/components/pending-button'
 import { errorMessage } from '@/features/core/errors'
+import { locale, t } from '@/features/core/i18n'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 import { profileQuery } from '@/features/users/profile'
 
-const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' })
+const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'long' })
 
 export function ProfilePage() {
   const user = useSuspenseQuery(profileQuery()).data.data
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6">
-      <PageHeader title="Profile" description="How you appear to the people in your workspaces." />
+      <PageHeader
+        title={t('users.profilePage.title')}
+        description={t('users.profilePage.description')}
+      />
       <AvatarCard />
       <Card>
         <CardHeader>
           <CardTitle>
-            <h2>Details</h2>
+            <h2>{t('users.profilePage.details')}</h2>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
-            <dt className="text-muted-foreground">Name</dt>
+            <dt className="text-muted-foreground">{t('users.profilePage.name')}</dt>
             <dd className="sm:col-span-2">{user.fullName ?? '—'}</dd>
-            <dt className="text-muted-foreground">Email</dt>
+            <dt className="text-muted-foreground">{t('users.profilePage.email')}</dt>
             <dd className="break-all sm:col-span-2">{user.email}</dd>
-            <dt className="text-muted-foreground">Member since</dt>
+            <dt className="text-muted-foreground">{t('users.profilePage.memberSince')}</dt>
             <dd className="sm:col-span-2">
               {user.createdAt ? dateFormat.format(new Date(user.createdAt)) : '—'}
             </dd>
@@ -63,7 +67,11 @@ function AvatarCard() {
   const setAvatar = useMutation(
     queries.profile.avatar.update.mutationOptions({
       onSuccess: (_, { body }) =>
-        toast.success(body.attachmentId ? 'Photo updated' : 'Photo removed'),
+        toast.success(
+          body.attachmentId
+            ? t('users.profilePage.photoUpdated')
+            : t('users.profilePage.photoRemoved'),
+        ),
       onError: showError,
     }),
   )
@@ -92,19 +100,19 @@ function AvatarCard() {
     <Card>
       <CardHeader>
         <CardTitle>
-          <h2>Photo</h2>
+          <h2>{t('users.profilePage.photo')}</h2>
         </CardTitle>
-        <CardDescription>A JPG, PNG or WebP image up to 2 MB.</CardDescription>
+        <CardDescription>{t('users.profilePage.photoDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap items-center gap-4">
-          <UserAvatar user={user} alt="Your photo" className="size-16" />
+          <UserAvatar user={user} alt={t('users.profilePage.yourPhoto')} className="size-16" />
           <div className="flex flex-wrap gap-2">
             <input
               ref={fileInput}
               type="file"
               accept={AVATAR_TYPES}
-              aria-label="Photo file"
+              aria-label={t('users.profilePage.photoFile')}
               tabIndex={-1}
               className="sr-only"
               onChange={upload}
@@ -115,7 +123,9 @@ function AvatarCard() {
               disabled={pending}
               onClick={() => fileInput.current?.click()}
             >
-              {user.avatar ? 'Replace photo' : 'Upload photo'}
+              {user.avatar
+                ? t('users.profilePage.replacePhoto')
+                : t('users.profilePage.uploadPhoto')}
             </PendingButton>
             {user.avatar && (
               <PendingButton
@@ -124,7 +134,7 @@ function AvatarCard() {
                 disabled={pending}
                 onClick={() => setAvatar.mutate({ body: { attachmentId: null } })}
               >
-                Remove photo
+                {t('users.profilePage.removePhoto')}
               </PendingButton>
             )}
           </div>

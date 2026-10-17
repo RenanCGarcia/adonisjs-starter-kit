@@ -19,6 +19,7 @@ import { useId } from 'react'
 import { toast } from 'sonner'
 import { queries, tenantHeaders } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
+import { t } from '@/features/core/i18n'
 
 type Role = { id: string; name: string }
 
@@ -62,37 +63,44 @@ export function InviteMemberDialog({
 
       onOpenChange(false)
       toast.success(
-        alreadyInvited ? `Invitation to ${email} resent` : `Invitation sent to ${email}`,
+        alreadyInvited
+          ? t('access.inviteMemberDialog.resent', { email })
+          : t('access.inviteMemberDialog.sent', { email }),
       )
     },
   })
 
   const items = [
-    { value: NO_ROLE, label: 'No role' },
+    { value: NO_ROLE, label: t('access.inviteMemberDialog.noRole') },
     ...roles.map(role => ({ value: role.id, label: role.name })),
   ]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent closeLabel={t('access.inviteMemberDialog.close')}>
         <DialogHeader>
-          <DialogTitle>Invite member</DialogTitle>
-          <DialogDescription>
-            They’ll get an email with a link to join this workspace.
-          </DialogDescription>
+          <DialogTitle>{t('access.inviteMemberDialog.title')}</DialogTitle>
+          <DialogDescription>{t('access.inviteMemberDialog.description')}</DialogDescription>
         </DialogHeader>
         <form.AppForm>
           <form.Form className="flex flex-col gap-4">
             <form.FormAlert />
             <form.AppField name="email">
               {field => (
-                <field.TextField label="Email" type="email" autoComplete="email" required />
+                <field.TextField
+                  label={t('access.inviteMemberDialog.email')}
+                  type="email"
+                  autoComplete="email"
+                  required
+                />
               )}
             </form.AppField>
             <form.Field name="roleId">
               {field => (
                 <Field>
-                  <FieldLabel htmlFor={roleFieldId}>Role</FieldLabel>
+                  <FieldLabel htmlFor={roleFieldId}>
+                    {t('access.inviteMemberDialog.role')}
+                  </FieldLabel>
                   <Select
                     items={items}
                     value={field.state.value}
@@ -113,7 +121,7 @@ export function InviteMemberDialog({
               )}
             </form.Field>
             <DialogFooter>
-              <form.SubmitButton>Send invitation</form.SubmitButton>
+              <form.SubmitButton>{t('access.inviteMemberDialog.submit')}</form.SubmitButton>
             </DialogFooter>
           </form.Form>
         </form.AppForm>

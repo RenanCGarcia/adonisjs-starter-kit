@@ -17,6 +17,7 @@
     "@tanstack/react-router": "^1.170.44",
     "@tuyau/core": "catalog:",
     "@tuyau/react-query": "catalog:",
+    "intl-messageformat": "catalog:",
     "lucide-react": "catalog:",
     "next-themes": "catalog:",
     "react": "catalog:",

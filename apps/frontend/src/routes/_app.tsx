@@ -15,6 +15,7 @@ import { TuyauError } from '@tuyau/core/client'
 import { CircleAlertIcon } from 'lucide-react'
 import { AppMark } from '@/features/core/components/app-mark'
 import { errorMessage } from '@/features/core/errors'
+import { t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
 import { WorkspaceSwitcher } from '@/features/tenancy/components/workspace-switcher'
 import { tenantsQuery } from '@/features/tenancy/workspace'
@@ -66,14 +67,14 @@ function AppError({ error }: ErrorComponentProps) {
           <CircleAlertIcon />
         </EmptyMedia>
         <EmptyTitle>
-          <h1>Something went wrong</h1>
+          <h1>{t('routes.app.wentWrong')}</h1>
         </EmptyTitle>
         <EmptyDescription>
-          {error instanceof TuyauError ? errorMessage(error) : 'The page failed to load.'}
+          {error instanceof TuyauError ? errorMessage(error) : t('routes.app.pageFailed')}
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button onClick={() => router.invalidate()}>Try again</Button>
+        <Button onClick={() => router.invalidate()}>{t('routes.app.tryAgain')}</Button>
       </EmptyContent>
     </Empty>
   )

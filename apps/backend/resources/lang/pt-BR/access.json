@@ -1,0 +1,9 @@
+{
+  "owner_role": "Proprietário",
+  "invitation_mail": {
+    "subject": "Você recebeu um convite",
+    "intro": "Você recebeu um convite para entrar em um espaço de trabalho.",
+    "open_link": "Abra este link para aceitar:",
+    "accept": "Aceitar o convite"
+  }
+}
