@@ -50,7 +50,9 @@
     "@japa/api-client": "^3.2.1",
     "@tuyau/core": "catalog:",
     "@vinejs/vine": "^4.4.0",
+    "edge.js": "catalog:",
     "luxon": "^3.7.2",
+    "mjml": "catalog:",
     "pg": "catalog:",
     "reflect-metadata": "^0.2.2"
   },
@@ -62,6 +64,7 @@
     "@japa/runner": "^5.3.0",
     "@poppinss/ts-exec": "^1.4.4",
     "@types/luxon": "^3.7.5",
+    "@types/mjml": "catalog:",
     "@types/node": "catalog:",
     "hot-hook": "^1.0.0",
     "pino-pretty": "^13.1.3",
