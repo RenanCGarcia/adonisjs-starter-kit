@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-17T00:54:16.992Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap button \"Logout\"",
+        "target": {
+          "role": "button",
+          "name": "Logout"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/auth.e2e.ts::a%20member%20signs%20in%2C%20sees%20their%20profile%2C%20and%20logs%20out",
+      "targetId": "web",
+      "instructionDigest": "0403bffd244d776ff6272743a5479569c9c6c48ddca5b1ef2d299f1d71644740",
+      "paramsDigest": "dcc011ab7fb405c286293f43371b0ca1dec2e354bdbdfcc84b630058c10534a6",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "summary": "Clicked Logout while signed in as e2e-1792198451676@example.test. The app redirected to /login and shows the Email and Password fields and Login button.",
+    "startPath": "/profile",
+    "endPath": "/login",
+    "endAnchors": [
+      {
+        "role": "textbox",
+        "name": "Email",
+        "placeholder": "Email"
+      },
+      {
+        "role": "textbox",
+        "name": "Password",
+        "placeholder": "Password",
+        "inputPurpose": "password"
+      },
+      {
+        "role": "button",
+        "name": "Login"
+      }
+    ],
+    "goneAnchors": [
+      {
+        "role": "heading",
+        "name": "E2E Member 1792198451676"
+      },
+      {
+        "role": "button",
+        "name": "Logout"
+      }
+    ],
+    "endWaitMs": 11946,
+    "keyedBy": {
+      "cacheSchema": "trace-1",
+      "policyVersion": "conservative/6",
+      "project": "8912ed2aea0e32a29a125e6b11d7bba399679b8145d69627f6cb4a61a9da698c",
+      "platform": "web",
+      "engineName": "web",
+      "engineSpiVersion": 1,
+      "appIdentity": "c840cb9706b31787443e64b2845fff62ae1833779ff79b190f7cb5ebb7a996d0",
+      "agentContextDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

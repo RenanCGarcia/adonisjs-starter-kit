@@ -12,6 +12,7 @@ catalog:
   '@adonisjs/redis': ^11.0.0
   '@aws-sdk/client-s3': ^3.1152.0
   '@aws-sdk/s3-request-presigner': ^3.1152.0
+  '@openrouter/ai-sdk-provider': ^3.1.0
   '@tuyau/core': '^1.2.2'
   '@types/node': '~26.6.5'
   '@types/react': '^19.3.0'
