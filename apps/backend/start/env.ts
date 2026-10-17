@@ -71,4 +71,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Queue
   QUEUE_DRIVER: Env.schema.enum(['redis', 'sync'] as const),
+
+  // Limiter
+  LIMITER_STORE: Env.schema.enum(['redis', 'memory'] as const),
 })

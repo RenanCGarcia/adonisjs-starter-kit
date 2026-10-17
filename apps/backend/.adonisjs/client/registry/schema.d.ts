@@ -31,42 +31,6 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/users/controllers/avatar_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'auth.new_account.store': {
-    methods: ["POST"]
-    pattern: '/api/v1/auth/signup'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#auth/validators/auth').signupValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#auth/validators/auth').signupValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/new_account_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/new_account_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'auth.access_tokens.store': {
-    methods: ["POST"]
-    pattern: '/api/v1/auth/login'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#auth/validators/auth').loginValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#auth/validators/auth').loginValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'profile.access_tokens.destroy': {
-    methods: ["POST"]
-    pattern: '/api/v1/account/logout'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['destroy']>>>
-    }
-  }
   'attachments.attachments.store': {
     methods: ["POST"]
     pattern: '/api/v1/attachments'
@@ -101,162 +65,6 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#tenancy/validators/tenant').createTenantValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#app/tenancy/controllers/tenants_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/tenancy/controllers/tenants_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'access.my_permissions.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/v1/access/me'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/my_permissions_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/my_permissions_controller').default['show']>>>
-    }
-  }
-  'access.permission_catalog.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/v1/access/permissions'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/permission_catalog_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/permission_catalog_controller').default['show']>>>
-    }
-  }
-  'access.roles.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/v1/roles'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['index']>>>
-    }
-  }
-  'access.roles.store': {
-    methods: ["POST"]
-    pattern: '/api/v1/roles'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/role').createRoleValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/role').createRoleValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'access.roles.update': {
-    methods: ["PUT"]
-    pattern: '/api/v1/roles/:id'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/role').updateRoleValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/role').updateRoleValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'access.roles.destroy': {
-    methods: ["DELETE"]
-    pattern: '/api/v1/roles/:id'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/role').roleParamsValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/role').roleParamsValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'access.members.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/v1/members'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/members_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/members_controller').default['index']>>>
-    }
-  }
-  'access.member_roles.update': {
-    methods: ["PUT"]
-    pattern: '/api/v1/members/:userId/role'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/member').assignRoleValidator)>>
-      paramsTuple: [ParamValue]
-      params: { userId: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/member').assignRoleValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/member_roles_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/member_roles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'access.member_permissions.update': {
-    methods: ["PUT"]
-    pattern: '/api/v1/members/:userId/permissions'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/member').replaceGrantsValidator)>>
-      paramsTuple: [ParamValue]
-      params: { userId: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/member').replaceGrantsValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'access.invitations.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/v1/invitations'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['index']>>>
-    }
-  }
-  'access.invitations.store': {
-    methods: ["POST"]
-    pattern: '/api/v1/invitations'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').inviteMemberValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').inviteMemberValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'access.invitations.destroy': {
-    methods: ["DELETE"]
-    pattern: '/api/v1/invitations/:id'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').invitationParamsValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').invitationParamsValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'invitation_accept.store': {
-    methods: ["POST"]
-    pattern: '/api/v1/invitations/accept'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').acceptInvitationValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').acceptInvitationValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitation_accept_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitation_accept_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'audit.audit_events.index': {
@@ -449,6 +257,198 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#app/core/controllers/health_checks_controller').default['ready']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/core/controllers/health_checks_controller').default['ready']>>>
+    }
+  }
+  'auth.new_account.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/signup'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/auth').signupValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/auth').signupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/new_account_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/new_account_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auth.access_tokens.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/login'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/auth').loginValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/auth').loginValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.access_tokens.destroy': {
+    methods: ["POST"]
+    pattern: '/api/v1/account/logout'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['destroy']>>>
+    }
+  }
+  'access.my_permissions.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/access/me'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/my_permissions_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/my_permissions_controller').default['show']>>>
+    }
+  }
+  'access.permission_catalog.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/access/permissions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/permission_catalog_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/permission_catalog_controller').default['show']>>>
+    }
+  }
+  'access.roles.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/roles'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['index']>>>
+    }
+  }
+  'access.roles.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/roles'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/role').createRoleValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/role').createRoleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.roles.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/roles/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/role').updateRoleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/role').updateRoleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.roles.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/roles/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/role').roleParamsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/role').roleParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.members.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/members'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/members_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/members_controller').default['index']>>>
+    }
+  }
+  'access.member_roles.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/members/:userId/role'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/member').assignRoleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { userId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/member').assignRoleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/member_roles_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/member_roles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.member_permissions.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/members/:userId/permissions'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/member').replaceGrantsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { userId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/member').replaceGrantsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.invitations.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/invitations'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['index']>>>
+    }
+  }
+  'access.invitations.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/invitations'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').inviteMemberValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').inviteMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.invitations.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/invitations/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').invitationParamsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').invitationParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'invitation_accept.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/invitations/accept'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').acceptInvitationValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').acceptInvitationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitation_accept_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitation_accept_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
 }

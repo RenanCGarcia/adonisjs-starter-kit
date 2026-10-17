@@ -99,6 +99,10 @@ Background work runs as jobs on `@adonisjs/queue`, backed by Redis through the `
 - **The worker is its own process**: `node ace queue:work`. `pnpm dev` runs it next to the server under `node --watch`; production runs the `worker` service in `compose.dokploy.yaml`.
 - **Tests run jobs inline**: `.env.test` sets `QUEUE_DRIVER=sync`. To assert a dispatch without running the job, use `QueueManager.fake()` and restore it in the group's teardown.
 
+## Rate limiting
+
+Every named throttle lives in `start/limiter.ts`, backed by `@adonisjs/limiter` on the Redis store (`memory` in tests, via `LIMITER_STORE=memory` in `.env.test`). Apply one to a route with `.use(someThrottle)`, next to the other route middleware; a login-style endpoint that must only penalize failures uses the limiter directly in its controller (`loginFailureLimiter().penalize(key, callback)`) instead of the HTTP middleware. A throttle that rejects a request throws `@adonisjs/limiter`'s `E_TOO_MANY_REQUESTS`, which `app/core/exceptions/handler.ts` renders like every other exception (`{ code, message }`, translated from `errors.E_TOO_MANY_REQUESTS`) and with the limiter's own `Retry-After` header.
+
 ## Tenancy
 
 A tenant is a workspace that users join through `tenant_memberships`. The `tenancy` module scopes rows to the current tenant. Every business table belongs to a tenant: a new module that stores app data depends on `tenancy` and makes its models tenant-scoped. `users`, `auth`, and `attachments` sit below it, since a user and their uploads exist before they join any tenant.

@@ -13,14 +13,6 @@ export interface ApiDefinition {
       destroy: typeof routes['profile.access_tokens.destroy']
     }
   }
-  auth: {
-    newAccount: {
-      store: typeof routes['auth.new_account.store']
-    }
-    accessTokens: {
-      store: typeof routes['auth.access_tokens.store']
-    }
-  }
   attachments: {
     attachments: {
       store: typeof routes['attachments.attachments.store']
@@ -31,37 +23,6 @@ export interface ApiDefinition {
       index: typeof routes['tenants.tenants.index']
       store: typeof routes['tenants.tenants.store']
     }
-  }
-  access: {
-    myPermissions: {
-      show: typeof routes['access.my_permissions.show']
-    }
-    permissionCatalog: {
-      show: typeof routes['access.permission_catalog.show']
-    }
-    roles: {
-      index: typeof routes['access.roles.index']
-      store: typeof routes['access.roles.store']
-      update: typeof routes['access.roles.update']
-      destroy: typeof routes['access.roles.destroy']
-    }
-    members: {
-      index: typeof routes['access.members.index']
-    }
-    memberRoles: {
-      update: typeof routes['access.member_roles.update']
-    }
-    memberPermissions: {
-      update: typeof routes['access.member_permissions.update']
-    }
-    invitations: {
-      index: typeof routes['access.invitations.index']
-      store: typeof routes['access.invitations.store']
-      destroy: typeof routes['access.invitations.destroy']
-    }
-  }
-  invitationAccept: {
-    store: typeof routes['invitation_accept.store']
   }
   audit: {
     auditEvents: {
@@ -102,5 +63,44 @@ export interface ApiDefinition {
   healthChecks: {
     live: typeof routes['health_checks.live']
     ready: typeof routes['health_checks.ready']
+  }
+  auth: {
+    newAccount: {
+      store: typeof routes['auth.new_account.store']
+    }
+    accessTokens: {
+      store: typeof routes['auth.access_tokens.store']
+    }
+  }
+  access: {
+    myPermissions: {
+      show: typeof routes['access.my_permissions.show']
+    }
+    permissionCatalog: {
+      show: typeof routes['access.permission_catalog.show']
+    }
+    roles: {
+      index: typeof routes['access.roles.index']
+      store: typeof routes['access.roles.store']
+      update: typeof routes['access.roles.update']
+      destroy: typeof routes['access.roles.destroy']
+    }
+    members: {
+      index: typeof routes['access.members.index']
+    }
+    memberRoles: {
+      update: typeof routes['access.member_roles.update']
+    }
+    memberPermissions: {
+      update: typeof routes['access.member_permissions.update']
+    }
+    invitations: {
+      index: typeof routes['access.invitations.index']
+      store: typeof routes['access.invitations.store']
+      destroy: typeof routes['access.invitations.destroy']
+    }
+  }
+  invitationAccept: {
+    store: typeof routes['invitation_accept.store']
   }
 }

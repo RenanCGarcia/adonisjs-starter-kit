@@ -2,6 +2,7 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 import { apiRoutes } from '#core/api_routes'
 import { controllers } from '#generated/controllers'
+import { invitationAcceptThrottle, invitationsCreateThrottle } from '#start/limiter'
 
 const {
   MyPermissions,
@@ -34,11 +35,13 @@ apiRoutes(() => {
         .where('userId', router.matchers.uuid())
 
       router.get('invitations', [Invitations, 'index'])
-      router.post('invitations', [Invitations, 'store'])
+      router.post('invitations', [Invitations, 'store']).use(invitationsCreateThrottle)
       router.delete('invitations/:id', [Invitations, 'destroy']).where('id', router.matchers.uuid())
     })
     .as('access')
     .use([middleware.auth(), middleware.tenant()])
 
-  router.post('invitations/accept', [InvitationAccept, 'store']).use(middleware.auth())
+  router
+    .post('invitations/accept', [InvitationAccept, 'store'])
+    .use([middleware.auth(), invitationAcceptThrottle])
 })

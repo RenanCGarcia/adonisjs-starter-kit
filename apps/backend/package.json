@@ -41,6 +41,7 @@
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/drive": "catalog:",
     "@adonisjs/i18n": "catalog:",
+    "@adonisjs/limiter": "catalog:",
     "@adonisjs/lucid": "^22.4.2",
     "@adonisjs/mail": "catalog:",
     "@adonisjs/queue": "catalog:",

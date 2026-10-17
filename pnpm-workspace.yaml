@@ -8,6 +8,7 @@ catalog:
   '@adonisjs/bouncer': ^4.0.1
   '@adonisjs/drive': ^4.0.0
   '@adonisjs/i18n': ^3.0.1
+  '@adonisjs/limiter': ^3.0.1
   '@adonisjs/mail': ^10.4.0
   '@adonisjs/queue': ^0.6.2
   '@adonisjs/redis': ^11.0.0
