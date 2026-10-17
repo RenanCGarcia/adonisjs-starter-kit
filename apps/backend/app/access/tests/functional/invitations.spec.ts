@@ -127,13 +127,15 @@ test.group('Access | invitations', group => {
     response.assertStatus(404)
   })
 
-  test('answers 409 for an email that already belongs to a member', async ({ client }) => {
+  test('answers 409 for an email that already belongs to a member, in any case', async ({
+    client,
+  }) => {
     const { acme, owner } = await setup()
     const member = await acme.member()
 
     const response = await client
       .visit('access.invitations.store')
-      .json({ email: member.email, roleId: null })
+      .json({ email: member.email.toUpperCase(), roleId: null })
       .headers(acme.headers)
       .loginAs(owner)
 

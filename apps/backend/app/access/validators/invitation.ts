@@ -3,7 +3,7 @@ import Role from '#access/models/role'
 import { existsInTenant } from '#tenancy/validators/exists_in_tenant'
 
 export const inviteMemberValidator = vine.create({
-  email: vine.string().email().maxLength(254),
+  email: vine.string().email().maxLength(254).toLowerCase(),
   roleId: vine.string().uuid().exists(existsInTenant(Role)).nullable(),
 })
 

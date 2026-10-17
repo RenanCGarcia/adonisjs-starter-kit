@@ -27,7 +27,7 @@ export default class AcceptInvitation {
       throw new InvitationNotFoundException()
     }
 
-    if (invitation.email !== userEmail.toLowerCase()) throw new InvitationEmailMismatchException()
+    if (invitation.email !== userEmail) throw new InvitationEmailMismatchException()
 
     const { tenantId, roleId } = invitation
 

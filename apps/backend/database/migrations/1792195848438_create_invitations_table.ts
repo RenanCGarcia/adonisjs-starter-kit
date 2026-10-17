@@ -14,6 +14,7 @@ export default class extends BaseSchema {
         .onDelete('CASCADE')
         .index()
       table.string('email', 254).notNullable()
+      table.check('email = lower(email)')
       table.uuid('role_id').nullable()
       // The role belongs to the same tenant and can't be deleted while a pending invitation
       // carries it: no ON DELETE, same as role_assignments. A NULL role_id skips the check

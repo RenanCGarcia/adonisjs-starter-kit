@@ -21,13 +21,11 @@ export default class InviteMember {
    * instead of failing. Emits after commit, so the mail always points at a stored invitation.
    */
   async handle({ tenantId, email, roleId, invitedById }: InviteMemberInput) {
-    const normalizedEmail = email.toLowerCase()
-
     const alreadyMember = await db
       .from('tenant_memberships')
       .join('users', 'users.id', 'tenant_memberships.user_id')
       .where('tenant_memberships.tenant_id', tenantId)
-      .where('users.email', normalizedEmail)
+      .where('users.email', email)
       .first()
 
     if (alreadyMember) throw new AlreadyMemberException()
@@ -37,7 +35,7 @@ export default class InviteMember {
 
     const invitation = await db.transaction(trx =>
       Invitation.updateOrCreate(
-        { tenantId, email: normalizedEmail },
+        { tenantId, email },
         { roleId, tokenHash, invitedById, expiresAt: DateTime.now().plus(EXPIRY) },
         { client: trx },
       ),
@@ -45,7 +43,7 @@ export default class InviteMember {
 
     await emitter.emit('access:member_invited', {
       tenantId,
-      email: normalizedEmail,
+      email,
       token,
     } satisfies MemberInvited)
 
