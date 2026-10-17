@@ -60,6 +60,12 @@ const routes = {
     tokens: [{"old":"/api/v1/access/me","type":0,"val":"api","end":""},{"old":"/api/v1/access/me","type":0,"val":"v1","end":""},{"old":"/api/v1/access/me","type":0,"val":"access","end":""},{"old":"/api/v1/access/me","type":0,"val":"me","end":""}],
     types: placeholder as Registry['access.my_permissions.show']['types'],
   },
+  'access.permission_catalog.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/access/permissions',
+    tokens: [{"old":"/api/v1/access/permissions","type":0,"val":"api","end":""},{"old":"/api/v1/access/permissions","type":0,"val":"v1","end":""},{"old":"/api/v1/access/permissions","type":0,"val":"access","end":""},{"old":"/api/v1/access/permissions","type":0,"val":"permissions","end":""}],
+    types: placeholder as Registry['access.permission_catalog.show']['types'],
+  },
   'access.roles.index': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/roles',
@@ -84,6 +90,12 @@ const routes = {
     tokens: [{"old":"/api/v1/roles/:id","type":0,"val":"api","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/roles/:id","type":0,"val":"roles","end":""},{"old":"/api/v1/roles/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['access.roles.destroy']['types'],
   },
+  'access.members.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/members',
+    tokens: [{"old":"/api/v1/members","type":0,"val":"api","end":""},{"old":"/api/v1/members","type":0,"val":"v1","end":""},{"old":"/api/v1/members","type":0,"val":"members","end":""}],
+    types: placeholder as Registry['access.members.index']['types'],
+  },
   'access.member_roles.update': {
     methods: ["PUT"],
     pattern: '/api/v1/members/:userId/role',
@@ -95,6 +107,30 @@ const routes = {
     pattern: '/api/v1/members/:userId/permissions',
     tokens: [{"old":"/api/v1/members/:userId/permissions","type":0,"val":"api","end":""},{"old":"/api/v1/members/:userId/permissions","type":0,"val":"v1","end":""},{"old":"/api/v1/members/:userId/permissions","type":0,"val":"members","end":""},{"old":"/api/v1/members/:userId/permissions","type":1,"val":"userId","end":""},{"old":"/api/v1/members/:userId/permissions","type":0,"val":"permissions","end":""}],
     types: placeholder as Registry['access.member_permissions.update']['types'],
+  },
+  'access.invitations.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/invitations',
+    tokens: [{"old":"/api/v1/invitations","type":0,"val":"api","end":""},{"old":"/api/v1/invitations","type":0,"val":"v1","end":""},{"old":"/api/v1/invitations","type":0,"val":"invitations","end":""}],
+    types: placeholder as Registry['access.invitations.index']['types'],
+  },
+  'access.invitations.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/invitations',
+    tokens: [{"old":"/api/v1/invitations","type":0,"val":"api","end":""},{"old":"/api/v1/invitations","type":0,"val":"v1","end":""},{"old":"/api/v1/invitations","type":0,"val":"invitations","end":""}],
+    types: placeholder as Registry['access.invitations.store']['types'],
+  },
+  'access.invitations.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/invitations/:id',
+    tokens: [{"old":"/api/v1/invitations/:id","type":0,"val":"api","end":""},{"old":"/api/v1/invitations/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/invitations/:id","type":0,"val":"invitations","end":""},{"old":"/api/v1/invitations/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['access.invitations.destroy']['types'],
+  },
+  'invitation_accept.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/invitations/accept',
+    tokens: [{"old":"/api/v1/invitations/accept","type":0,"val":"api","end":""},{"old":"/api/v1/invitations/accept","type":0,"val":"v1","end":""},{"old":"/api/v1/invitations/accept","type":0,"val":"invitations","end":""},{"old":"/api/v1/invitations/accept","type":0,"val":"accept","end":""}],
+    types: placeholder as Registry['invitation_accept.store']['types'],
   },
   'health_checks.live': {
     methods: ["GET","HEAD"],

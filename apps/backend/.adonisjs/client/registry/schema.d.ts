@@ -115,6 +115,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/my_permissions_controller').default['show']>>>
     }
   }
+  'access.permission_catalog.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/access/permissions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/permission_catalog_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/permission_catalog_controller').default['show']>>>
+    }
+  }
   'access.roles.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/roles'
@@ -163,6 +175,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/roles_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'access.members.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/members'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/members_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/members_controller').default['index']>>>
+    }
+  }
   'access.member_roles.update': {
     methods: ["PUT"]
     pattern: '/api/v1/members/:userId/role'
@@ -185,6 +209,54 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#access/validators/member').replaceGrantsValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/member_permissions_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.invitations.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/invitations'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['index']>>>
+    }
+  }
+  'access.invitations.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/invitations'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').inviteMemberValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').inviteMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'access.invitations.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/invitations/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').invitationParamsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').invitationParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitations_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'invitation_accept.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/invitations/accept'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#access/validators/invitation').acceptInvitationValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#access/validators/invitation').acceptInvitationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/access/controllers/invitation_accept_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/access/controllers/invitation_accept_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'health_checks.live': {

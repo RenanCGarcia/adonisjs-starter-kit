@@ -5,9 +5,13 @@
 
 export const controllers = {
   access: {
+    InvitationAccept: () => import('#app/access/controllers/invitation_accept_controller'),
+    Invitations: () => import('#app/access/controllers/invitations_controller'),
     MemberPermissions: () => import('#app/access/controllers/member_permissions_controller'),
     MemberRoles: () => import('#app/access/controllers/member_roles_controller'),
+    Members: () => import('#app/access/controllers/members_controller'),
     MyPermissions: () => import('#app/access/controllers/my_permissions_controller'),
+    PermissionCatalog: () => import('#app/access/controllers/permission_catalog_controller'),
     Roles: () => import('#app/access/controllers/roles_controller'),
   },
   attachments: {

@@ -13,8 +13,13 @@ import {
 } from '#access/validators/role'
 
 export default class RolesController {
+  /** A members manager needs the role list to pick one when inviting or assigning. */
   async index({ bouncer, serialize }: HttpContext) {
-    await bouncer.authorize(can, PERMISSIONS.rolesManage)
+    const allowed =
+      (await bouncer.allows(can, PERMISSIONS.rolesManage)) ||
+      (await bouncer.allows(can, PERMISSIONS.membersManage))
+
+    if (!allowed) await bouncer.authorize(can, PERMISSIONS.rolesManage)
 
     const roles = await Role.query().orderBy('name')
 
