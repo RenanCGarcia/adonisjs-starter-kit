@@ -10,6 +10,16 @@ type CatalogGroup = Awaited<
 
 export type PermissionGroupKey = CatalogGroup['key']
 
+/** One catalog group: its key and the assignable permissions under it, in catalog order. */
+export type PermissionGroup = CatalogGroup
+
+/**
+ * What a role or grant may hold, matching the request body a role or grant endpoint accepts.
+ * Narrower than `Permission`: a response's `permissions` field types as the full union, but
+ * only platform-admin status ever produces `platform.admin`, never a role or a direct grant.
+ */
+export type AssignablePermission = Exclude<Permission, 'platform.admin'>
+
 export function can(permissions: readonly Permission[], permission: Permission) {
   return permissions.includes(permission)
 }
