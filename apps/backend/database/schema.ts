@@ -80,7 +80,18 @@ export class PermissionGrantSchema extends BaseModel {
   @column()
   declare permission: string
   @column()
-  declare tenantId: string | null
+  declare tenantId: string
+  @column()
+  declare userId: string
+}
+
+export class PlatformAdminSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'userId'] as const
+  $columns = PlatformAdminSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
   @column()
   declare userId: string
 }
@@ -95,7 +106,7 @@ export class RoleAssignmentSchema extends BaseModel {
   @column()
   declare roleId: string
   @column()
-  declare tenantId: string | null
+  declare tenantId: string
   @column()
   declare userId: string
 }
@@ -112,7 +123,7 @@ export class RoleSchema extends BaseModel {
   @column()
   declare permissions: string[]
   @column()
-  declare tenantId: string | null
+  declare tenantId: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

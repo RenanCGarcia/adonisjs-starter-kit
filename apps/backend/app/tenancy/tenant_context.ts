@@ -31,7 +31,7 @@ export function currentTenantContext(): TenantContext {
 
 /**
  * The current tenant id, or null in runAsSystem() and outside any context. Never throws,
- * so it can't scope tenant queries: it is for code that falls back to platform level.
+ * so it can't scope tenant queries: it is for authorization, which denies outside a tenant.
  */
 export function currentTenantId(): string | null {
   const context = storage.getStore()

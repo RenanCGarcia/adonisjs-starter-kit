@@ -49,7 +49,7 @@ flowchart LR
 |     | Feature                                                          |
 | --- | ---------------------------------------------------------------- |
 | 🔐  | Signup, login, profile and avatar (token + session guards)       |
-| 🏢  | Multi-tenancy, removable                                         |
+| 🏢  | Multi-tenancy                                                    |
 | 🛡️  | Roles and permissions per tenant                                 |
 | 📎  | Attachments on S3 with signed URLs and orphan cleanup            |
 | ✉️  | Mail (Mailpit in dev) and Redis queues                           |

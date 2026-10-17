@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 import type User from '#users/models/user'
 import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { platform, workspace } from '#access/tests/seed'
+import { makePlatformAdmin, workspace } from '#access/tests/seed'
 
 async function permissionsOf(client: ApiClient, user: User, headers: Record<string, string>) {
   const response = await client.visit('access.my_permissions.show').headers(headers).loginAs(user)
@@ -41,7 +41,7 @@ test.group('Access | effective permissions', group => {
   test('gives a platform admin every permission', async ({ client, assert }) => {
     const acme = await workspace()
     const admin = await acme.member()
-    await platform.assign(admin, await platform.role('Admin', ['platform.admin']))
+    await makePlatformAdmin(admin)
 
     assert.deepEqual(await permissionsOf(client, admin, acme.headers), [
       'roles.manage',

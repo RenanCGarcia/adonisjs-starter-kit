@@ -22,8 +22,8 @@ test.group('Access | tenant owner', group => {
       .loginAs(founder)
 
     assert.deepEqual(response.body().data.permissions, ['roles.manage', 'members.manage'])
-    assert.lengthOf(await Role.query().where('tenant_id', acme.tenant.id), 1)
-    assert.lengthOf(await RoleAssignment.query().where('tenant_id', acme.tenant.id), 1)
+    assert.lengthOf(await acme.inside(() => Role.all()), 1)
+    assert.lengthOf(await acme.inside(() => RoleAssignment.all()), 1)
   })
 
   test('assigns an Owner role left by an interrupted run', async ({ assert }) => {
@@ -36,7 +36,10 @@ test.group('Access | tenant owner', group => {
       creatorId: founder.id,
     })
 
-    const assignment = await RoleAssignment.query().where('user_id', founder.id).firstOrFail()
+    const assignment = await acme.inside(() =>
+      RoleAssignment.query().where('user_id', founder.id).firstOrFail(),
+    )
+
     assert.equal(assignment.roleId, owner.id)
   })
 })

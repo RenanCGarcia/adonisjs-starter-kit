@@ -1,22 +1,13 @@
 import vine from '@vinejs/vine'
-import { currentScope, inScope } from '#access/scope'
+import Role from '#access/models/role'
+import { existsInTenant } from '#tenancy/validators/exists_in_tenant'
 import { ASSIGNABLE_PERMISSIONS } from '#access/permissions'
 
 const params = vine.object({ userId: vine.string().uuid() })
 
 export const assignRoleValidator = vine.create({
   params,
-  roleId: vine
-    .string()
-    .uuid()
-    .exists({
-      table: 'roles',
-      column: 'id',
-      filter: query => {
-        inScope(query, currentScope(), 'roles')
-      },
-    })
-    .nullable(),
+  roleId: vine.string().uuid().exists(existsInTenant(Role)).nullable(),
 })
 
 export const replaceGrantsValidator = vine.create({

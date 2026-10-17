@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import Role from '#access/models/role'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { platform, workspace } from '#access/tests/seed'
+import { workspace } from '#access/tests/seed'
 
 async function setup() {
   const acme = await workspace('Acme')
@@ -24,7 +24,6 @@ test.group('Access | tenant isolation', group => {
     await globex.tenant.related('memberships').create({ userId: user.id })
     await globex.assign(user, await globex.role('Editor', ['roles.manage']))
     await globex.grant(user, 'members.manage')
-    await platform.grant(user, 'roles.manage')
 
     const response = await client
       .visit('access.my_permissions.show')
@@ -51,7 +50,7 @@ test.group('Access | tenant isolation', group => {
 
     updated.assertStatus(404)
     deleted.assertStatus(404)
-    assert.deepEqual((await Role.findOrFail(auditor.id)).permissions, [])
+    assert.deepEqual((await globex.inside(() => Role.findOrFail(auditor.id))).permissions, [])
   })
 
   test('refuses a role of another tenant and a member of another tenant', async ({ client }) => {
@@ -80,7 +79,6 @@ test.group('Access | tenant isolation', group => {
   test('takes a role name in one tenant only', async ({ client }) => {
     const { acme, globex, owner } = await setup()
     await globex.role('Editor', [])
-    await platform.role('Support', [])
 
     const editor = await client
       .visit('access.roles.store')
@@ -88,13 +86,6 @@ test.group('Access | tenant isolation', group => {
       .headers(acme.headers)
       .loginAs(owner)
 
-    const support = await client
-      .visit('access.roles.store')
-      .json({ name: 'Support', permissions: [] })
-      .headers(acme.headers)
-      .loginAs(owner)
-
     editor.assertStatus(200)
-    support.assertStatus(200)
   })
 })

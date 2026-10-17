@@ -49,7 +49,7 @@ flowchart LR
 |     | Recurso                                                            |
 | --- | ------------------------------------------------------------------ |
 | 🔐  | Cadastro, login, perfil e avatar (guards de token e sessão)        |
-| 🏢  | Multi-tenancy, removível                                           |
+| 🏢  | Multi-tenancy                                                      |
 | 🛡️  | Papéis e permissões por tenant                                     |
 | 📎  | Anexos no S3 com URLs assinadas e limpeza de órfãos                |
 | ✉️  | E-mail (Mailpit em dev) e filas no Redis                           |

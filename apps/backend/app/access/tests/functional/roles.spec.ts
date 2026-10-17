@@ -107,7 +107,7 @@ test.group('Access | roles', group => {
     await assignment.delete()
     const deleted = await destroy()
     deleted.assertStatus(200)
-    assert.isNull(await Role.find(editor.id))
+    assert.isNull(await acme.inside(() => Role.find(editor.id)))
   })
 
   test('keeps members.manage on the role of the last manager', async ({ client, assert }) => {
@@ -123,7 +123,8 @@ test.group('Access | roles', group => {
     const refused = await update()
     refused.assertStatus(409)
     refused.assertBodyContains({ code: 'E_LAST_MANAGER' })
-    assert.deepEqual((await ownerRole.refresh()).permissions, ['roles.manage', 'members.manage'])
+    const kept = await acme.inside(() => Role.findOrFail(ownerRole.id))
+    assert.deepEqual(kept.permissions, ['roles.manage', 'members.manage'])
 
     await acme.grant(await acme.member(), 'members.manage')
     const handedOver = await update()

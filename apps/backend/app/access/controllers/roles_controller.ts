@@ -5,7 +5,6 @@ import CreateRole from '#access/actions/create_role'
 import DeleteRole from '#access/actions/delete_role'
 import UpdateRole from '#access/actions/update_role'
 import { PERMISSIONS } from '#access/permissions'
-import { currentScope, inScope } from '#access/scope'
 import RoleTransformer from '#access/transformers/role_transformer'
 import {
   createRoleValidator,
@@ -17,7 +16,7 @@ export default class RolesController {
   async index({ bouncer, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
 
-    const roles = await inScope(Role.query(), currentScope(), 'roles').orderBy('name')
+    const roles = await Role.query().orderBy('name')
 
     return serialize(RoleTransformer.transform(roles))
   }
@@ -26,17 +25,17 @@ export default class RolesController {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
     const { name, permissions } = await request.validateUsing(createRoleValidator)
 
-    const role = await new CreateRole().handle({ scope: currentScope(), name, permissions })
+    const role = await new CreateRole().handle({ name, permissions })
 
     return serialize(RoleTransformer.transform(role))
   }
 
-  async update({ bouncer, request, serialize }: HttpContext) {
+  async update({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
     const { params, name, permissions } = await request.validateUsing(updateRoleValidator)
 
     const role = await new UpdateRole().handle({
-      scope: currentScope(),
+      tenantId: tenant.id,
       id: params.id,
       name,
       permissions,
@@ -49,7 +48,7 @@ export default class RolesController {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
     const { params } = await request.validateUsing(roleParamsValidator)
 
-    await new DeleteRole().handle({ scope: currentScope(), id: params.id })
+    await new DeleteRole().handle({ id: params.id })
 
     return serialize({ id: params.id })
   }

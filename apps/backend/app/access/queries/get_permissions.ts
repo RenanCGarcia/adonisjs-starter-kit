@@ -1,29 +1,37 @@
 import db from '@adonisjs/lucid/services/db'
-import { inScope, type Scope } from '#access/scope'
-import { isPermission, type Permission } from '#access/permissions'
+import PlatformAdmin from '#access/models/platform_admin'
+import { ALL_PERMISSIONS, isAssignable, type Permission } from '#access/permissions'
 
 export interface GetPermissionsInput {
   userId: string
-  scope: Scope
+  tenantId: string | null
 }
 
-/** The permissions of the user's role in `scope` plus their grants there. */
+/**
+ * Every permission for a platform admin. Otherwise the permissions of the user's role in the
+ * tenant plus their grants there, and none outside a tenant.
+ */
 export default class GetPermissions {
-  async handle({ userId, scope }: GetPermissionsInput): Promise<Set<Permission>> {
+  async handle({ userId, tenantId }: GetPermissionsInput): Promise<Set<Permission>> {
+    if (await PlatformAdmin.findBy('userId', userId)) return new Set(ALL_PERMISSIONS)
+
+    if (!tenantId) return new Set()
+
     const fromRole = db
       .from('role_assignments')
       .join('roles', 'roles.id', 'role_assignments.role_id')
+      .where('role_assignments.tenant_id', tenantId)
       .where('role_assignments.user_id', userId)
       .select(db.raw('unnest(roles.permissions) as permission'))
 
-    const granted = db.from('permission_grants').where('user_id', userId).select('permission')
+    const granted = db
+      .from('permission_grants')
+      .where('tenant_id', tenantId)
+      .where('user_id', userId)
+      .select('permission')
 
-    const rows: { permission: string }[] = await inScope(
-      fromRole,
-      scope,
-      'role_assignments',
-    ).unionAll(inScope(granted, scope, 'permission_grants'))
+    const rows: { permission: string }[] = await fromRole.unionAll(granted)
 
-    return new Set(rows.flatMap(({ permission }) => (isPermission(permission) ? [permission] : [])))
+    return new Set(rows.flatMap(({ permission }) => (isAssignable(permission) ? [permission] : [])))
   }
 }

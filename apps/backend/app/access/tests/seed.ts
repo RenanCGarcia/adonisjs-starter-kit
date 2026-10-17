@@ -1,6 +1,8 @@
 import User from '#users/models/user'
 import Role from '#access/models/role'
 import Tenant from '#tenancy/models/tenant'
+import PlatformAdmin from '#access/models/platform_admin'
+import { runInTenant } from '#tenancy/tenant_context'
 import PermissionGrant from '#access/models/permission_grant'
 import RoleAssignment from '#access/models/role_assignment'
 
@@ -12,31 +14,25 @@ function user() {
   return User.create({ email: `user${users}@example.com`, password: 'password123' })
 }
 
-function scoped(tenantId: string | null) {
-  return {
-    role: (name: string, permissions: string[]) => Role.create({ tenantId, name, permissions }),
-    assign: (holder: User, role: Role) =>
-      RoleAssignment.create({ tenantId, userId: holder.id, roleId: role.id }),
-    grant: (holder: User, permission: string) =>
-      PermissionGrant.create({ tenantId, userId: holder.id, permission }),
-  }
+export function makePlatformAdmin(holder: User) {
+  return PlatformAdmin.create({ userId: holder.id })
 }
 
-/** Roles and grants at platform level, outside every tenant. */
-export const platform = scoped(null)
-
-/**
- * A tenant to act in, and the headers that select it. Specs other than tenant_isolation and
- * owner go through this, so "Access without tenancy" in docs/architecture.md only swaps
- * this file.
- */
+/** A tenant to act in, the headers that select it, and its roles, grants and members. */
 export async function workspace(name = 'Acme') {
   const tenant = await Tenant.create({ name })
+  const inside = <T>(fn: () => Promise<T>) => runInTenant(tenant.id, fn)
 
   return {
-    ...scoped(tenant.id),
     tenant,
+    inside,
     headers: { 'X-Tenant-Id': tenant.id },
+    role: (roleName: string, permissions: string[]) =>
+      inside(() => Role.create({ name: roleName, permissions })),
+    assign: (holder: User, role: Role) =>
+      inside(() => RoleAssignment.create({ userId: holder.id, roleId: role.id })),
+    grant: (holder: User, permission: string) =>
+      inside(() => PermissionGrant.create({ userId: holder.id, permission })),
     async member() {
       const joined = await user()
       await tenant.related('memberships').create({ userId: joined.id })

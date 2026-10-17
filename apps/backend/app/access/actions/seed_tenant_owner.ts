@@ -1,6 +1,7 @@
 import db from '@adonisjs/lucid/services/db'
 import Role from '#access/models/role'
 import RoleAssignment from '#access/models/role_assignment'
+import { runInTenant } from '#tenancy/tenant_context'
 import { ASSIGNABLE_PERMISSIONS } from '#access/permissions'
 
 export interface SeedTenantOwnerInput {
@@ -14,18 +15,20 @@ export interface SeedTenantOwnerInput {
  */
 export default class SeedTenantOwner {
   async handle({ tenantId, creatorId }: SeedTenantOwnerInput) {
-    await db.transaction(async trx => {
-      const owner = await Role.firstOrCreate(
-        { tenantId, name: 'Owner' },
-        { permissions: ASSIGNABLE_PERMISSIONS },
-        { client: trx },
-      )
+    await runInTenant(tenantId, () =>
+      db.transaction(async trx => {
+        const owner = await Role.firstOrCreate(
+          { name: 'Owner' },
+          { permissions: ASSIGNABLE_PERMISSIONS },
+          { client: trx },
+        )
 
-      await RoleAssignment.firstOrCreate(
-        { userId: creatorId, tenantId },
-        { roleId: owner.id },
-        { client: trx },
-      )
-    })
+        await RoleAssignment.firstOrCreate(
+          { userId: creatorId },
+          { roleId: owner.id },
+          { client: trx },
+        )
+      }),
+    )
   }
 }
