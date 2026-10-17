@@ -81,6 +81,53 @@ export function createTenant(account: Account, name = unique('Workspace')) {
   return api<Tenant>('/tenants', { token: account.token, body: { name } })
 }
 
+export type Role = { id: string; name: string; permissions: string[] }
+
+/** A role in `tenant`, created by `owner` through the API. */
+export function createRole(
+  owner: Account,
+  tenant: Tenant,
+  name = unique('Role'),
+  permissions: string[] = [],
+) {
+  return api<Role>('/roles', {
+    method: 'POST',
+    token: owner.token,
+    tenantId: tenant.id,
+    body: { name, permissions },
+  })
+}
+
+/** Replaces a member's role in `tenant`; `roleId: null` leaves them without one. */
+export function assignRole(owner: Account, tenant: Tenant, userId: string, roleId: string | null) {
+  return api(`/members/${userId}/role`, {
+    method: 'PUT',
+    token: owner.token,
+    tenantId: tenant.id,
+    body: { roleId },
+  })
+}
+
+/**
+ * A fresh account invited into `tenant` and accepting through the API, the only way to add a
+ * member: there's no direct "add to tenant" endpoint.
+ */
+export async function addMember(owner: Account, tenant: Tenant, fullName = 'E2E Member') {
+  const member = await signUp(fullName)
+
+  await api('/invitations', {
+    method: 'POST',
+    token: owner.token,
+    tenantId: tenant.id,
+    body: { email: member.email, roleId: null },
+  })
+
+  const token = await invitationToken(member.email)
+  await api('/invitations/accept', { method: 'POST', token: member.token, body: { token } })
+
+  return member
+}
+
 /**
  * Signs the browser in as `account` without the login form: the token is stored before the
  * app's first page load. Only that first load seeds it, so logging out later sticks.
