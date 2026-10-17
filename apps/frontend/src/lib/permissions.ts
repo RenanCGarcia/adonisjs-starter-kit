@@ -1,0 +1,43 @@
+import type { api } from '@/lib/api'
+
+type MyPermissions = Awaited<ReturnType<typeof api.access.myPermissions.show>>['data']
+
+export type Permission = MyPermissions['permissions'][number]
+
+type CatalogGroup = Awaited<
+  ReturnType<typeof api.access.permissionCatalog.show>
+>['data']['groups'][number]
+
+export type PermissionGroupKey = CatalogGroup['key']
+
+export function can(permissions: readonly Permission[], permission: Permission) {
+  return permissions.includes(permission)
+}
+
+type Label = { label: string; description?: string }
+
+const LABELS: Record<Permission | PermissionGroupKey, Label> = {
+  'roles': { label: 'Roles' },
+  'members': { label: 'Members' },
+  'roles.manage': {
+    label: 'Manage roles',
+    description: 'Create, rename and delete roles, and choose what each role can do.',
+  },
+  'members.manage': {
+    label: 'Manage members',
+    description: 'Invite people, change their role, and grant them extra permissions.',
+  },
+  'platform.admin': {
+    label: 'Platform admin',
+    description: 'Every permission in every workspace.',
+  },
+}
+
+function isLabelled(key: string): key is keyof typeof LABELS {
+  return key in LABELS
+}
+
+/** The human label for a permission or catalog group key; a key the table doesn't know shows as is. */
+export function permissionLabel(key: string): Label {
+  return isLabelled(key) ? LABELS[key] : { label: key }
+}

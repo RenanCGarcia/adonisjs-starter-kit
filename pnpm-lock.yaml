@@ -225,6 +225,9 @@ catalogs:
     '@types/react-dom':
       specifier: ^19.3.0
       version: 19.3.0
+    lucide-react:
+      specifier: ^1.57.0
+      version: 1.57.0
     next-themes:
       specifier: ^0.4.6
       version: 0.4.6
@@ -414,12 +417,21 @@ importers:
       '@tuyau/core':
         specifier: 'catalog:'
         version: 1.2.2(@adonisjs/assembler@8.5.2(typescript@6.0.3))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))
+      lucide-react:
+        specifier: 'catalog:'
+        version: 1.57.0(@types/react@19.3.0)(react@19.3.1)
+      next-themes:
+        specifier: 'catalog:'
+        version: 0.4.6(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react:
         specifier: 'catalog:'
         version: 19.3.1
       react-dom:
         specifier: 'catalog:'
         version: 19.3.1(react@19.3.1)
+      sonner:
+        specifier: 'catalog:'
+        version: 2.0.8(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
     devDependencies:
       '@monorepo/backend':
         specifier: workspace:*
@@ -473,7 +485,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       lucide-react:
-        specifier: ^1.57.0
+        specifier: 'catalog:'
         version: 1.57.0(@types/react@19.3.0)(react@19.3.1)
       next-themes:
         specifier: 'catalog:'
