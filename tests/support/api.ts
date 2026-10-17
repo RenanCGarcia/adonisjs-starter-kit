@@ -125,32 +125,51 @@ export async function addMember(owner: Account, tenant: Tenant, fullName = 'E2E 
   return member
 }
 
+/** The frontend's persisted stores (zustand `persist`): one localStorage key each, `{ state, version }`. */
+const SESSION_KEY = 'starter:session'
+const WORKSPACE_KEY = 'starter:last-workspace'
+
+function persisted(state: Record<string, string | null>) {
+  return JSON.stringify({ state, version: 1 })
+}
+
 /**
  * Signs the browser in as `account` without the login form: the token is stored before the
- * app's first page load. Only that first load seeds it, so logging out later sticks.
+ * app's first page load. Only that first load seeds it, so logging out later sticks. With
+ * `tenant`, that workspace is also the one the app opens.
  */
-export async function signInAs(browser: Browser, account: Account) {
-  await browser.addInitScript(token => {
+export async function signInAs(browser: Browser, account: Account, tenant?: Tenant) {
+  const seeds = [[SESSION_KEY, persisted({ token: account.token })]]
+
+  if (tenant) seeds.push([WORKSPACE_KEY, persisted({ tenantId: tenant.id })])
+
+  await browser.addInitScript(entries => {
     if (sessionStorage.getItem('e2e:seeded')) return
-    localStorage.setItem('token', token)
+
+    for (const [key, value] of entries) localStorage.setItem(key, value)
     sessionStorage.setItem('e2e:seeded', '1')
-  }, account.token)
+  }, seeds)
 }
 
 /**
- * Switches an already-open page to `account`'s token, for a flow that moves between identities
- * (inviter, invitee) in one test. Unlike `signInAs`, it acts immediately and isn't a one-time seed.
+ * Switches the browser to `account`'s token, for a flow that moves between identities (inviter,
+ * invitee) in one test. It writes at once, unlike `signInAs`'s one-time seed, and the app reads it
+ * on the next `app.open`.
  */
 export async function switchAccount(browser: Browser, account: Account) {
-  await browser.evaluate(token => localStorage.setItem('token', token), account.token)
+  await browser.evaluate(
+    ([key, value]) => localStorage.setItem(key, value),
+    [SESSION_KEY, persisted({ token: account.token })],
+  )
 }
 
 /**
- * Drops the browser's token directly, leaving a page that renders signed out, without revoking it
- * server-side the way the UI's "Log out" does: a token this test switches back to later still works.
+ * Drops the browser's token directly, leaving a page that renders signed out after the next
+ * `app.open`, without revoking it server-side the way the UI's "Log out" does: a token this test
+ * switches back to later still works.
  */
 export async function signOut(browser: Browser) {
-  await browser.evaluate(() => localStorage.removeItem('token'))
+  await browser.evaluate(key => localStorage.removeItem(key), SESSION_KEY)
 }
 
 /** Reads the newest invitation mailed to `email`; throws until the queue worker has sent it. */

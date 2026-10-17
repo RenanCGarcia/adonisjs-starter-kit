@@ -1,0 +1,135 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@monorepo/ui/components/card'
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import type { TuyauError } from '@tuyau/core/client'
+import { useRef } from 'react'
+import type { ChangeEvent } from 'react'
+import { toast } from 'sonner'
+import { queries } from '@/features/core/api'
+import { PageHeader } from '@/features/core/components/page-header'
+import { PendingButton } from '@/features/core/components/pending-button'
+import { errorMessage } from '@/features/core/errors'
+import { UserAvatar } from '@/features/users/components/user-avatar'
+import { profileQuery } from '@/features/users/profile'
+
+const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' })
+
+export function ProfilePage() {
+  const user = useSuspenseQuery(profileQuery()).data.data
+
+  return (
+    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6">
+      <PageHeader title="Profile" description="How you appear to the people in your workspaces." />
+      <AvatarCard />
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <h2>Details</h2>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
+            <dt className="text-muted-foreground">Name</dt>
+            <dd className="sm:col-span-2">{user.fullName ?? '—'}</dd>
+            <dt className="text-muted-foreground">Email</dt>
+            <dd className="break-all sm:col-span-2">{user.email}</dd>
+            <dt className="text-muted-foreground">Member since</dt>
+            <dd className="sm:col-span-2">
+              {user.createdAt ? dateFormat.format(new Date(user.createdAt)) : '—'}
+            </dd>
+          </dl>
+        </CardContent>
+      </Card>
+    </main>
+  )
+}
+
+const AVATAR_TYPES = 'image/png,image/jpeg,image/webp'
+
+function AvatarCard() {
+  const user = useSuspenseQuery(profileQuery()).data.data
+  const fileInput = useRef<HTMLInputElement>(null)
+  const showError = (error: TuyauError) => toast.error(errorMessage(error))
+
+  const uploadFile = useMutation(
+    queries.attachments.attachments.store.mutationOptions({ onError: showError }),
+  )
+
+  const setAvatar = useMutation(
+    queries.profile.avatar.update.mutationOptions({
+      onSuccess: (_, { body }) =>
+        toast.success(body.attachmentId ? 'Photo updated' : 'Photo removed'),
+      onError: showError,
+    }),
+  )
+
+  const pending = uploadFile.isPending || setAvatar.isPending
+  const removing = setAvatar.isPending && setAvatar.variables.body.attachmentId === null
+
+  const upload = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget
+    const file = input.files?.[0]
+
+    if (!file) return
+
+    uploadFile.mutate(
+      { body: { file } },
+      {
+        onSuccess: attachment => setAvatar.mutate({ body: { attachmentId: attachment.data.id } }),
+        onSettled: () => {
+          input.value = ''
+        },
+      },
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <h2>Photo</h2>
+        </CardTitle>
+        <CardDescription>A JPG, PNG or WebP image up to 2 MB.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap items-center gap-4">
+          <UserAvatar user={user} alt="Your photo" className="size-16" />
+          <div className="flex flex-wrap gap-2">
+            <input
+              ref={fileInput}
+              type="file"
+              accept={AVATAR_TYPES}
+              aria-label="Photo file"
+              tabIndex={-1}
+              className="sr-only"
+              onChange={upload}
+            />
+            <PendingButton
+              variant="outline"
+              pending={pending && !removing}
+              disabled={pending}
+              onClick={() => fileInput.current?.click()}
+            >
+              {user.avatar ? 'Replace photo' : 'Upload photo'}
+            </PendingButton>
+            {user.avatar && (
+              <PendingButton
+                variant="ghost"
+                pending={removing}
+                disabled={pending}
+                onClick={() => setAvatar.mutate({ body: { attachmentId: null } })}
+              >
+                Remove photo
+              </PendingButton>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

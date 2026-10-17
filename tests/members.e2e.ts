@@ -4,10 +4,10 @@ import { addMember, createRole, createTenant, signInAs, signUp } from './support
 
 test('the owner sees themself', async ({ app, screen, browser }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  await createTenant(owner)
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/members`)
+  await app.open('/members')
 
   const row = screen.getByRole('row').filter({ hasText: owner.email })
   await expect(row).toBeVisible()
@@ -22,7 +22,7 @@ test("changes a member's role and it persists after reload", async ({ app, scree
   const select = () => screen.getByRole('combobox', `Role for ${member.fullName}`)
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/members`)
+  await app.open('/members')
 
   await select().tap()
   await screen.getByRole('option', role.name).tap()
@@ -39,7 +39,7 @@ test('edits a member’s grants and they persist after reload', async ({ app, sc
   const row = () => screen.getByRole('row').filter({ hasText: member.email })
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/members`)
+  await app.open('/members')
 
   await screen.getByRole('button', `Edit permissions for ${member.fullName}`).tap()
   await screen.getByRole('checkbox', 'Manage roles', { exact: false }).check()
@@ -58,11 +58,11 @@ test('demoting the last manager shows the error and keeps their role', async ({
   browser,
 }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  await createTenant(owner)
   const select = () => screen.getByRole('combobox', `Role for ${owner.fullName}`)
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/members`)
+  await app.open('/members')
 
   await select().tap()
   await screen.getByRole('option', 'No role').tap()

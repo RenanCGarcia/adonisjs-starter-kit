@@ -13,7 +13,7 @@ test('a visitor signs up and lands on workspace onboarding', async ({ app, scree
   await screen.getByLabel('Confirm password').fill(password)
   await screen.getByRole('button', 'Create account').tap()
 
-  await expect(browser).toHaveURL('/')
+  await expect(browser).toHaveURL('/onboarding')
   await expect(screen.getByRole('heading', 'Create your workspace')).toBeVisible()
   await expect(screen.getByRole('button', 'Account menu')).toHaveText('AL')
 })

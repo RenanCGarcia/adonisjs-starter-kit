@@ -1,0 +1,7 @@
+{
+  "core": [],
+  "users": ["core"],
+  "auth": ["core"],
+  "tenancy": ["core"],
+  "access": ["core", "users", "tenancy", "auth"]
+}

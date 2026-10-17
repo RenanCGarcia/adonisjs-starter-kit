@@ -1,6 +1,7 @@
 import { defineConfig, type OxlintOverride } from 'oxlint'
 import { julrPreset } from '@julr/tooling-configs/oxc/lint'
 import backendModules from './apps/backend/modules.json' with { type: 'json' }
+import frontendFeatures from './apps/frontend/features.json' with { type: 'json' }
 
 const BACKEND_APP = 'apps/backend/app'
 
@@ -44,6 +45,51 @@ const moduleBoundaries = [
     ]
   }),
 ]
+
+const FRONTEND_FEATURES = 'apps/frontend/src/features'
+
+const featureBoundaries = [
+  restrictFeatureImports(
+    `${FRONTEND_FEATURES}/**`,
+    [],
+    'This folder is not a registered feature: add it to apps/frontend/features.json.',
+  ),
+  ...Object.entries(frontendFeatures).map(([name, deps]: [string, string[]]) =>
+    restrictFeatureImports(
+      `${FRONTEND_FEATURES}/${name}/**`,
+      [name, ...deps],
+      `Feature "${name}" may import ${deps.join(', ') || 'no other feature'}. A new dependency goes in apps/frontend/features.json first.`,
+    ),
+  ),
+]
+
+function restrictFeatureImports(files: string, allowed: string[], message: string): OxlintOverride {
+  return {
+    files: [files],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/features/**', ...allowed.map(name => `!@/features/${name}/**`)],
+              message,
+            },
+            {
+              group: ['@/router', '@/routes/**'],
+              message:
+                'Routes import features, never the reverse: read route data with getRouteApi().',
+            },
+            {
+              group: ['../**', './**'],
+              message: 'Import through @/features/<feature>/... instead of a relative path.',
+            },
+          ],
+        },
+      ],
+    },
+  }
+}
 
 const designSystem: OxlintOverride[] = [
   {
@@ -120,5 +166,5 @@ export default defineConfig({
     'anti-slop/require-safety-comment-for-type-assertion': 'error',
   },
 
-  overrides: [...moduleBoundaries, ...designSystem],
+  overrides: [...moduleBoundaries, ...featureBoundaries, ...designSystem],
 })

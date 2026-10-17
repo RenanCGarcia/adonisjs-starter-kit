@@ -20,7 +20,7 @@ test('a member with no role sees only Overview and is denied the managed pages',
   const member = await addMember(owner, tenant, 'No Role Member')
 
   await signInAs(browser, member)
-  await app.open(`/t/${tenant.id}`)
+  await app.open('/')
 
   const nav = screen.getByRole('navigation', 'Workspace')
   await expect(nav.getByRole('link', 'Overview')).toBeVisible()
@@ -29,7 +29,7 @@ test('a member with no role sees only Overview and is denied the managed pages',
   await expect(nav.getByRole('link', 'Roles')).toBeHidden()
 
   for (const path of ['members', 'roles', 'invitations']) {
-    await app.open(`/t/${tenant.id}/${path}`)
+    await app.open(`/${path}`)
     await expect(screen.getByRole('heading', 'You don’t have access')).toBeVisible()
   }
 })
@@ -46,28 +46,30 @@ test('a member with only members.manage sees Members and Invitations but not Rol
   await assignRole(owner, tenant, member.id, role.id)
 
   await signInAs(browser, member)
-  await app.open(`/t/${tenant.id}`)
+  await app.open('/')
 
   const nav = screen.getByRole('navigation', 'Workspace')
   await expect(nav.getByRole('link', 'Members')).toBeVisible()
   await expect(nav.getByRole('link', 'Invitations')).toBeVisible()
   await expect(nav.getByRole('link', 'Roles')).toBeHidden()
 
-  await app.open(`/t/${tenant.id}/roles`)
+  await app.open('/roles')
   await expect(screen.getByRole('heading', 'You don’t have access')).toBeVisible()
 })
 
-test('a signed-in non-member visiting another workspace sees it as not found', async ({
+test('a remembered workspace the user is not in falls back to their own', async ({
   app,
   screen,
   browser,
 }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  const foreign = await createTenant(owner)
   const outsider = await signUp('Outsider')
+  const own = await createTenant(outsider)
 
-  await signInAs(browser, outsider)
-  await app.open(`/t/${tenant.id}`)
+  await signInAs(browser, outsider, foreign)
+  await app.open('/')
 
-  await expect(screen.getByRole('heading', 'Workspace not found')).toBeVisible()
+  await expect(screen.getByRole('heading', own.name, { level: 1 })).toBeVisible()
+  await expect(screen.getByRole('button', `Workspace: ${own.name}`)).toBeVisible()
 })

@@ -8,40 +8,27 @@ import {
   EmptyTitle,
 } from '@monorepo/ui/components/empty'
 import { Separator } from '@monorepo/ui/components/separator'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Outlet, redirect, useRouter } from '@tanstack/react-router'
 import type { ErrorComponentProps } from '@tanstack/react-router'
 import { TuyauError } from '@tuyau/core/client'
 import { CircleAlertIcon } from 'lucide-react'
-import { AppMark } from '@/components/app-mark'
-import { UserMenu } from '@/components/user-menu'
-import { WorkspaceSwitcher } from '@/components/workspace-switcher'
-import { api } from '@/lib/api'
-import { errorMessage } from '@/lib/errors'
+import { AppMark } from '@/features/core/components/app-mark'
+import { errorMessage } from '@/features/core/errors'
+import { session } from '@/features/core/session'
+import { WorkspaceSwitcher } from '@/features/tenancy/components/workspace-switcher'
+import { tenantsQuery } from '@/features/tenancy/workspace'
+import { UserMenu } from '@/features/users/components/user-menu'
+import { profileQuery } from '@/features/users/profile'
 
 export const Route = createFileRoute('/_app')({
-  beforeLoad: ({ context, location }) => {
-    if (!context.auth.isAuthenticated()) {
+  beforeLoad: ({ location }) => {
+    if (!session.isAuthenticated()) {
       throw redirect({ to: '/login', search: returnTo(location.href) })
     }
   },
-  loader: async ({ context, location }) => {
-    const [[profile, profileError], [tenants, tenantsError]] = await Promise.all([
-      api.profile.profile.show({}).safe(),
-      api.tenants.tenants.index({}).safe(),
-    ])
-
-    // A token the API no longer accepts (expired, revoked elsewhere) is a signed-out session.
-    if (profileError?.status === 401 || tenantsError?.status === 401) {
-      context.auth.clearToken()
-      throw redirect({ to: '/login', search: returnTo(location.href) })
-    }
-
-    if (profileError) throw profileError
-
-    if (tenantsError) throw tenantsError
-
-    return { user: profile.data, tenants: tenants.data }
-  },
+  loader: ({ context: { queryClient } }) =>
+    Promise.all([queryClient.query(profileQuery()), queryClient.query(tenantsQuery())]),
   component: AppLayout,
   errorComponent: AppError,
 })
@@ -52,16 +39,16 @@ function returnTo(href: string) {
 }
 
 function AppLayout() {
-  const { user, tenants } = Route.useLoaderData()
+  const { data: user } = useSuspenseQuery(profileQuery())
 
   return (
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b bg-background px-3 md:px-4">
         <AppMark />
         <Separator orientation="vertical" className="mx-1 my-3" />
-        <WorkspaceSwitcher tenants={tenants} />
+        <WorkspaceSwitcher />
         <div className="ml-auto">
-          <UserMenu user={user} />
+          <UserMenu user={user.data} />
         </div>
       </header>
       <Outlet />

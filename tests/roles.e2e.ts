@@ -12,11 +12,11 @@ import {
 
 test('creates a role and it appears with its permissions', async ({ app, screen, browser }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  await createTenant(owner)
   const name = unique('Editor')
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/roles`)
+  await app.open('/roles')
 
   await screen.getByRole('button', 'New role').tap()
   await screen.getByRole('dialog', 'New role').getByLabel('Role name').fill(name)
@@ -37,7 +37,7 @@ test('renames a role and changes its permissions', async ({ app, screen, browser
   const renamed = unique('Contributor')
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/roles`)
+  await app.open('/roles')
 
   await screen.getByRole('button', `Edit ${role.name}`).tap()
   const dialog = screen.getByRole('dialog', 'Edit role')
@@ -57,7 +57,7 @@ test('deletes an unused role after confirming', async ({ app, screen, browser })
   const role = await createRole(owner, tenant, unique('Temp'), [])
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/roles`)
+  await app.open('/roles')
 
   await screen.getByRole('button', `Delete ${role.name}`).tap()
   await screen
@@ -76,7 +76,7 @@ test('a role in use cannot be deleted', async ({ app, screen, browser }) => {
   await assignRole(owner, tenant, member.id, role.id)
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/roles`)
+  await app.open('/roles')
 
   await screen.getByRole('button', `Delete ${role.name}`).tap()
   await screen
@@ -94,10 +94,10 @@ test('a role in use cannot be deleted', async ({ app, screen, browser }) => {
 
 test('a duplicate role name shows an inline error', async ({ app, screen, browser }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  await createTenant(owner)
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/roles`)
+  await app.open('/roles')
 
   await screen.getByRole('button', 'New role').tap()
   await screen.getByRole('dialog', 'New role').getByLabel('Role name').fill('Owner')

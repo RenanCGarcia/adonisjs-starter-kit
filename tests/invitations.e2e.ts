@@ -16,11 +16,11 @@ import {
 
 test('invites by email and it shows as pending', async ({ app, screen, browser }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  await createTenant(owner)
   const email = uniqueEmail('invite')
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/invitations`)
+  await app.open('/invitations')
 
   await screen.getByRole('button', 'Invite member').tap()
   await screen.getByRole('dialog', 'Invite member').getByLabel('Email').fill(email)
@@ -40,7 +40,7 @@ test('re-inviting a pending email refreshes it and says so', async ({ app, scree
   const email = uniqueEmail('resend')
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/invitations`)
+  await app.open('/invitations')
 
   await screen.getByRole('button', 'Invite member').tap()
   await screen.getByRole('dialog', 'Invite member').getByLabel('Email').fill(email)
@@ -63,11 +63,11 @@ test('re-inviting a pending email refreshes it and says so', async ({ app, scree
 
 test('revokes an invitation after confirming', async ({ app, screen, browser }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  await createTenant(owner)
   const email = uniqueEmail('revoke')
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/invitations`)
+  await app.open('/invitations')
 
   await screen.getByRole('button', 'Invite member').tap()
   await screen.getByRole('dialog', 'Invite member').getByLabel('Email').fill(email)
@@ -89,7 +89,7 @@ test('inviting an existing member’s email shows the error', async ({ app, scre
   const member = await addMember(owner, tenant)
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/invitations`)
+  await app.open('/invitations')
 
   await screen.getByRole('button', 'Invite member').tap()
   await screen.getByRole('dialog', 'Invite member').getByLabel('Email').fill(member.email)
@@ -111,7 +111,7 @@ test('a new person opens the mailed link signed out, creates an account, and acc
   const password = randomUUID().slice(0, 24)
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/invitations`)
+  await app.open('/invitations')
   await screen.getByRole('button', 'Invite member').tap()
   const dialog = screen.getByRole('dialog', 'Invite member')
   await dialog.getByLabel('Email').fill(email)
@@ -137,10 +137,11 @@ test('a new person opens the mailed link signed out, creates an account, and acc
 
   await expect(browser).toHaveURL(`/invitations/${token}`)
   await screen.getByRole('button', 'Accept invitation').tap()
-  await expect(browser).toHaveURL(`/t/${tenant.id}`)
+  await expect(browser).toHaveURL('/')
+  await expect(screen.getByRole('heading', tenant.name, { level: 1 })).toBeVisible()
 
   await switchAccount(browser, owner)
-  await app.open(`/t/${tenant.id}/members`)
+  await app.open('/members')
   await expect(screen.getByRole('combobox', 'Role for Ada Lovelace')).toHaveText(role.name)
 })
 
@@ -154,7 +155,7 @@ test('an existing account signs in through the link and accepts', async ({
   const invitee = await signUp('Grace Hopper')
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/invitations`)
+  await app.open('/invitations')
   await screen.getByRole('button', 'Invite member').tap()
   await screen.getByRole('dialog', 'Invite member').getByLabel('Email').fill(invitee.email)
   await screen.getByRole('button', 'Send invitation').tap()
@@ -174,17 +175,18 @@ test('an existing account signs in through the link and accepts', async ({
 
   await expect(browser).toHaveURL(`/invitations/${token}`)
   await screen.getByRole('button', 'Accept invitation').tap()
-  await expect(browser).toHaveURL(`/t/${tenant.id}`)
+  await expect(browser).toHaveURL('/')
+  await expect(screen.getByRole('heading', tenant.name, { level: 1 })).toBeVisible()
 })
 
 test('the wrong signed-in account sees the mismatch state', async ({ app, screen, browser }) => {
   const owner = await signUp()
-  const tenant = await createTenant(owner)
+  await createTenant(owner)
   const invitedEmail = uniqueEmail('intended')
   const wrongAccount = await signUp('Wrong Person')
 
   await signInAs(browser, owner)
-  await app.open(`/t/${tenant.id}/invitations`)
+  await app.open('/invitations')
   await screen.getByRole('button', 'Invite member').tap()
   await screen.getByRole('dialog', 'Invite member').getByLabel('Email').fill(invitedEmail)
   await screen.getByRole('button', 'Send invitation').tap()
@@ -211,5 +213,5 @@ test('an unknown token shows the invalid state', async ({ app, screen, browser }
 
   await expect(screen.getByRole('heading', 'Invitation not found')).toBeVisible()
   await screen.getByRole('link', 'Go home').tap()
-  await expect(browser).toHaveURL('/')
+  await expect(browser).toHaveURL('/onboarding')
 })
