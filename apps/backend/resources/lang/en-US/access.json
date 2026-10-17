@@ -2,8 +2,11 @@
   "owner_role": "Owner",
   "invitation_mail": {
     "subject": "You’ve been invited",
-    "intro": "You’ve been invited to join a workspace.",
+    "preview": "Accept your invitation to join {appName}",
+    "heading": "You’ve been invited",
+    "intro": "You’ve been invited to join a workspace on {appName}.",
     "open_link": "Open this link to accept:",
-    "accept": "Accept the invitation"
+    "accept": "Accept the invitation",
+    "expires": "This invitation expires in 7 days."
   }
 }

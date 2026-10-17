@@ -3,6 +3,7 @@ import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import mail from '@adonisjs/mail/services/main'
 import Invitation from '#access/models/invitation'
+import InvitationMail from '#access/mails/invitation_mail'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { createUser, workspace } from '#access/tests/seed'
 
@@ -16,13 +17,14 @@ async function setup() {
 
 /** Pulls the raw token out of the invitation link in the most recently sent mail. */
 function lastToken(fake: ReturnType<typeof mail.fake>) {
-  const sent = fake.messages.sent()
-  const html = sent[sent.length - 1]?.toJSON().message.html
+  const sent = fake.mails.sent()
+  const html = sent[sent.length - 1]?.message.toJSON().message.html
 
   if (!html) throw new Error('The sent mail has no HTML body')
 
-  // SAFETY: the listener in access/start/events.ts only ever calls message.html(string).
-  const match = (html as string).match(/invitations\/([a-f0-9]+)/)
+  // SAFETY: InvitationMail only ever calls message.htmlView(), which always renders to a string.
+  // Matches the MJML button's rendered href, proving the compiled HTML is genuine MJML output.
+  const match = (html as string).match(/href="[^"]*\/invitations\/([a-f0-9]+)"/)
   const token = match?.[1]
 
   if (!token) throw new Error('No invitation link found in the sent mail')
@@ -89,8 +91,8 @@ test.group('Access | invitations', group => {
       .headers(acme.headers)
       .loginAs(owner)
 
-    const sent = fake.messages.sent()
-    assert.equal(sent[sent.length - 1]?.toJSON().message.subject, 'Você recebeu um convite')
+    const sent = fake.mails.sent()
+    assert.equal(sent[sent.length - 1]?.message.toJSON().message.subject, 'Você recebeu um convite')
   })
 
   test('invites, lists, and revokes', async ({ client, assert }) => {
@@ -106,7 +108,7 @@ test.group('Access | invitations', group => {
 
     created.assertStatus(200)
     created.assertBodyContains({ data: { email: 'guest@example.com', roleId: editor.id } })
-    fake.messages.assertSent({ to: 'guest@example.com' })
+    fake.mails.assertSent(InvitationMail, ({ message }) => message.hasTo('guest@example.com'))
 
     const listed = await client
       .visit('access.invitations.index')

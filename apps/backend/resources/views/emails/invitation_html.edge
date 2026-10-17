@@ -1,0 +1,31 @@
+@email.layout({ lang: lang, appName: appName, title: subject, preview: preview, footer: footer })
+  <mj-section padding="0">
+    <mj-column>
+      <mj-text font-size="20px" font-weight="700" padding-bottom="16px">
+        {{ t('access.invitation_mail.heading') }}
+      </mj-text>
+      <mj-text padding-bottom="24px">
+        {{ t('access.invitation_mail.intro', { appName }) }}
+      </mj-text>
+      <mj-button
+        href="{{ link }}"
+        background-color="#18181b"
+        color="#fafafa"
+        border-radius="10px"
+        font-weight="600"
+        padding-bottom="24px"
+      >
+        {{ t('access.invitation_mail.accept') }}
+      </mj-button>
+      <mj-text font-size="13px" color="#71717a" padding-bottom="4px">
+        {{ t('mail.paste_link') }}
+      </mj-text>
+      <mj-text font-size="13px" color="#71717a" word-break="break-all" padding-bottom="20px">
+        {{ link }}
+      </mj-text>
+      <mj-text font-size="13px" color="#71717a">
+        {{ t('access.invitation_mail.expires') }}
+      </mj-text>
+    </mj-column>
+  </mj-section>
+@end
