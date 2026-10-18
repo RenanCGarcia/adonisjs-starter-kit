@@ -1,15 +1,9 @@
 import vine from '@vinejs/vine'
 import { localeRule, timezoneRule } from '#users/validators/user'
 
-/**
- * Shared rules for email and password.
- */
 const email = () => vine.string().email().maxLength(254).toLowerCase()
 const password = () => vine.string().minLength(8).maxLength(32)
 
-/**
- * Validator to use when performing self-signup
- */
 export const signupValidator = vine.create({
   fullName: vine.string().nullable(),
   email: email().unique({ table: 'users', column: 'email' }),
@@ -19,10 +13,6 @@ export const signupValidator = vine.create({
   timezone: timezoneRule().nullable().optional(),
 })
 
-/**
- * Validator to use before validating user credentials
- * during login
- */
 export const loginValidator = vine.create({
   email: email(),
   password: vine.string(),

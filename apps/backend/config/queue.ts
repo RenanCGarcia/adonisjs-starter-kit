@@ -5,9 +5,6 @@ export default defineConfig({
   default: env.get('QUEUE_DRIVER'),
 
   adapters: {
-    /**
-     * Uses the main connection from config/redis.ts.
-     */
     redis: drivers.redis({
       connectionName: 'main',
     }),
