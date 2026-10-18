@@ -97,7 +97,7 @@ Background work runs as jobs on `@adonisjs/queue`, backed by Redis through the `
 - **Jobs can run twice**: retries (`maxRetries`) and stalled-job recovery re-run a job that may have partly succeeded, so make it idempotent.
 - **Recurring jobs** are declared in `start/scheduler.ts`, preloaded only for the HTTP server. A schedule is upserted by its id (the job class name), so every boot of every instance converges on one schedule. `PruneAttachmentsJob` is the reference example.
 - **The worker is its own process**: `node ace queue:work`. `pnpm dev` runs it next to the server under `node --watch`; production runs the `worker` service in `compose.dokploy.yaml`.
-- **Queue upgrades can migrate Redis**: a release that changes the storage format ships the conversion in `node ace queue:migrate`, which does nothing on storage that is already current. Production runs it on every deploy in the `migrate` service, before the backend and the worker start. In development, run it from `apps/backend` once after such an upgrade: until then the server fails to boot on the schedules of the old format.
+- **Queue upgrades can migrate Redis**: a release that changes the storage format ships the conversion in `node ace queue:migrate`, which does nothing on storage that is already current. Production runs it on every deploy in the `migrate` service, before the backend and the worker start. `pnpm dev` runs it too, since the server fails to boot on schedules of an older format.
 - **Tests run jobs inline**: `.env.test` sets `QUEUE_DRIVER=sync`. To assert a dispatch without running the job, use `QueueManager.fake()` and restore it in the group's teardown.
 
 ## Rate limiting
