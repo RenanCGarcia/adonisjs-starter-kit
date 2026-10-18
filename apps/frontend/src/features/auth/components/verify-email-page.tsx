@@ -1,4 +1,4 @@
-import { buttonVariants } from '@monorepo/ui/components/button'
+import { Button, buttonVariants } from '@monorepo/ui/components/button'
 import { useMutation } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
@@ -86,6 +86,19 @@ export function VerifyEmailPage({ token, isAuthenticated, verifiedAt }: Props) {
             {t('auth.verifyEmailPage.resend')}
           </PendingButton>
         )}
+      </AuthCard>
+    )
+  }
+
+  if (verify.isError) {
+    return (
+      <AuthCard
+        title={t('auth.verifyEmailPage.failedTitle')}
+        description={errorMessage(verify.error)}
+      >
+        <Button size="lg" className="w-full" onClick={() => verify.mutate({ body: { token } })}>
+          {t('auth.verifyEmailPage.tryAgain')}
+        </Button>
       </AuthCard>
     )
   }

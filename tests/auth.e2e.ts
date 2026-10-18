@@ -111,6 +111,7 @@ test('a member resets a forgotten password from the mailed link and signs in wit
 test('a signed-up member sees the unverified banner until they open the mailed link', async ({
   app,
   screen,
+  browser,
 }) => {
   const email = uniqueEmail('verify')
   const password = randomUUID().slice(0, 24)
@@ -126,7 +127,20 @@ test('a signed-up member sees the unverified banner until they open the mailed l
 
   const token = await verifyEmailToken(email)
 
+  // Regression: a failure other than a bad token left the page on "Verifying" with no way out.
+  let failed = false
+
+  await browser.route(/\/api\/v1\/auth\/email\/verify$/, async route => {
+    if (failed) return route.continue()
+
+    failed = true
+    await route.abort()
+  })
   await app.open(`/verify-email/${token}`)
+  await expect(screen.getByRole('heading', 'Couldn’t verify your email')).toBeVisible()
+  await expect(screen.getByText('Can’t reach the server', { exact: false })).toBeVisible()
+  await screen.getByRole('button', 'Try again').tap()
+
   await expect(screen.getByRole('heading', 'Email verified')).toBeVisible()
   await screen.getByRole('link', 'Continue').tap()
 
