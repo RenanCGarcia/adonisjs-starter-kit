@@ -34,6 +34,7 @@ import { auditEventsQuery, auditSearchSchema } from '@/features/audit/queries'
 import type { AuditSearch } from '@/features/audit/queries'
 import { PageHeader } from '@/features/core/components/page-header'
 import { Pagination } from '@/features/core/components/pagination'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 
@@ -142,7 +143,7 @@ export function AuditPage({
             onClick={() => filter({ actor: undefined })}
           >
             {actor
-              ? t('audit.auditPage.actor', { name: actor.fullName ?? actor.email })
+              ? t('audit.auditPage.actor', { name: displayName(actor) })
               : t('audit.auditPage.someone')}
             <XIcon data-icon="inline-end" />
           </Button>

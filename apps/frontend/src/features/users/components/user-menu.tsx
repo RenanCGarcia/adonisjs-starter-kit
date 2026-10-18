@@ -19,6 +19,7 @@ import { LogOutIcon, SunMoonIcon, UserIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import type { ReactNode } from 'react'
 import { logOut } from '@/features/core/api'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
@@ -50,9 +51,7 @@ export function UserMenu({ user, children }: { user: Data.Users.User; children?:
       <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex flex-col">
-            <span className="truncate font-medium text-foreground">
-              {user.fullName ?? user.email}
-            </span>
+            <span className="truncate font-medium text-foreground">{displayName(user)}</span>
             {user.fullName && <span className="truncate">{user.email}</span>}
           </DropdownMenuLabel>
         </DropdownMenuGroup>

@@ -4,12 +4,11 @@ import { CogIcon, ShieldAlertIcon } from 'lucide-react'
 import { describeEvent } from '@/features/audit/event-text'
 import type { AuditEventRow, PermissionLabel } from '@/features/audit/event-text'
 import { DATE_TIME_MEDIUM, formatDate, relativeTime, useTimeZone } from '@/features/core/datetime'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
 type Actor = NonNullable<AuditEventRow['actor']>
-
-const actorName = (actor: Actor) => actor.fullName ?? actor.email
 
 const rawPermission: PermissionLabel = permission => permission
 
@@ -89,7 +88,7 @@ function AuditTimelineItem({
             {row.impersonator && (
               <span className="text-muted-foreground">
                 {' '}
-                {t('audit.timeline.impersonatedBy', { name: actorName(row.impersonator) })}
+                {t('audit.timeline.impersonatedBy', { name: displayName(row.impersonator) })}
               </span>
             )}
           </p>
@@ -156,16 +155,16 @@ function Byline({
 }) {
   if (!actor) return <span className="font-medium">{t('audit.timeline.system')}</span>
 
-  if (!onActorSelect) return <span className="font-medium">{actorName(actor)}</span>
+  if (!onActorSelect) return <span className="font-medium">{displayName(actor)}</span>
 
   return (
     <button
       type="button"
       className="font-medium underline-offset-2 hover:underline focus-visible:underline focus-visible:outline-none"
-      title={t('audit.timeline.showOnly', { name: actorName(actor) })}
+      title={t('audit.timeline.showOnly', { name: displayName(actor) })}
       onClick={() => onActorSelect(actor)}
     >
-      {actorName(actor)}
+      {displayName(actor)}
     </button>
   )
 }

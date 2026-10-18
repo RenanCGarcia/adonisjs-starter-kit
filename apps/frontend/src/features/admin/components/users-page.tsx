@@ -8,16 +8,12 @@ import {
 } from '@monorepo/ui/components/table'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { SearchInput } from '@/features/admin/components/search-input'
-import {
-  TwoFactorStatus,
-  UserActions,
-  UserStatus,
-  displayName,
-} from '@/features/admin/components/user-actions'
+import { TwoFactorStatus, UserActions, UserStatus } from '@/features/admin/components/user-actions'
 import { adminUsersQuery } from '@/features/admin/queries'
 import type { AdminSearch } from '@/features/admin/queries'
 import { PageHeader } from '@/features/core/components/page-header'
 import { Pagination } from '@/features/core/components/pagination'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
@@ -66,7 +62,7 @@ export function UsersPage({
                   <div className="flex items-center gap-2">
                     <UserAvatar user={row.user} className="size-7" />
                     <div className="flex min-w-0 flex-col">
-                      <span className="truncate font-medium">{displayName(row)}</span>
+                      <span className="truncate font-medium">{displayName(row.user)}</span>
                       <span className="truncate text-muted-foreground">{row.user.email}</span>
                     </div>
                   </div>

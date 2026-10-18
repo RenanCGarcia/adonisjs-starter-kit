@@ -1,4 +1,5 @@
 import type { api } from '@/features/core/api'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 
 type TenantEventRow = Awaited<ReturnType<typeof api.audit.auditEvents.index>>['data'][number]
@@ -42,10 +43,6 @@ type EventText<T extends AuditEventType> = {
 
 /** A workspace event also names its type in the trail's filter. */
 type LabeledEventText<T extends AuditEventType> = EventText<T> & { label: string }
-
-type Snapshot = { email: string; fullName: string | null }
-
-const displayName = (member: Snapshot) => member.fullName ?? member.email
 
 function permissionChanges(from: readonly string[], to: readonly string[]) {
   return {

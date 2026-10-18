@@ -15,6 +15,7 @@ import { RowActionsMenu } from '@/features/admin/components/row-actions-menu'
 import type { RowAction } from '@/features/admin/components/row-actions-menu'
 import { queries } from '@/features/core/api'
 import { ConfirmDialog } from '@/features/core/components/confirm-dialog'
+import { displayName } from '@/features/core/display-name'
 import { errorMessage } from '@/features/core/errors'
 import { t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
@@ -25,8 +26,6 @@ export type AdminUserRow = {
   disabledAt: string | null
   platformAdmin: boolean
 }
-
-export const displayName = ({ user }: AdminUserRow) => user.fullName ?? user.email
 
 export function UserStatus({ row }: { row: AdminUserRow }) {
   if (row.platformAdmin) return <Badge variant="secondary">{t('admin.userActions.admin')}</Badge>
@@ -48,7 +47,7 @@ type Confirming = 'disable' | 'grant' | 'revoke' | 'resetTwoFactor' | null
 
 /** A platform admin can only lose the role, and never from themself: the API refuses the rest. */
 export function UserActions({ row }: { row: AdminUserRow }) {
-  const name = displayName(row)
+  const name = displayName(row.user)
   const navigate = useNavigate()
   const { data: me } = useSuspenseQuery(profileQuery())
   const [confirming, setConfirming] = useState<Confirming>(null)
