@@ -27,15 +27,15 @@ test('a member enrolls two-factor from the profile, then signs in with a fresh c
   await screen.getByRole('button', 'I saved them').tap()
   await expect(screen.getByRole('button', 'Regenerate recovery codes')).toBeVisible()
 
-  // Regression: the dialog stayed mounted while closed, so reopening it still held the password.
+  // Regression: the dialog stayed mounted while closed, so reopening it still held what was typed.
   const disableDialog = screen.getByRole('dialog', 'Disable two-factor authentication?')
 
   await screen.getByRole('button', 'Disable').tap()
-  await disableDialog.getByLabel('Password').fill(user.password)
+  await disableDialog.getByLabel('Code').fill('123456')
   await disableDialog.getByRole('button', 'Close').tap()
   await expect(disableDialog).toBeHidden()
   await screen.getByRole('button', 'Disable').tap()
-  await expect(disableDialog.getByLabel('Password')).toHaveValue('')
+  await expect(disableDialog.getByLabel('Code')).toHaveValue('')
   await disableDialog.getByRole('button', 'Close').tap()
 
   await screen.getByRole('button', 'Account menu').tap()
