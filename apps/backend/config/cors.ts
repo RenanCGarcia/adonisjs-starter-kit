@@ -7,7 +7,7 @@ const corsConfig = defineConfig({
    * In development, allow every origin to simplify local front/backend setup.
    * Elsewhere, only the comma-separated CORS_ORIGIN allowlist (none when unset).
    */
-  origin: app.inDev ? true : (env.get('CORS_ORIGIN')?.split(',') ?? []),
+  origin: app.inDev ? true : (env.get('CORS_ORIGIN') ?? []),
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
   headers: true,
   exposeHeaders: [],

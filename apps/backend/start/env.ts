@@ -12,7 +12,22 @@ export default await Env.create(new URL('../', import.meta.url), {
   APP_KEY: Env.schema.secret(),
   FRONTEND_URL: Env.schema.string({ format: 'url', tld: false }),
   MONITORING_SECRET: Env.schema.secret(),
-  CORS_ORIGIN: Env.schema.string.optional(),
+  // @adonisjs/cors compares origins with ===, so 'https://a.com, https://b.com/' would only allow a.
+  CORS_ORIGIN: (key: string, value?: string) => {
+    if (value === undefined || value === '') return undefined
+
+    return value
+      .split(',')
+      .map(entry => entry.trim())
+      .filter(Boolean)
+      .map(entry => {
+        if (!URL.canParse(entry)) {
+          throw new Error(`Invalid value for "${key}": "${entry}" is not an origin URL`)
+        }
+
+        return new URL(entry).origin
+      })
+  },
   // At least a day: 0 or less would delete the whole audit trail on the next prune.
   AUDIT_RETENTION_DAYS: (key: string, value?: string) => {
     if (value === undefined || value === '') return undefined
