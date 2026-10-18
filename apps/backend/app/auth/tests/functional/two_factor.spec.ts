@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { account, signUp } from '#tests/accounts'
 import { sessionOf } from '#tests/sessions'
 import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
@@ -6,19 +7,6 @@ import type { ApiClient } from '@japa/api-client'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { enableTwoFactor, totpCode } from '#auth/tests/two_factor'
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
-
-async function signUp(client: ApiClient, email: string) {
-  const response = await client.visit('auth.new_account.store').json({ ...account, email })
-  const { token }: { token: string } = response.body().data
-
-  return token
-}
 
 /** Signs up an account with confirmed two-factor, and returns the secret its app holds. */
 async function signUpWithTwoFactor(client: ApiClient, email: string) {

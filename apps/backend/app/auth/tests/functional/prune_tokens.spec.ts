@@ -1,26 +1,9 @@
 import { test } from '@japa/runner'
+import { sessionIdOf, signUp } from '#tests/accounts'
 import db from '@adonisjs/lucid/services/db'
 import AuditEvent from '#core/models/audit_event'
-import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
 import PruneExpiredTokens from '#auth/actions/prune_expired_tokens'
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
-
-function sessionIdOf(token: string) {
-  return Buffer.from(token.slice('oat_'.length).split('.')[0]!, 'base64url').toString()
-}
-
-async function signUp(client: ApiClient, email: string) {
-  const response = await client.visit('auth.new_account.store').json({ ...account, email })
-  const { token }: { token: string } = response.body().data
-
-  return token
-}
 
 test.group('Auth | prune tokens', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())

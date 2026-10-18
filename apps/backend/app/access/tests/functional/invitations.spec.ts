@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import { linkToken } from '#tests/mails'
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import mail from '@adonisjs/mail/services/main'
@@ -6,37 +7,13 @@ import AuditEvent from '#core/models/audit_event'
 import Invitation from '#access/models/invitation'
 import InvitationMail from '#access/mails/invitation_mail'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { createUser, workspace } from '#access/tests/seed'
-
-async function setup() {
-  const acme = await workspace()
-  const owner = await acme.member()
-  await acme.assign(owner, await acme.role('Owner', ['roles.manage', 'members.manage']))
-
-  return { acme, owner }
-}
-
-/** Pulls the raw token out of the invitation link in the most recently queued mail. */
-function lastToken(fake: ReturnType<typeof mail.fake>) {
-  const queued = fake.mails.queued()
-  const html = queued[queued.length - 1]?.message.toJSON().message.html
-
-  if (!html) throw new Error('The queued mail has no HTML body')
-
-  // SAFETY: InvitationMail only ever calls message.htmlView(), which always renders to a string.
-  const match = (html as string).match(/href="[^"]*\/invitations\/([a-f0-9]+)"/)
-  const token = match?.[1]
-
-  if (!token) throw new Error('No invitation link found in the queued mail')
-
-  return token
-}
+import { createUser, ownedWorkspace, workspace } from '#access/tests/seed'
 
 test.group('Access | invitations', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
 
   test('requires members.manage on every route', async ({ client }) => {
-    const { acme } = await setup()
+    const { acme } = await ownedWorkspace()
     const plain = await acme.member()
 
     const invitation = await acme.inside(() =>
@@ -65,7 +42,7 @@ test.group('Access | invitations', group => {
   })
 
   test('requires auth on every route, including accept', async ({ client }) => {
-    const { acme } = await setup()
+    const { acme } = await ownedWorkspace()
 
     const responses = [
       await client.visit('access.members.index').headers(acme.headers),
@@ -82,7 +59,7 @@ test.group('Access | invitations', group => {
 
   test('mails the invitation in the inviter’s locale', async ({ client, assert }) => {
     using fake = mail.fake()
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
 
     await client
       .visit('access.invitations.store')
@@ -100,7 +77,7 @@ test.group('Access | invitations', group => {
 
   test('invites, lists, and revokes', async ({ client, assert }) => {
     using fake = mail.fake()
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const editor = await acme.role('Editor', ['roles.manage'])
 
     const created = await client
@@ -136,7 +113,7 @@ test.group('Access | invitations', group => {
   })
 
   test('answers 404 for an unknown invitation id', async ({ client }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const stranger = '01900000-0000-7000-8000-000000000000'
 
     const response = await client
@@ -150,7 +127,7 @@ test.group('Access | invitations', group => {
   test('answers 409 for an email that already belongs to a member, in any case', async ({
     client,
   }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const member = await acme.member()
 
     const response = await client
@@ -165,21 +142,21 @@ test.group('Access | invitations', group => {
 
   test('re-inviting the same email replaces the token', async ({ client, assert }) => {
     using fake = mail.fake()
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
 
     await client
       .visit('access.invitations.store')
       .json({ email: 'guest@example.com', roleId: null })
       .headers(acme.headers)
       .loginAs(owner)
-    const firstToken = lastToken(fake)
+    const firstToken = linkToken(fake, 'invitations')
 
     await client
       .visit('access.invitations.store')
       .json({ email: 'guest@example.com', roleId: null })
       .headers(acme.headers)
       .loginAs(owner)
-    const secondToken = lastToken(fake)
+    const secondToken = linkToken(fake, 'invitations')
 
     assert.notEqual(firstToken, secondToken)
 
@@ -203,7 +180,7 @@ test.group('Access | invitations', group => {
   })
 
   test('accept answers 404 for an expired invitation', async ({ client }) => {
-    const { acme } = await setup()
+    const { acme } = await ownedWorkspace()
 
     await acme.inside(() =>
       Invitation.create({
@@ -224,14 +201,14 @@ test.group('Access | invitations', group => {
 
   test('accept answers 403 when the signed-in email differs', async ({ client }) => {
     using fake = mail.fake()
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
 
     await client
       .visit('access.invitations.store')
       .json({ email: 'guest@example.com', roleId: null })
       .headers(acme.headers)
       .loginAs(owner)
-    const token = lastToken(fake)
+    const token = linkToken(fake, 'invitations')
 
     const response = await client
       .visit('invitation_accept.store')
@@ -247,7 +224,7 @@ test.group('Access | invitations', group => {
     assert,
   }) => {
     using fake = mail.fake()
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const editor = await acme.role('Editor', ['roles.manage'])
     const guest = await createUser()
     await guest.merge({ email: 'guest@example.com' }).save()
@@ -257,7 +234,7 @@ test.group('Access | invitations', group => {
       .json({ email: 'guest@example.com', roleId: editor.id })
       .headers(acme.headers)
       .loginAs(owner)
-    const token = lastToken(fake)
+    const token = linkToken(fake, 'invitations')
 
     const accepted = await client.visit('invitation_accept.store').json({ token }).loginAs(guest)
     accepted.assertStatus(200)
@@ -281,7 +258,7 @@ test.group('Access | invitations', group => {
     assert,
   }) => {
     using fake = mail.fake()
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const editor = await acme.role('Editor', ['roles.manage'])
     const guest = await createUser()
     await guest.merge({ email: 'guest@example.com' }).save()
@@ -295,7 +272,7 @@ test.group('Access | invitations', group => {
 
     const accepted = await client
       .visit('invitation_accept.store')
-      .json({ token: lastToken(fake) })
+      .json({ token: linkToken(fake, 'invitations') })
       .loginAs(guest)
 
     accepted.assertStatus(200)
@@ -316,7 +293,7 @@ test.group('Access | invitations', group => {
     client,
     assert,
   }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const globex = await workspace('Globex')
     const globexOwner = await globex.member()
     await globex.assign(globexOwner, await globex.role('Owner', ['members.manage']))
@@ -347,7 +324,7 @@ test.group('Access | invitations', group => {
     assert,
   }) => {
     using fake = mail.fake()
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const editor = await acme.role('Editor', ['roles.manage'])
     const guest = await createUser()
     await guest.merge({ email: 'guest@example.com' }).save()
@@ -367,7 +344,7 @@ test.group('Access | invitations', group => {
     await invite()
     await client
       .visit('invitation_accept.store')
-      .json({ token: lastToken(fake) })
+      .json({ token: linkToken(fake, 'invitations') })
       .loginAs(guest)
 
     const events = await AuditEvent.query().where('tenant_id', acme.tenant.id).orderBy('id')

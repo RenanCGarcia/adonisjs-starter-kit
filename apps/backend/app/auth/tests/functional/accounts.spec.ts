@@ -1,18 +1,8 @@
 import { test } from '@japa/runner'
+import { account, sessionIdOf } from '#tests/accounts'
 import { sessionOf } from '#tests/sessions'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
-
-/** The access token's id, which a session's audit events carry: `oat_<base64url id>.<secret>`. */
-function sessionIdOf(token: string) {
-  return Buffer.from(token.slice('oat_'.length).split('.')[0]!, 'base64url').toString()
-}
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
 
 /** A signup body with a concrete `locale`/`timezone`, for a value the typed route would reject. */
 interface SignupBody {

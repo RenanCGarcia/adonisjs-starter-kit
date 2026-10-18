@@ -1,29 +1,10 @@
 import { DateTime } from 'luxon'
+import { account, sessionIdOf, signUp } from '#tests/accounts'
 import { test } from '@japa/runner'
 import { sessionOf } from '#tests/sessions'
 import db from '@adonisjs/lucid/services/db'
 import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
-
-/** The access token's id, which a session row carries as `id`: `oat_<base64url id>.<secret>`. */
-function sessionIdOf(token: string) {
-  return Buffer.from(token.slice('oat_'.length).split('.')[0]!, 'base64url').toString()
-}
-
-// Signup itself opens a session: its token is the account's first device, so tests that count
-// sessions use it instead of discarding it and opening an uncounted extra one.
-async function signUp(client: ApiClient, email: string) {
-  const response = await client.visit('auth.new_account.store').json({ ...account, email })
-  const { token }: { token: string } = response.body().data
-
-  return token
-}
 
 async function login(client: ApiClient, email: string, userAgent: string) {
   const response = await client

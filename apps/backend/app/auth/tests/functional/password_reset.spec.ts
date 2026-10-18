@@ -1,40 +1,13 @@
 import { test } from '@japa/runner'
+import { account, signUp } from '#tests/accounts'
+import { linkToken } from '#tests/mails'
 import { sessionOf } from '#tests/sessions'
 import db from '@adonisjs/lucid/services/db'
 import mail from '@adonisjs/mail/services/main'
-import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
 import PasswordResetMail from '#auth/mails/password_reset_mail'
 
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
-
 const newPassword = { password: 'new-password456', passwordConfirmation: 'new-password456' }
-
-/** Pulls the raw token out of the reset link in the most recently queued mail. */
-function lastResetToken(fake: ReturnType<typeof mail.fake>) {
-  const queued = fake.mails.queued()
-  const html = queued[queued.length - 1]?.message.toJSON().message.html
-
-  // SAFETY: PasswordResetMail only ever calls message.htmlView(), which renders to a string.
-  const token = (html as string | undefined)?.match(
-    /href="[^"]*\/reset-password\/([a-f0-9]+)"/,
-  )?.[1]
-
-  if (!token) throw new Error('No reset link found in the last queued mail')
-
-  return token
-}
-
-async function signUp(client: ApiClient, email: string) {
-  const response = await client.visit('auth.new_account.store').json({ ...account, email })
-  const { token }: { token: string } = response.body().data
-
-  return token
-}
 
 test.group('Auth | password reset', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
@@ -110,7 +83,7 @@ test.group('Auth | password reset', group => {
 
     using fake = mail.fake()
     await client.visit('auth.password_resets.store').json({ email: 'ada@example.com' })
-    const token = lastResetToken(fake)
+    const token = linkToken(fake, 'reset-password')
 
     const reset = await client.visit('auth.password_resets.update').json({ token, ...newPassword })
     reset.assertStatus(200)
@@ -146,7 +119,7 @@ test.group('Auth | password reset', group => {
     await signUp(client, 'ada@example.com')
     using fake = mail.fake()
     await client.visit('auth.password_resets.store').json({ email: 'ada@example.com' })
-    const token = lastResetToken(fake)
+    const token = linkToken(fake, 'reset-password')
 
     await db.from('user_tokens').update({ expires_at: new Date(Date.now() - 1000) })
 
@@ -162,7 +135,7 @@ test.group('Auth | password reset', group => {
     await signUp(client, 'ada@example.com')
     using fake = mail.fake()
     await client.visit('auth.password_resets.store').json({ email: 'ada@example.com' })
-    const token = lastResetToken(fake)
+    const token = linkToken(fake, 'reset-password')
     await db.from('users').where('email', 'ada@example.com').update({ disabled_at: new Date() })
 
     const response = await client

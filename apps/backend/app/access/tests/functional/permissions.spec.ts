@@ -1,17 +1,7 @@
 import { test } from '@japa/runner'
-import type User from '#users/models/user'
-import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { DateTime } from 'luxon'
-import { makePlatformAdmin, workspace } from '#access/tests/seed'
-
-async function permissionsOf(client: ApiClient, user: User, headers: Record<string, string>) {
-  const response = await client.visit('access.my_permissions.show').headers(headers).loginAs(user)
-
-  response.assertStatus(200)
-
-  return response.body().data.permissions
-}
+import { makePlatformAdmin, permissionsOf, workspace } from '#access/tests/seed'
 
 test.group('Access | effective permissions', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())

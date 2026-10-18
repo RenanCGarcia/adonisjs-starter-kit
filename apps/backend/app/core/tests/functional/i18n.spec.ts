@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { signUp } from '#tests/accounts'
 import testUtils from '@adonisjs/core/services/test_utils'
 
 const wrongCredentials = { email: 'nobody@example.com', password: 'wrong-password' }
@@ -34,17 +35,12 @@ test.group('Core | i18n', group => {
   })
 
   test('translates an exception by its code and keeps the code', async ({ client }) => {
-    const account = await client.visit('auth.new_account.store').json({
-      fullName: null,
-      email: 'ada@example.com',
-      password: 'password123',
-      passwordConfirmation: 'password123',
-    })
+    const token = await signUp(client, 'ada@example.com')
 
     const response = await client
       .visit('invitation_accept.store')
       .header('accept-language', 'pt-BR')
-      .bearerToken(account.body().data.token)
+      .bearerToken(token)
       .json({ token: 'unknown' })
 
     response.assertStatus(404)
