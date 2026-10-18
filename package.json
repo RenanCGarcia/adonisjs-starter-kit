@@ -31,7 +31,7 @@
     "@oxlint/plugins": "1.88.0",
     "@shadcn/lint": "^0.2.1",
     "@types/node": "catalog:",
-    "ai": "^7.0.0",
+    "ai": "^7.0.142",
     "e2e": "^0.21.1",
     "lefthook": "^2.2.2",
     "otpauth": "catalog:",
