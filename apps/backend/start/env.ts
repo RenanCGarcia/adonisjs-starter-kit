@@ -10,7 +10,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   // App
   APP_NAME: Env.schema.string(),
   APP_KEY: Env.schema.secret(),
-  APP_URL: Env.schema.string({ format: 'url', tld: false }),
   FRONTEND_URL: Env.schema.string({ format: 'url', tld: false }),
   MONITORING_SECRET: Env.schema.secret(),
   CORS_ORIGIN: Env.schema.string.optional(),

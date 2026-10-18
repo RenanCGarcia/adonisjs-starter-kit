@@ -3,8 +3,6 @@ import app from '@adonisjs/core/services/app'
 import proxyAddr from 'proxy-addr'
 import { defineConfig } from '@adonisjs/core/http'
 
-export const appUrl = env.get('APP_URL')
-
 /** How many days an audit event is kept before the daily prune deletes it. */
 export const auditRetentionDays = env.get('AUDIT_RETENTION_DAYS', 365)
 
