@@ -240,6 +240,9 @@ catalogs:
     '@types/node':
       specifier: ~26.6.5
       version: 26.6.5
+    '@types/proxy-addr':
+      specifier: ^2.0.3
+      version: 2.0.3
     '@types/react':
       specifier: ^19.3.0
       version: 19.3.0
@@ -267,6 +270,9 @@ catalogs:
     pg:
       specifier: ^8.23.1
       version: 8.23.1
+    proxy-addr:
+      specifier: ^2.0.7
+      version: 2.0.8
     qrcode.react:
       specifier: ^4.2.0
       version: 4.2.0
@@ -425,6 +431,9 @@ importers:
       pg:
         specifier: 'catalog:'
         version: 8.23.1
+      proxy-addr:
+        specifier: 'catalog:'
+        version: 2.0.8
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -456,6 +465,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.5
+      '@types/proxy-addr':
+        specifier: 'catalog:'
+        version: 2.0.3
       hot-hook:
         specifier: ^1.0.0
         version: 1.0.0
@@ -3120,6 +3132,9 @@ packages:
 
   '@types/pluralize@0.0.33':
     resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
+
+  '@types/proxy-addr@2.0.3':
+    resolution: {integrity: sha512-TgAHHO4tNG3HgLTUhB+hM4iwW6JUNeQHCLnF1DjaDA9c69PN+IasoFu2MYDhubFc+ZIw5c5t9DMtjvrD6R3Egg==}
 
   '@types/react-dom@19.3.0':
     resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
@@ -8919,6 +8934,10 @@ snapshots:
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/pluralize@0.0.33': {}
+
+  '@types/proxy-addr@2.0.3':
+    dependencies:
+      '@types/node': 26.6.5
 
   '@types/react-dom@19.3.0(@types/react@19.3.0)':
     dependencies:

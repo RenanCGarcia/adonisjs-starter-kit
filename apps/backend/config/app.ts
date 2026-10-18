@@ -1,5 +1,6 @@
 import env from '#start/env'
 import app from '@adonisjs/core/services/app'
+import proxyAddr from 'proxy-addr'
 import { defineConfig } from '@adonisjs/core/http'
 
 /**
@@ -21,6 +22,13 @@ export const http = defineConfig({
    * Useful to correlate logs and debug a request flow.
    */
   generateRequestId: true,
+
+  /**
+   * Production runs behind Traefik on a private Docker network. Trusting only loopback would make
+   * every visitor share Traefik's IP, and with it every per-IP throttle. Private ranges can't be
+   * reached from outside, so a client can't forge its own address through X-Forwarded-For.
+   */
+  trustProxy: proxyAddr.compile(['loopback', 'uniquelocal']),
 
   /**
    * Allow HTTP method spoofing via the "_method" form/query parameter.
