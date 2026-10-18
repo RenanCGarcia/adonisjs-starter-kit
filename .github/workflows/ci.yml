@@ -131,6 +131,8 @@ jobs:
         run: |
           aws --endpoint-url http://127.0.0.1:9000 s3api head-bucket --bucket starter 2>/dev/null \
             || aws --endpoint-url http://127.0.0.1:9000 s3 mb s3://starter
+      # Fails if a provider leaves a connection open during codegen's warmup boot.
+      - run: timeout -k 5 120 pnpm --filter @monorepo/backend codegen
       - run: pnpm --filter @monorepo/backend test
 
   build:
