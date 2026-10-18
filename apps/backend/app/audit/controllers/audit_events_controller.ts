@@ -9,8 +9,7 @@ import AuditEventTransformer from '#audit/transformers/audit_event_transformer'
 export default class AuditEventsController {
   /** The tenant's whole trail needs audit.view; one subject type's, its feature's permission. */
   async index({ bouncer, request, tenant, serialize }: HttpContext) {
-    const { page, perPage, type, ...filters } =
-      await request.validateUsing(listAuditEventsValidator)
+    const { type, ...filters } = await request.validateUsing(listAuditEventsValidator)
 
     const subjectPermission = filters.subjectType && SUBJECT_PERMISSIONS.get(filters.subjectType)
 
@@ -22,8 +21,6 @@ export default class AuditEventsController {
 
     const { rows, meta } = await new ListAuditEvents().handle({
       trail: { tenantId: tenant.id },
-      page: page ?? 1,
-      perPage: perPage ?? 20,
       types: type,
       ...filters,
     })

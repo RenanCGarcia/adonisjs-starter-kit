@@ -2,8 +2,8 @@ import Tenant from '#tenancy/models/tenant'
 
 export interface ListTenantsInput {
   search?: string
-  page: number
-  perPage: number
+  page?: number
+  perPage?: number
 }
 
 export interface TenantRow {
@@ -13,7 +13,7 @@ export interface TenantRow {
 
 /** Tenant and its memberships aren't tenant-scoped, so this reads every tenant without a context. */
 export default class ListTenants {
-  async handle({ search, page, perPage }: ListTenantsInput) {
+  async handle({ search, page = 1, perPage = 20 }: ListTenantsInput) {
     const tenants = await Tenant.query()
       .if(search, query => query.whereILike('name', `%${search}%`))
       .withCount('memberships')

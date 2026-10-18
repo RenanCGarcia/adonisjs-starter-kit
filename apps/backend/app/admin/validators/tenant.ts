@@ -1,11 +1,11 @@
 import vine from '@vinejs/vine'
+import { pagination } from '#core/validators/pagination'
 
 const params = vine.object({ id: vine.string().uuid() })
 
 export const listTenantsValidator = vine.create({
   search: vine.string().trim().maxLength(255).optional(),
-  page: vine.number().withoutDecimals().min(1).optional(),
-  perPage: vine.number().withoutDecimals().range([1, 100]).optional(),
+  ...pagination(),
 })
 
 export const renameTenantValidator = vine.create({

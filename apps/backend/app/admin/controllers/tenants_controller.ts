@@ -16,13 +16,9 @@ import {
 export default class TenantsController {
   async index({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)
-    const { search, page, perPage } = await request.validateUsing(listTenantsValidator)
+    const filters = await request.validateUsing(listTenantsValidator)
 
-    const { rows, meta } = await new ListTenants().handle({
-      search,
-      page: page ?? 1,
-      perPage: perPage ?? 20,
-    })
+    const { rows, meta } = await new ListTenants().handle(filters)
 
     return serialize(AdminTenantTransformer.paginate(rows, meta))
   }

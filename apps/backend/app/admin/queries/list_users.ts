@@ -4,8 +4,8 @@ import PlatformAdmin from '#access/models/platform_admin'
 
 export interface ListUsersInput {
   search?: string
-  page: number
-  perPage: number
+  page?: number
+  perPage?: number
 }
 
 export interface UserRow {
@@ -15,7 +15,7 @@ export interface UserRow {
 }
 
 export default class ListUsers {
-  async handle({ search, page, perPage }: ListUsersInput) {
+  async handle({ search, page = 1, perPage = 20 }: ListUsersInput) {
     const users = await User.query()
       .if(search, query =>
         query.where(matches =>
