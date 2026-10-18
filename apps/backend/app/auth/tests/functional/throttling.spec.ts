@@ -1,4 +1,6 @@
 import { test } from '@japa/runner'
+import { setTimeout } from 'node:timers/promises'
+import { penalizeTwoFactorFailure } from '#start/limiter'
 import testUtils from '@adonisjs/core/services/test_utils'
 
 const account = {
@@ -102,5 +104,24 @@ test.group('Auth | throttling', group => {
       .json({ email: 'eve@example.com' })
 
     otherEmail.assertStatus(200)
+  })
+})
+
+test.group('Auth | failure budget', () => {
+  test('concurrent checks never run more than the 5 the budget allows', async ({ assert }) => {
+    let checked = 0
+
+    const attempts = Array.from({ length: 20 }, () =>
+      penalizeTwoFactorFailure('budget-user', async () => {
+        checked++
+        // A real check awaits the database, the window a racing request would slip through.
+        await setTimeout(20)
+        throw new Error('wrong code')
+      }),
+    )
+
+    await Promise.allSettled(attempts)
+
+    assert.equal(checked, 5)
   })
 })

@@ -83,40 +83,38 @@ export const emailVerificationResendThrottle = throttle('email_verification_rese
 })
 
 /**
- * Runs a credential check that counts against the caller only when it throws, so a correct
- * password never uses up the limit and clears the failures before it. Keyed by email+IP rather
- * than email alone, so a stranger failing on purpose can't lock the owner out of their account.
+ * Runs a credential check under a budget of 5 failures per 15 minutes, then a 15 minute block.
+ * The attempt is reserved with an atomic consume before the check runs, so concurrent requests
+ * can't all read a counter that hasn't moved yet. A success deletes the key, so a correct answer
+ * never uses up the budget and clears the failures before it.
  */
-export async function penalizeLoginFailure<T>(
-  email: string,
-  ip: string,
-  check: () => Promise<T>,
-): Promise<T> {
+async function guardFailures<T>(key: string, check: () => Promise<T>) {
   if (app.inDev) return check()
 
-  // penalize returns an already-blocked state as a value but rethrows the check's own error.
-  const [blocked, result] = await limiter
-    .use({ requests: 5, duration: '15 mins', blockDuration: '15 mins' })
-    .penalize(`login_failure_${ip}_${email}`, check)
+  const failures = limiter.use({ requests: 5, duration: '15 mins', blockDuration: '15 mins' })
 
-  if (blocked) throw blocked
+  await failures.consume(key)
+
+  const result = await check()
+
+  await failures.delete(key)
 
   return result
 }
 
 /**
- * Like `penalizeLoginFailure`, for the code of a login's second step. Keyed by the user alone:
- * whoever gets here knows the password, and keying by IP would let them rotate IPs through the
- * million TOTP values. The cost is that they can lock the owner out of signing in for a while.
+ * Keyed by email+IP rather than email alone, so a stranger failing on purpose can't lock the
+ * owner out of their account.
  */
-export async function penalizeTwoFactorFailure<T>(userId: string, check: () => Promise<T>) {
-  if (app.inDev) return check()
+export function penalizeLoginFailure<T>(email: string, ip: string, check: () => Promise<T>) {
+  return guardFailures(`login_failure_${ip}_${email}`, check)
+}
 
-  const [blocked, result] = await limiter
-    .use({ requests: 5, duration: '15 mins', blockDuration: '15 mins' })
-    .penalize(`two_factor_failure_${userId}`, check)
-
-  if (blocked) throw blocked
-
-  return result
+/**
+ * For the code of a login's second step. Keyed by the user alone: whoever gets here knows the
+ * password, and keying by IP would let them rotate IPs through the million TOTP values. The cost
+ * is that they can lock the owner out of signing in for a while.
+ */
+export function penalizeTwoFactorFailure<T>(userId: string, check: () => Promise<T>) {
+  return guardFailures(`two_factor_failure_${userId}`, check)
 }
