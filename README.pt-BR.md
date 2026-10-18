@@ -16,6 +16,25 @@
 
 </div>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/members-dark.png">
+    <img src="docs/images/members.png" alt="Página de membros do workspace Lovelace Labs" width="720">
+  </picture>
+</p>
+
+## Capturas de tela
+
+|                                                                                                                      |                                                                                                                                               |
+| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| ![Página de login](docs/images/sign-in.png) Login                                                                    | ![Página de login no tema escuro](docs/images/sign-in-dark.png) Login, tema escuro                                                            |
+| ![Visão geral do workspace](docs/images/workspace-overview.png) Visão geral do workspace                             | ![Convites](docs/images/invitations.png) Convites pendentes                                                                                   |
+| ![Papéis e permissões](docs/images/roles-permissions.png) Papéis e permissões                                        | ![Trilha de auditoria](docs/images/audit-trail.png) Trilha de auditoria                                                                       |
+| ![Configuração de dois fatores](docs/images/two-factor-setup.png) Configuração de dois fatores                       | ![Página de perfil em português](docs/images/profile-preferences.png) Perfil em português (pt-BR). Cada usuário escolhe idioma e fuso horário |
+| ![Administração da plataforma, workspaces](docs/images/admin-workspaces.png) Administração da plataforma, workspaces | ![Administração da plataforma, usuários](docs/images/admin-users.png) Administração da plataforma, usuários                                   |
+
+Para refazer estas capturas, rode `pnpm screenshots`. O script popula um banco separado, `starter_demo`, para que seus dados de desenvolvimento não apareçam nas imagens. Ele precisa do Docker e das portas 3333 e 5173 livres.
+
 ## Stack
 
 ```mermaid
@@ -46,40 +65,45 @@ flowchart LR
 
 ## O que vem pronto
 
-|     | Recurso                                                            |
-| --- | ------------------------------------------------------------------ |
-| 🔐  | Cadastro, login, perfil e avatar (guards de token e sessão)        |
-| 🏢  | Multi-tenancy                                                      |
-| 🛡️  | Papéis e permissões por tenant                                     |
-| 📎  | Anexos no S3 com URLs assinadas e limpeza de órfãos                |
-| ✉️  | E-mail (Mailpit em dev) e filas no Redis                           |
-| ❤️  | Health checks (`/health/live`, `/health/ready`)                    |
-| 🧬  | Chaves primárias UUIDv7, env validado no boot                      |
-| 🧪  | Testes unitários, funcionais e e2e                                 |
-| 🧹  | oxlint + oxfmt, fronteiras de módulo no lint, Conventional Commits |
-| 🐳  | Dockerfile multi-stage e compose para Dokploy                      |
+|     | Recurso                                                                               |
+| --- | ------------------------------------------------------------------------------------- |
+| 🔐  | Cadastro, login, verificação de e-mail, redefinição de senha, perfil e avatar         |
+| 🔑  | Autenticação em duas etapas (TOTP + códigos de recuperação) e sessões por dispositivo |
+| 🏢  | Multi-tenancy com workspaces e convites por e-mail                                    |
+| 🛡️  | Papéis e permissões granulares por workspace                                          |
+| 📜  | Trilha de auditoria de quem mudou o quê em um workspace, e quando                     |
+| 🛠️  | Área de administração da plataforma para todo workspace e usuário, protegida por 2FA  |
+| 🌐  | i18n (en-US, pt-BR) com idioma e fuso horário por usuário                             |
+| 📎  | Anexos no S3 com URLs assinadas e limpeza de órfãos                                   |
+| ✉️  | E-mail (Mailpit em dev) e filas no Redis                                              |
+| ❤️  | Health checks (`/health/live`, `/health/ready`)                                       |
+| 🧬  | Chaves primárias UUIDv7, env validado no boot                                         |
+| 🧪  | Testes unitários, funcionais e e2e                                                    |
+| 🧹  | oxlint + oxfmt, fronteiras de módulo no lint, Conventional Commits                    |
+| 🐳  | Dockerfile multi-stage e compose para Dokploy                                         |
 
 ## Módulos
 
 ```mermaid
 flowchart BT
-  users --> core
   users --> attachments
   attachments --> core
   auth --> users
   tenancy --> users
   access --> tenancy
-  access --> users
+  admin --> auth
+  admin --> access
+  audit --> admin
 ```
 
-As setas são os imports permitidos, declarados em [`apps/backend/modules.json`](apps/backend/modules.json) e aplicados pelo lint.
+As setas são os imports permitidos, declarados em [`apps/backend/modules.json`](apps/backend/modules.json) e aplicados pelo lint. O diagrama omite uma seta quando um caminho mais longo já a mostra. O arquivo lista todas.
 
 ## Começando
 
 > Requer **Node 24**, **pnpm** via Corepack (`corepack enable`) e **Docker**.
 
 ```sh
-git clone --depth 1 https://github.com/enzopita/starter.git meu-app
+git clone --depth 1 https://github.com/enzopita/adonisjs-starter-kit.git meu-app
 cd meu-app && rm -rf .git && git init
 ```
 
@@ -112,6 +136,7 @@ pnpm dev
 | `pnpm typecheck` · `pnpm lint` | Typecheck · lint                           |
 | `pnpm format`                  | Formatação                                 |
 | `pnpm codegen`                 | Regenera o cliente tipado e os registros   |
+| `pnpm screenshots`             | Refaz as capturas de tela do README        |
 | `node ace make:module <nome>`  | Novo módulo do backend (em `apps/backend`) |
 
 ## Deploy
