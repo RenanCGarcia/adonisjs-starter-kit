@@ -78,8 +78,8 @@ function useSyncPreferences(
 
     preferences.set({ locale: nextLocale, timeZone: nextTimeZone })
 
-    // Only reload for a locale the next load can read back: LOCALES lacking it, or blocked
-    // storage, would otherwise reload forever since the mismatch never resolves.
+    // Only reload for a locale the next load can read back: one LOCALES lacks would reload
+    // forever, and with blocked storage the reload would also drop the in-memory session.
     const reloadIfStale = () => {
       if (nextLocale !== locale && LOCALES.includes(nextLocale) && preferences.persists) {
         window.location.reload()
