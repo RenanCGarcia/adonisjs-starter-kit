@@ -87,7 +87,7 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   declare avatar: BelongsTo<typeof Attachment> | null
 
   get initials() {
-    const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')
+    const [first, last] = this.fullName ? this.fullName.split(' ') : [this.email.split('@')[0]]
 
     if (first && last) {
       return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
