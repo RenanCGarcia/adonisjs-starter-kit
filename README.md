@@ -6,6 +6,7 @@
 
 English · [Português](README.pt-BR.md)
 
+[![CI](https://github.com/enzopita/adonisjs-starter-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/enzopita/adonisjs-starter-kit/actions/workflows/ci.yml)
 ![Node 24](https://img.shields.io/badge/node-24-339933?logo=nodedotjs&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-12-F69220?logo=pnpm&logoColor=white)
 ![AdonisJS 7](https://img.shields.io/badge/AdonisJS-7-5A45FF?logo=adonisjs&logoColor=white)
