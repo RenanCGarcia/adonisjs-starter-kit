@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "prepare": "lefthook install",
-    "dev": "docker compose up -d --wait && turbo dev dev:worker",
+    "dev": "docker compose up -d --wait && pnpm --filter @monorepo/backend exec node ace queue:migrate && turbo dev dev:worker",
     "codegen": "turbo codegen",
     "build": "turbo build",
     "test": "turbo test",

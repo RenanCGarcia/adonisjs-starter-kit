@@ -13,7 +13,6 @@ WORKDIR /repo
 
 FROM base AS fetch
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY patches ./patches
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch
 
 FROM fetch AS build
