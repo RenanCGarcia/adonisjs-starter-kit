@@ -6,7 +6,7 @@
     "heading": "You’ve been invited",
     "intro": "Someone invited you to join a workspace on {appName}.",
     "open_link": "Open this link to accept:",
-    "accept": "Accept the invitation",
+    "action": "Accept the invitation",
     "expires": "This invitation expires in {days} days.",
     "footer": "You received this because you were invited to a workspace. Ignore this email if you weren’t expecting it."
   }

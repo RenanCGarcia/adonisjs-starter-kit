@@ -1,46 +1,8 @@
-import env from '#start/env'
-import { BaseMail } from '@adonisjs/mail'
-import i18nManager from '@adonisjs/i18n/services/main'
+import { LinkMail } from '#core/mails/link_mail'
 import { USER_TOKEN_EXPIRY } from '#auth/services/user_tokens'
 
-export interface EmailVerificationMailInput {
-  email: string
-  link: string
-  locale: string
-}
-
-export default class EmailVerificationMail extends BaseMail {
-  constructor(private data: EmailVerificationMailInput) {
-    super()
-  }
-
-  prepare() {
-    const i18n = i18nManager.locale(this.data.locale)
-    const appName = env.get('APP_NAME')
-    const subject = i18n.t('auth.email_verification_mail.subject')
-
-    // Queued mails reach the worker as JSON, so the views get finished strings, not a bound t().
-    const view = {
-      link: this.data.link,
-      lang: this.data.locale.split('-')[0],
-      appName,
-      subject,
-      preview: i18n.t('auth.email_verification_mail.preview', { appName }),
-      heading: i18n.t('auth.email_verification_mail.heading'),
-      intro: i18n.t('auth.email_verification_mail.intro', { appName }),
-      action: i18n.t('auth.email_verification_mail.action'),
-      openLink: i18n.t('auth.email_verification_mail.open_link'),
-      pasteLink: i18n.t('mail.paste_link'),
-      expires: i18n.t('auth.email_verification_mail.expires', {
-        hours: USER_TOKEN_EXPIRY.email_verification.hours,
-      }),
-      footer: i18n.t('auth.email_verification_mail.footer'),
-    }
-
-    this.message
-      .to(this.data.email)
-      .subject(subject)
-      .htmlView('emails/email_verification_html', view)
-      .textView('emails/email_verification_text', view)
-  }
+export default class EmailVerificationMail extends LinkMail {
+  protected prefix = 'auth.email_verification_mail'
+  protected view = 'email_verification'
+  protected expiresIn = { hours: USER_TOKEN_EXPIRY.email_verification.hours }
 }
