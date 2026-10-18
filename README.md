@@ -34,7 +34,7 @@ English · [Português](README.pt-BR.md)
 | ![Two-factor setup](docs/images/two-factor-setup.png) Two-factor setup                     | ![Profile page in Portuguese](docs/images/profile-preferences.png) Profile in Portuguese (pt-BR). Each user picks a language and time zone |
 | ![Platform admin, workspaces](docs/images/admin-workspaces.png) Platform admin, workspaces | ![Platform admin, users](docs/images/admin-users.png) Platform admin, users                                                                |
 
-To retake these screenshots, run `pnpm screenshots`. The script seeds a separate `starter_demo` database, so your dev data stays out of the pictures. It needs Docker and free ports 3333 and 5173.
+To retake these screenshots, run `pnpm screenshots`. The script seeds a separate `starter_demo` database, so your dev data stays out of the pictures. It needs Docker, [`agent-browser`](https://www.npmjs.com/package/agent-browser) on the `PATH`, and free ports 3333 and 5173. It also deletes the demo addresses' mail from Mailpit.
 
 ## Stack
 

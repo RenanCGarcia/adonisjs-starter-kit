@@ -2,7 +2,8 @@
  * Retakes the README screenshots in docs/images/: a fresh demo database, a fixed dataset seeded
  * through the API, the app served against it, and agent-browser capturing each screen.
  *
- * Needs Docker and free ports 3333 and 5173.
+ * Needs Docker, `agent-browser` on the PATH, and free ports 3333 and 5173. Deletes Mailpit's mail
+ * to the demo addresses only.
  */
 import { execFile, execFileSync, spawn } from 'node:child_process'
 import type { ChildProcess } from 'node:child_process'
@@ -42,8 +43,6 @@ const DEMO_ENV = {
   QUEUE_DRIVER: 'sync',
   LIMITER_STORE: 'memory',
 }
-
-Object.assign(process.env, DEMO_ENV)
 
 const PASSWORD = 'lovelace-demo-password'
 
@@ -113,7 +112,8 @@ function start(name: string, command: string, args: string[], cwd: string) {
 
 function stopAll() {
   for (const child of started) {
-    if (child.pid && child.exitCode === null) {
+    // Even when the leader exited: `node ace serve` can leave its server child in the group.
+    if (child.pid) {
       try {
         process.kill(-child.pid, 'SIGTERM')
       } catch {
@@ -288,7 +288,10 @@ async function main() {
     }
   }
 
+  // Compose interpolates DB_DATABASE into the pgsql container, so the demo values must not be set
+  // yet or `up` recreates the dev container around the demo database.
   run('docker', ['compose', 'up', '-d', '--wait'])
+  Object.assign(process.env, DEMO_ENV)
   resetDatabase()
   await clearDemoMail()
 

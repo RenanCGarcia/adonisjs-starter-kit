@@ -34,7 +34,7 @@
 | ![Configuração de dois fatores](docs/images/two-factor-setup.png) Configuração de dois fatores                       | ![Página de perfil em português](docs/images/profile-preferences.png) Perfil em português (pt-BR). Cada usuário escolhe idioma e fuso horário |
 | ![Administração da plataforma, workspaces](docs/images/admin-workspaces.png) Administração da plataforma, workspaces | ![Administração da plataforma, usuários](docs/images/admin-users.png) Administração da plataforma, usuários                                   |
 
-Para refazer estas capturas, rode `pnpm screenshots`. O script popula um banco separado, `starter_demo`, para que seus dados de desenvolvimento não apareçam nas imagens. Ele precisa do Docker e das portas 3333 e 5173 livres.
+Para refazer estas capturas, rode `pnpm screenshots`. O script popula um banco separado, `starter_demo`, para que seus dados de desenvolvimento não apareçam nas imagens. Ele precisa do Docker, do [`agent-browser`](https://www.npmjs.com/package/agent-browser) no `PATH` e das portas 3333 e 5173 livres. Ele também apaga do Mailpit os e-mails dos endereços de demonstração.
 
 ## Stack
 
