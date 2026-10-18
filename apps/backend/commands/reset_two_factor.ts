@@ -1,6 +1,5 @@
 import User from '#users/models/user'
 import { BaseCommand, args } from '@adonisjs/core/ace'
-import i18nManager from '@adonisjs/i18n/services/main'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 import ResetTwoFactor from '#admin/actions/reset_two_factor'
 import TwoFactorNotEnabledException from '#auth/exceptions/two_factor_not_enabled_exception'
@@ -26,7 +25,7 @@ export default class ResetTwoFactorCommand extends BaseCommand {
     }
 
     const reset = await new ResetTwoFactor()
-      .handle({ id: user.id, locale: i18nManager.defaultLocale, protectPlatformAdmins: false })
+      .handle({ id: user.id, protectPlatformAdmins: false })
       .catch(error => {
         if (error instanceof TwoFactorNotEnabledException) return null
 

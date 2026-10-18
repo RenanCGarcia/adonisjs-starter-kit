@@ -282,7 +282,9 @@ export class UserSchema extends BaseModel {
     'emailVerifiedAt',
     'fullName',
     'id',
+    'locale',
     'password',
+    'timezone',
     'twoFactorConfirmedAt',
     'twoFactorLastStep',
     'twoFactorSecret',
@@ -303,8 +305,12 @@ export class UserSchema extends BaseModel {
   declare fullName: string | null
   @column({ isPrimary: true })
   declare id: string
+  @column()
+  declare locale: string | null
   @column({ serializeAs: null })
   declare password: string
+  @column()
+  declare timezone: string | null
   @column.dateTime()
   declare twoFactorConfirmedAt: DateTime | null
   @column()

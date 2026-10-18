@@ -5,7 +5,7 @@
 | Module        | Owns                                                                                                                                |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `core`        | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`, health checks, the audit recorder.        |
-| `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.                                                       |
+| `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint, locale and timezone.                                  |
 | `auth`        | Behavior over that identity: sign-up, login, two-factor, logout, sessions, password reset, email verification, the auth middleware. |
 | `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.                                                       |
 | `tenancy`     | Tenants and their members, the tenant scope on models, the `tenant` middleware.                                                     |
@@ -329,6 +329,37 @@ The states are nullable timestamps, and each holds an invariant at its write rat
 Suspending, disabling, granting and their reverses are idempotent: a repeat keeps the first date and answers 200, and records its event again, since every successful write records one (see [The guard](#the-guard)).
 
 An impersonation token is an ordinary access token whose `impersonator_id` names the admin: `User.currentAccessToken.impersonatorId` carries it, and every event recorded with it stores it in `audit_events.impersonator_id`. The session ends with `POST /api/v1/account/logout` from that token, and the frontend restores the admin's own token. It never reaches the admin area, since its user is never a platform admin.
+
+## Locale, timezone and UTC
+
+`users.locale` and `users.timezone` are nullable: null means "not known yet", which only existing
+users (signed up before this) can be. A later unit fills them in from the browser on the user's
+next load; nothing backfills them. `#users/validators/user.ts` exports `localeRule` (the
+`supportedLocales` of `config/i18n.ts`, so there's one list) and `timezoneRule` (every IANA zone
+`Intl.supportedValuesOf('timeZone')` names, plus `UTC`, built once at import time); both signup
+(`auth/validators/auth.ts`) and `PATCH /api/v1/account/profile` (`users/validators/user.ts`)
+import them rather than repeating the list.
+
+Sign-up accepts optional `locale` and `timezone`; an absent `locale` stores the request's resolved
+locale (`ctx.i18n.locale`), and an absent `timezone` stays null. `PATCH /api/v1/account/profile`
+updates either or both (`UpdateProfile` in `users/actions/`), audited as `user.profile_updated`
+like `user.avatar_changed`; it isn't refused during impersonation, following the avatar endpoint's
+precedent over the two-factor endpoints'.
+
+Every mail to an existing user picks its locale with `mailLocaleFor` (`users/services/mail_locale`):
+the user's own stored locale, else the triggering request's, else the app default. Password reset,
+both email-verification mails, and the admin's two-factor reset (`admin/actions/reset_two_factor`,
+and `node ace admin:reset-two-factor`) all go through it, so the admin's own locale never leaks
+into a mail addressed to someone else. An invitation stays on the inviter's request locale, since
+the invited address may have no account yet, unless that email already belongs to a user, in which
+case `InviteMember` uses theirs.
+
+Everything crosses the API in UTC. `TZ=UTC` is set process-wide (`.env.example`, every
+`compose*.yaml` service), the deployment setup the AdonisJS docs show; Luxon has no separate
+"default zone" to pin, since `DateTime.now()` already follows the process `TZ`. A transformer
+serializes a `DateTime` with `toISO()`'s default UTC-offset formatting, so a response looks like
+`"createdAt": "2026-10-18T16:56:46.344+00:00"` regardless of the host's local time. The frontend
+alone converts a timestamp for display, in the user's stored timezone once that unit lands.
 
 ## Translations
 

@@ -1,4 +1,5 @@
 import vine from '@vinejs/vine'
+import { localeRule, timezoneRule } from '#users/validators/user'
 
 /**
  * Shared rules for email and password.
@@ -14,6 +15,8 @@ export const signupValidator = vine.create({
   email: email().unique({ table: 'users', column: 'email' }),
   password: password(),
   passwordConfirmation: password().sameAs('password'),
+  locale: localeRule().optional(),
+  timezone: timezoneRule().nullable().optional(),
 })
 
 /**

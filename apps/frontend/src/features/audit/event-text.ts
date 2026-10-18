@@ -236,6 +236,9 @@ const ACCOUNT_EVENTS: EventTexts<Exclude<AuditEventType, TenantEventType>> = {
       return { sentence: t('audit.events.avatarChanged') }
     },
   },
+  'user.profile_updated': {
+    describe: () => ({ sentence: t('audit.events.profileUpdated') }),
+  },
   'attachment.uploaded': {
     describe: ({ data }) => ({ sentence: t('audit.events.fileUploaded', { name: data.name }) }),
   },

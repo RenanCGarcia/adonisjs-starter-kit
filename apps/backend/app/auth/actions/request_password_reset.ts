@@ -5,6 +5,7 @@ import type {} from '#auth/types/audit'
 import type {} from '#auth/types/events'
 import emitter from '@adonisjs/core/services/emitter'
 import { issueUserToken } from '#auth/services/user_tokens'
+import { mailLocaleFor } from '#users/services/mail_locale'
 
 export interface RequestPasswordResetInput {
   email: string
@@ -32,6 +33,12 @@ export default class RequestPasswordReset {
       return issued
     })
 
-    if (token) await emitter.emit('auth:password_reset_requested', { email, token, locale })
+    if (token) {
+      await emitter.emit('auth:password_reset_requested', {
+        email,
+        token,
+        locale: mailLocaleFor(recipient, locale),
+      })
+    }
   }
 }

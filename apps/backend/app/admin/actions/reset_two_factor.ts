@@ -5,13 +5,12 @@ import type {} from '#admin/types/audit'
 import type {} from '#admin/types/events'
 import emitter from '@adonisjs/core/services/emitter'
 import { clearTwoFactor } from '#auth/services/two_factor'
+import { mailLocaleFor } from '#users/services/mail_locale'
 import { ensureNotPlatformAdmin } from '#admin/services/protect_platform_admins'
 import TwoFactorNotEnabledException from '#auth/exceptions/two_factor_not_enabled_exception'
 
 export interface ResetTwoFactorInput {
   id: string
-  /** The mail's: the user's own locale isn't stored. */
-  locale: string
   /** False only for `node ace admin:reset-two-factor`, the operator's way to reset an admin. */
   protectPlatformAdmins: boolean
 }
@@ -22,7 +21,7 @@ export default class ResetTwoFactor {
    * the user again about a reset that didn't happen. Signs the user out everywhere, so a session
    * on the lost device stops working too.
    */
-  async handle({ id, locale, protectPlatformAdmins }: ResetTwoFactorInput) {
+  async handle({ id, protectPlatformAdmins }: ResetTwoFactorInput) {
     const { user, revoked } = await db.transaction(async trx => {
       const locked = await User.query({ client: trx }).where('id', id).forUpdate().firstOrFail()
 
@@ -49,7 +48,10 @@ export default class ResetTwoFactor {
       return { user: locked, revoked: Number(deleted) }
     })
 
-    await emitter.emit('admin:two_factor_reset', { email: user.email, locale })
+    await emitter.emit('admin:two_factor_reset', {
+      email: user.email,
+      locale: mailLocaleFor(user),
+    })
 
     return { user, revoked }
   }

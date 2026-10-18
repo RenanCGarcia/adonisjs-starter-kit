@@ -62,6 +62,25 @@ test.group('Auth | password reset', group => {
     fake.mails.assertQueued(PasswordResetMail, ({ message }) => message.hasTo('ada@example.com'))
   })
 
+  // Regression: the mail follows the requester's Accept-Language instead of the recipient's own
+  // stored locale.
+  test('mails a pt-BR user in pt-BR even on a request with an en-US Accept-Language', async ({
+    client,
+    assert,
+  }) => {
+    await signUp(client, 'ada@example.com')
+    await db.from('users').where('email', 'ada@example.com').update({ locale: 'pt-BR' })
+    using fake = mail.fake()
+
+    await client
+      .visit('auth.password_resets.store')
+      .header('accept-language', 'en-US')
+      .json({ email: 'ada@example.com' })
+
+    const queued = fake.mails.queued()
+    assert.equal(queued[0]?.message.toJSON().message.subject, 'Redefina sua senha')
+  })
+
   test('mails nothing for a disabled account', async ({ client }) => {
     await signUp(client, 'ada@example.com')
     await db.from('users').where('email', 'ada@example.com').update({ disabled_at: new Date() })

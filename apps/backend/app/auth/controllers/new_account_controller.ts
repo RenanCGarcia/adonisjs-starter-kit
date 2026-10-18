@@ -9,13 +9,18 @@ import { issueUserToken } from '#auth/services/user_tokens'
 import { signupValidator } from '#auth/validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
 import UserTransformer from '#users/transformers/user_transformer'
+import { mailLocaleFor } from '#users/services/mail_locale'
 
 export default class NewAccountController {
   async store({ i18n, request, serialize }: HttpContext) {
-    const { fullName, email, password } = await request.validateUsing(signupValidator)
+    const { fullName, email, password, locale, timezone } =
+      await request.validateUsing(signupValidator)
 
     const { user, verificationToken } = await db.transaction(async trx => {
-      const created = await User.create({ fullName, email, password }, { client: trx })
+      const created = await User.create(
+        { fullName, email, password, locale: locale ?? i18n.locale, timezone: timezone ?? null },
+        { client: trx },
+      )
 
       await audit.record(trx, 'auth.signed_up', {
         tenantId: null,
@@ -33,7 +38,7 @@ export default class NewAccountController {
     await emitter.emit('auth:email_verification_requested', {
       email,
       token: verificationToken,
-      locale: i18n.locale,
+      locale: mailLocaleFor(user, i18n.locale),
     })
 
     const token = await new OpenSession().handle({

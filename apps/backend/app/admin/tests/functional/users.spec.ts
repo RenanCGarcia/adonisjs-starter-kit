@@ -148,6 +148,8 @@ test.group('Admin | users', group => {
     using fake = mail.fake()
     const viewer = await admin()
     const ada = await createUser()
+    ada.locale = 'pt-BR'
+    await ada.save()
     await enableTwoFactor(ada)
     await replaceRecoveryCodes(db.connection(), ada.id)
     const session = await User.accessTokens.create(ada)
@@ -160,9 +162,11 @@ test.group('Admin | users', group => {
 
     assert.containsSubset(await listRow(), { user: { twoFactorEnabled: true } })
 
+    // The admin's own request locale (en-US here) must not leak into the user's mail: see the
+    // locale regression test below.
     const reset = await client
       .visit('admin.two_factor_resets.destroy', { id: ada.id })
-      .header('accept-language', 'pt-BR')
+      .header('accept-language', 'en-US')
       .loginAs(viewer)
 
     reset.assertBody({ data: { id: ada.id, twoFactorEnabled: false } })
@@ -185,6 +189,7 @@ test.group('Admin | users', group => {
     )
 
     const again = await client
+
       .visit('admin.two_factor_resets.destroy', { id: ada.id })
       .loginAs(viewer)
 
@@ -204,6 +209,30 @@ test.group('Admin | users', group => {
     assert.deepEqual(
       events.map(event => [event.tenantId, event.actorId, event.data]),
       [[null, viewer.id, { email: ada.email }]],
+    )
+  })
+
+  // Regression: the mail uses the admin's own request locale instead of the target's stored one.
+  test('mails the two-factor reset in the target’s locale, not the admin’s', async ({
+    client,
+    assert,
+  }) => {
+    using fake = mail.fake()
+    const viewer = await admin()
+    const ada = await createUser()
+    ada.locale = 'pt-BR'
+    await ada.save()
+    await enableTwoFactor(ada)
+
+    const reset = await client
+      .visit('admin.two_factor_resets.destroy', { id: ada.id })
+      .header('accept-language', 'en-US')
+      .loginAs(viewer)
+
+    reset.assertStatus(200)
+    assert.equal(
+      fake.mails.queued()[0]?.message.toJSON().message.subject,
+      'Sua autenticação em dois fatores foi desativada',
     )
   })
 

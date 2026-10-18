@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
+import User from '#users/models/user'
 import Role from '#access/models/role'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
@@ -7,6 +8,7 @@ import type {} from '#access/types/audit'
 import emitter from '@adonisjs/core/services/emitter'
 import Invitation from '#access/models/invitation'
 import type { MemberInvited } from '#access/types/events'
+import { mailLocaleFor } from '#users/services/mail_locale'
 import AlreadyMemberException from '#access/exceptions/already_member_exception'
 
 export interface InviteMemberInput {
@@ -55,11 +57,15 @@ export default class InviteMember {
       return upserted
     })
 
+    // The recipient may not have an account yet; one who already does gets mailed in their own
+    // locale rather than the inviter's.
+    const existing = await User.findBy('email', email)
+
     await emitter.emit('access:member_invited', {
       tenantId,
       email,
       token,
-      locale,
+      locale: mailLocaleFor(existing, locale),
     } satisfies MemberInvited)
 
     return invitation

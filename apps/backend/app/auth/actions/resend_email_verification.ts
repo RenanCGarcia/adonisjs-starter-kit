@@ -5,6 +5,7 @@ import type {} from '#auth/types/audit'
 import type {} from '#auth/types/events'
 import emitter from '@adonisjs/core/services/emitter'
 import { issueUserToken } from '#auth/services/user_tokens'
+import { mailLocaleFor } from '#users/services/mail_locale'
 
 export interface ResendEmailVerificationInput {
   user: User
@@ -29,7 +30,11 @@ export default class ResendEmailVerification {
     })
 
     if (token) {
-      await emitter.emit('auth:email_verification_requested', { email: user.email, token, locale })
+      await emitter.emit('auth:email_verification_requested', {
+        email: user.email,
+        token,
+        locale: mailLocaleFor(user, locale),
+      })
     }
   }
 }

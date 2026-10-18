@@ -60,6 +60,7 @@
     "avatarAdded": "added a photo",
     "avatarChanged": "changed their photo",
     "avatarRemoved": "removed their photo",
+    "profileUpdated": "updated their language or time zone",
     "fileUploaded": "uploaded “{name}”",
     "accessDenied": "was denied access to {method} {route}, which needs “{permission}”",
     "tenantAccessDenied": "tried to open this workspace without being a member",

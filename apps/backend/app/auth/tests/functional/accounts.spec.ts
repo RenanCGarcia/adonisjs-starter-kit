@@ -14,6 +14,16 @@ const account = {
   passwordConfirmation: 'password123',
 }
 
+/** A signup body with a concrete `locale`/`timezone`, for a value the typed route would reject. */
+interface SignupBody {
+  fullName: string | null
+  email: string
+  password: string
+  passwordConfirmation: string
+  locale?: string
+  timezone?: string
+}
+
 test.group('Auth | accounts', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
 
@@ -35,6 +45,59 @@ test.group('Auth | accounts', group => {
       .json({ email: 'ADA@example.COM', password: account.password })
 
     response.assertStatus(200)
+  })
+
+  // Regression: a given locale/timezone is ignored, or an absent locale doesn't fall back to the
+  // request's.
+  test('stores the given locale and timezone, and falls back to the request locale', async ({
+    client,
+    assert,
+  }) => {
+    const chosen = await client.visit('auth.new_account.store').json({
+      ...account,
+      email: 'chose@example.com',
+      locale: 'pt-BR',
+      timezone: 'America/Sao_Paulo',
+    })
+
+    assert.containsSubset(chosen.body().data.user, {
+      locale: 'pt-BR',
+      timezone: 'America/Sao_Paulo',
+    })
+
+    const fallback = await client
+      .visit('auth.new_account.store')
+      .header('accept-language', 'pt-BR')
+      .json({ ...account, email: 'fallback@example.com' })
+
+    assert.containsSubset(fallback.body().data.user, { locale: 'pt-BR', timezone: null })
+  })
+
+  // Regression: an unsupported locale or an unrecognized timezone name is stored instead of
+  // rejected.
+  test('rejects an unsupported locale or an unrecognized timezone', async ({ client }) => {
+    const badLocaleBody: SignupBody = {
+      ...account,
+      email: 'bad-locale@example.com',
+      locale: 'fr-FR',
+    }
+
+    // SAFETY: the route only type-checks a supported locale/timezone; this body is intentionally
+    // one the validator, not the type checker, must reject.
+    const badLocale = await client.post('/api/v1/auth/signup').json(badLocaleBody as never)
+
+    badLocale.assertStatus(422)
+
+    const badTimezoneBody: SignupBody = {
+      ...account,
+      email: 'bad-timezone@example.com',
+      timezone: 'Mars/Olympus_Mons',
+    }
+
+    // SAFETY: same as above, for the timezone field.
+    const badTimezone = await client.post('/api/v1/auth/signup').json(badTimezoneBody as never)
+
+    badTimezone.assertStatus(422)
   })
 
   test('records the sign-up, attributed to the new account', async ({ client, assert }) => {

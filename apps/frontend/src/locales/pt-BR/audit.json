@@ -60,6 +60,7 @@
     "avatarAdded": "adicionou uma foto",
     "avatarChanged": "trocou a foto",
     "avatarRemoved": "removeu a foto",
+    "profileUpdated": "atualizou o idioma ou o fuso horário",
     "fileUploaded": "enviou “{name}”",
     "accessDenied": "teve o acesso a {method} {route} negado, pois exige “{permission}”",
     "tenantAccessDenied": "tentou abrir este espaço de trabalho sem ser membro",

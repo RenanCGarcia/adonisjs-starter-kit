@@ -5,6 +5,7 @@ type ParamValue = string | number | bigint | boolean
 export type ScannedRoutes = {
   ALL: {
     'profile.profile.show': { paramsTuple?: []; params?: {} }
+    'profile.profile.update': { paramsTuple?: []; params?: {} }
     'profile.avatar.update': { paramsTuple?: []; params?: {} }
     'attachments.attachments.store': { paramsTuple?: []; params?: {} }
     'tenants.tenants.index': { paramsTuple?: []; params?: {} }
@@ -93,6 +94,9 @@ export type ScannedRoutes = {
     'access.roles.index': { paramsTuple?: []; params?: {} }
     'access.members.index': { paramsTuple?: []; params?: {} }
     'access.invitations.index': { paramsTuple?: []; params?: {} }
+  }
+  PATCH: {
+    'profile.profile.update': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'profile.avatar.update': { paramsTuple?: []; params?: {} }

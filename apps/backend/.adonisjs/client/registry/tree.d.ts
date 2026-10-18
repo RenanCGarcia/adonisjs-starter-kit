@@ -5,6 +5,7 @@ export interface ApiDefinition {
   profile: {
     profile: {
       show: typeof routes['profile.profile.show']
+      update: typeof routes['profile.profile.update']
     }
     avatar: {
       update: typeof routes['profile.avatar.update']
