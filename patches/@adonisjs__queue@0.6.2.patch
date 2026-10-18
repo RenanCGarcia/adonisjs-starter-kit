@@ -1,0 +1,28 @@
+diff --git a/build/providers/queue_provider.js b/build/providers/queue_provider.js
+index 08aca5640592731a09422cff5339a2aae20bc0f6..e2ba43392ef270dac1fb9d7ba537eaeed4cf6346 100644
+--- a/build/providers/queue_provider.js
++++ b/build/providers/queue_provider.js
+@@ -34,11 +34,22 @@ export default class QueueProvider {
+             return QueueManager;
+         });
+     }
++    /**
++     * A warmed up app never gets started and its providers are never shut
++     * down. Therefore, we must not resolve the queue manager (and open the
++     * adapter connections) in this mode.
++     */
++    #isWarmingUp() {
++        return this.app.getMode() === 'warmup';
++    }
+     async boot() {
++        if (this.#isWarmingUp()) {
++            return;
++        }
+         await this.app.container.make('queue.manager');
+     }
+     async start() {
+-        if (this.app.getEnvironment() === 'console') {
++        if (this.app.getEnvironment() === 'console' || this.#isWarmingUp()) {
+             return;
+         }
+         const queueManager = await this.app.container.make('queue.manager');
