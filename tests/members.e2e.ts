@@ -2,18 +2,6 @@ import { test } from '@e2e-dev/web'
 import { expect } from 'e2e'
 import { addMember, createRole, createTenant, signInAs, signUp } from './support/api.ts'
 
-test('the owner sees themself', async ({ app, screen, browser }) => {
-  const owner = await signUp()
-  await createTenant(owner)
-
-  await signInAs(browser, owner)
-  await app.open('/members')
-
-  const row = screen.getByRole('row').filter({ hasText: owner.email })
-  await expect(row).toBeVisible()
-  await expect(row.getByText('You')).toBeVisible()
-})
-
 test("changes a member's role and it persists after reload", async ({ app, screen, browser }) => {
   const owner = await signUp()
   const tenant = await createTenant(owner)
@@ -63,6 +51,9 @@ test('demoting the last manager shows the error and keeps their role', async ({
 
   await signInAs(browser, owner)
   await app.open('/members')
+
+  const row = screen.getByRole('row').filter({ hasText: owner.email })
+  await expect(row.getByText('You')).toBeVisible()
 
   await select().tap()
   await screen.getByRole('option', 'No role').tap()
