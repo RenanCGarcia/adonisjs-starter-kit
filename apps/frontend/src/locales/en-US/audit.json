@@ -44,6 +44,7 @@
     "signedUp": "created their account",
     "loggedIn": "signed in",
     "loginFailed": "Someone tried to sign in as {email} with a wrong password",
+    "passwordResetRequired": "Someone entered the right password for {email} and was asked to choose a new one before signing in",
     "loggedOut": "signed out",
     "sessionRevoked": "revoked a session",
     "passwordResetRequested": "Someone asked for a link to reset the password of {email}",

@@ -25,6 +25,7 @@ export default class ResetPassword {
       const entry = { tenantId: null, subject, actorId: user.id, data: { email: user.email } }
 
       user.password = password
+      user.passwordResetRequiredAt = null
 
       // The link reached the inbox, which is what verifying the email proves.
       const verifies = !user.emailVerifiedAt

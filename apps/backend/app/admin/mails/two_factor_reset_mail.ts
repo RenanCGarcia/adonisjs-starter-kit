@@ -1,9 +1,11 @@
 import env from '#start/env'
 import { BaseMail } from '@adonisjs/mail'
 import i18nManager from '@adonisjs/i18n/services/main'
+import { USER_TOKEN_EXPIRY } from '#auth/services/user_tokens'
 
 export interface TwoFactorResetMailInput {
   email: string
+  link: string
   locale: string
 }
 
@@ -19,7 +21,7 @@ export default class TwoFactorResetMail extends BaseMail {
 
     // Queued mails reach the worker as JSON, so the views get finished strings, not a bound t().
     const view = {
-      link: `${env.get('FRONTEND_URL')}/profile`,
+      link: this.data.link,
       lang: this.data.locale.split('-')[0],
       appName,
       subject,
@@ -29,6 +31,9 @@ export default class TwoFactorResetMail extends BaseMail {
       action: i18n.t('admin.two_factor_reset_mail.action'),
       openLink: i18n.t('admin.two_factor_reset_mail.open_link'),
       pasteLink: i18n.t('mail.paste_link'),
+      expires: i18n.t('admin.two_factor_reset_mail.expires', {
+        minutes: USER_TOKEN_EXPIRY.password_reset.minutes,
+      }),
       warning: i18n.t('admin.two_factor_reset_mail.warning'),
       footer: i18n.t('admin.two_factor_reset_mail.footer'),
     }

@@ -8,6 +8,7 @@ import { errors as limiterErrors } from '@adonisjs/limiter'
 import UserTransformer from '#users/transformers/user_transformer'
 import { penalizeLoginFailure } from '#start/limiter'
 import AccountDisabledException from '#auth/exceptions/account_disabled_exception'
+import PasswordResetRequiredException from '#auth/exceptions/password_reset_required_exception'
 import { issueTwoFactorChallenge } from '#auth/services/two_factor'
 
 /** The password was right, but the account needs a second factor before a session opens. */
@@ -50,6 +51,16 @@ export default class AccessTokensController {
 
     // After the password check, so the answer doesn't tell whether an email is disabled.
     if (user.disabledAt) throw new AccountDisabledException()
+
+    if (user.passwordResetRequiredAt) {
+      await audit.note('auth.password_reset_required', {
+        tenantId: null,
+        subject: { type: 'user', id: user.id },
+        data: { email: user.email },
+      })
+
+      throw new PasswordResetRequiredException()
+    }
 
     if (user.twoFactorConfirmedAt) return serialize(await challenge(user))
 

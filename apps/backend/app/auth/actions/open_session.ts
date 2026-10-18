@@ -1,6 +1,7 @@
 import db from '@adonisjs/lucid/services/db'
 import User, { SESSION_IDLE_TIMEOUT_DAYS } from '#users/models/user'
 import AccountDisabledException from '#auth/exceptions/account_disabled_exception'
+import PasswordResetRequiredException from '#auth/exceptions/password_reset_required_exception'
 
 export interface OpenSessionInput {
   user: User
@@ -24,12 +25,14 @@ export default class OpenSession {
       .where('id', String(token.identifier))
       .update({ user_agent: userAgent?.slice(0, 512) ?? null, ip_address: ipAddress })
 
-    // A disable committing since the caller's check may have deleted the tokens before this one existed.
+    // A disable or an admin two-factor reset committing since the caller's check may have deleted
+    // the tokens before this one existed.
     await user.refresh()
 
-    if (user.disabledAt) {
+    if (user.disabledAt || user.passwordResetRequiredAt) {
       await User.accessTokens.delete(user, token.identifier)
-      throw new AccountDisabledException()
+
+      throw user.disabledAt ? new AccountDisabledException() : new PasswordResetRequiredException()
     }
 
     return token

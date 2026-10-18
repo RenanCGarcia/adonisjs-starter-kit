@@ -1,6 +1,7 @@
 export interface TwoFactorReset {
   email: string
-  /** The admin's request locale, or the default from `node ace`: the user's isn't stored. */
+  /** The raw password reset token, for the mailed link only. */
+  token: string
   locale: string
 }
 

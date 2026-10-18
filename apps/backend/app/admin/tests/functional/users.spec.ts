@@ -8,6 +8,7 @@ import PlatformAdmin from '#access/models/platform_admin'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { admin } from '#admin/tests/seed'
 import { enableTwoFactor } from '#auth/tests/two_factor'
+import PasswordResetMail from '#auth/mails/password_reset_mail'
 import TwoFactorResetMail from '#admin/mails/two_factor_reset_mail'
 import { countRecoveryCodes, replaceRecoveryCodes } from '#auth/services/two_factor'
 import { createUser, workspace } from '#access/tests/seed'
@@ -140,8 +141,10 @@ test.group('Admin | users', group => {
   })
 
   // Regression: a reset leaves a session someone else holds working, keeps the old secret or
-  // recovery codes, doesn't tell the user, or runs again on a user without two-factor.
-  test('resetting two-factor signs the user out, mails them, and the password alone signs in', async ({
+  // recovery codes, lets the old password alone sign in (a phished password plus a "lost device"
+  // claim), mails no working reset link, keeps holding sign-in after the reset, or runs again on a
+  // user without two-factor.
+  test('resetting two-factor signs the user out and holds sign-in until the mailed link sets a new password', async ({
     client,
     assert,
   }) => {
@@ -153,6 +156,7 @@ test.group('Admin | users', group => {
     await enableTwoFactor(ada)
     await replaceRecoveryCodes(db.connection(), ada.id)
     const session = await User.accessTokens.create(ada)
+    const oldCredentials = { email: ada.email, password: 'password123' }
 
     const listRow = async () => {
       const list = await client.visit('admin.users.index').qs({ search: ada.email }).loginAs(viewer)
@@ -175,21 +179,44 @@ test.group('Admin | users', group => {
     const stale = await client.visit('profile.profile.show').bearerToken(session.value!.release())
     stale.assertStatus(401)
 
-    const login = await client
-      .visit('auth.access_tokens.store')
-      .json({ email: ada.email, password: 'password123' })
-
-    assert.isFalse(login.body().data.twoFactorRequired)
+    const held = await client.visit('auth.access_tokens.store').json(oldCredentials)
+    held.assertStatus(403)
+    held.assertBodyContains({ code: 'E_PASSWORD_RESET_REQUIRED' })
+    assert.notProperty(held.body(), 'data')
+    assert.lengthOf(await db.from('auth_access_tokens').where('tokenable_id', ada.id), 0)
     assert.equal(await countRecoveryCodes(db.connection(), ada.id), 0)
 
     fake.mails.assertQueued(TwoFactorResetMail, ({ message }) => message.hasTo(ada.email))
-    assert.equal(
-      fake.mails.queued()[0]?.message.toJSON().message.subject,
-      'Sua autenticação em dois fatores foi desativada',
-    )
+    const mailed = fake.mails.queued()[0]?.message.toJSON().message
+    assert.equal(mailed?.subject, 'Sua autenticação em dois fatores foi desativada')
+
+    // SAFETY: TwoFactorResetMail only ever calls message.htmlView(), which renders to a string.
+    const resetToken = (mailed?.html as string | undefined)?.match(
+      /href="[^"]*\/reset-password\/([a-f0-9]+)"/,
+    )?.[1]
+
+    if (!resetToken) throw new Error('No reset link found in the two-factor reset mail')
+
+    const newPassword = 'new-password456'
+
+    const chosen = await client
+      .visit('auth.password_resets.update')
+      .json({ token: resetToken, password: newPassword, passwordConfirmation: newPassword })
+
+    chosen.assertStatus(200)
+    assert.isNull((await User.findOrFail(ada.id)).passwordResetRequiredAt)
+
+    const login = await client
+      .visit('auth.access_tokens.store')
+      .json({ email: ada.email, password: newPassword })
+
+    login.assertStatus(200)
+    assert.isString(sessionOf(login.body().data).token)
+
+    const oldPassword = await client.visit('auth.access_tokens.store').json(oldCredentials)
+    oldPassword.assertStatus(400)
 
     const again = await client
-
       .visit('admin.two_factor_resets.destroy', { id: ada.id })
       .loginAs(viewer)
 
@@ -204,12 +231,56 @@ test.group('Admin | users', group => {
 
     const events = await AuditEvent.query()
       .where('subject_id', ada.id)
-      .where('type', 'admin.two_factor_reset')
+      .whereIn('type', ['admin.two_factor_reset', 'auth.password_reset_required'])
+      .orderBy('id')
 
     assert.deepEqual(
-      events.map(event => [event.tenantId, event.actorId, event.data]),
-      [[null, viewer.id, { email: ada.email }]],
+      events.map(event => [event.type, event.tenantId, event.actorId, event.data]),
+      [
+        ['admin.two_factor_reset', null, viewer.id, { email: ada.email }],
+        ['auth.password_reset_required', null, null, { email: ada.email }],
+      ],
     )
+  })
+
+  // Regression: forgot-password skips a user held by a two-factor reset, who is stuck once the
+  // mailed link expires.
+  test('a user held by a two-factor reset can still ask for a new reset link', async ({
+    client,
+  }) => {
+    const viewer = await admin()
+    const ada = await createUser()
+    await enableTwoFactor(ada)
+
+    await client.visit('admin.two_factor_resets.destroy', { id: ada.id }).loginAs(viewer)
+
+    using fake = mail.fake()
+    const requested = await client.visit('auth.password_resets.store').json({ email: ada.email })
+
+    requested.assertStatus(200)
+    fake.mails.assertQueued(PasswordResetMail, ({ message }) => message.hasTo(ada.email))
+  })
+
+  // Regression: a disabled user's two-factor is reset and they're mailed a link to a sign-in that
+  // still refuses them.
+  test('refuses to reset a disabled user’s two-factor', async ({ client, assert }) => {
+    using fake = mail.fake()
+    const viewer = await admin()
+    const ada = await createUser()
+    await enableTwoFactor(ada)
+    await client.visit('admin.user_suspensions.store', { id: ada.id }).loginAs(viewer)
+
+    const response = await client
+      .visit('admin.two_factor_resets.destroy', { id: ada.id })
+      .loginAs(viewer)
+
+    response.assertStatus(409)
+    response.assertBodyContains({ code: 'E_USER_DISABLED' })
+
+    const untouched = await User.findOrFail(ada.id)
+    assert.isNotNull(untouched.twoFactorConfirmedAt)
+    assert.isNull(untouched.passwordResetRequiredAt)
+    fake.mails.assertNoneQueued()
   })
 
   // Regression: the mail uses the admin's own request locale instead of the target's stored one.

@@ -17,6 +17,7 @@
   "E_INVITATION_NOT_FOUND": "This invitation doesn’t exist or has expired.",
   "E_LAST_MANAGER": "Someone must still be able to manage members. Give that permission to another member first.",
   "E_MEMBER_NOT_FOUND": "This person is no longer a member of the workspace.",
+  "E_PASSWORD_RESET_REQUIRED": "Choose a new password before you sign in. Use the link we emailed you, or ask for a new one with “Forgot password?”.",
   "E_PLATFORM_ADMIN_PROTECTED": "Platform admins can’t be disabled, impersonated or have their two-factor reset.",
   "E_ROLE_IN_USE": "Move this role’s members to another role before deleting it.",
   "E_ROW_NOT_FOUND": "This item doesn’t exist.",
@@ -30,5 +31,5 @@
   "E_TWO_FACTOR_REQUIRED": "Turn on two-factor authentication in your account to use the admin area.",
   "E_UNAUDITED_WRITE": "This change was saved without an audit record. Report it to the team.",
   "E_UNAUTHORIZED_ACCESS": "Sign in to continue.",
-  "E_USER_DISABLED": "This account is disabled. Enable it before impersonating it."
+  "E_USER_DISABLED": "This account is disabled. Enable it first."
 }

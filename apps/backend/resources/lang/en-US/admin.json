@@ -2,11 +2,12 @@
   "two_factor_reset_mail": {
     "subject": "Your two-factor authentication was turned off",
     "preview": "An administrator turned off two-factor on your {appName} account",
-    "heading": "Two-factor authentication is off",
-    "intro": "An administrator of {appName} turned off two-factor authentication on your account and signed you out everywhere. You now sign in with your password alone. Turn two-factor back on to protect your account.",
-    "open_link": "Open this link to turn it back on:",
-    "action": "Turn two-factor back on",
-    "warning": "If you didn’t ask for this, change your password and contact support right away.",
+    "heading": "Choose a new password to sign in again",
+    "intro": "An administrator of {appName} turned off two-factor authentication on your account and signed you out everywhere. Before you can sign in again, choose a new password with the link below. Then turn two-factor back on from your profile to protect your account.",
+    "open_link": "Open this link to choose a new password:",
+    "action": "Choose a new password",
+    "expires": "This link expires in {minutes} minutes and works once. After that, ask for a new one with “Forgot password?” on the sign-in page.",
+    "warning": "If you didn’t ask for this, contact support right away.",
     "footer": "You received this because two-factor authentication was turned off on your account."
   }
 }

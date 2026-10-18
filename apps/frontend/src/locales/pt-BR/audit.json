@@ -44,6 +44,7 @@
     "signedUp": "criou a conta",
     "loggedIn": "entrou",
     "loginFailed": "Alguém tentou entrar como {email} com uma senha errada",
+    "passwordResetRequired": "Alguém informou a senha certa de {email} e foi orientado a escolher uma nova antes de entrar",
     "loggedOut": "saiu",
     "sessionRevoked": "encerrou uma sessão",
     "passwordResetRequested": "Alguém pediu um link para redefinir a senha de {email}",

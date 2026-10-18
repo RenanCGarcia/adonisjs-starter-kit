@@ -180,6 +180,12 @@ const ACCOUNT_EVENTS: EventTexts<Exclude<AuditEventType, TenantEventType>> = {
       standalone: true,
     }),
   },
+  'auth.password_reset_required': {
+    describe: ({ data }) => ({
+      sentence: t('audit.events.passwordResetRequired', { email: data.email }),
+      standalone: true,
+    }),
+  },
   'auth.logged_out': {
     describe: () => ({ sentence: t('audit.events.loggedOut') }),
   },

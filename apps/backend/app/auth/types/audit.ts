@@ -7,6 +7,8 @@ declare module '#core/audit/types' {
     'auth.logged_in': AccountEvent<'user', { email: string; factor?: 'totp' | 'recovery_code' }>
     // The subject is the account the email belongs to, if any, so its owner sees the attempt.
     'auth.login_failed': AccountEvent<'user' | null, { email: string }>
+    // The password was right, but an admin two-factor reset holds sign-in until it's changed.
+    'auth.password_reset_required': AccountEvent<'user', { email: string }>
     'auth.logged_out': AccountEvent<'user', { email: string }>
     'auth.session_revoked': AccountEvent<'user', { email: string }>
     // Recorded for any email, like a failed login: the subject is its account, if any.

@@ -284,6 +284,7 @@ export class UserSchema extends BaseModel {
     'id',
     'locale',
     'password',
+    'passwordResetRequiredAt',
     'timezone',
     'twoFactorConfirmedAt',
     'twoFactorLastStep',
@@ -309,6 +310,8 @@ export class UserSchema extends BaseModel {
   declare locale: string | null
   @column({ serializeAs: null })
   declare password: string
+  @column.dateTime()
+  declare passwordResetRequiredAt: DateTime | null
   @column()
   declare timezone: string | null
   @column.dateTime()
