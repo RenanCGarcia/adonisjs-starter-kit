@@ -45,9 +45,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),
 
-  // Session
-  SESSION_DRIVER: Env.schema.enum(['cookie', 'memory', 'database'] as const),
-
   // Mail
   MAIL_MAILER: Env.schema.enum(['smtp'] as const),
   MAIL_FROM_NAME: Env.schema.string(),

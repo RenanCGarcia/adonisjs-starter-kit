@@ -35,7 +35,6 @@ server.use([
 router.use([
   () => import('#core/middleware/detect_user_locale_middleware'),
   () => import('@adonisjs/core/bodyparser_middleware'),
-  () => import('@adonisjs/session/session_middleware'),
   () => import('@adonisjs/shield/shield_middleware'),
   () => import('@adonisjs/auth/initialize_auth_middleware'),
   () => import('#auth/middleware/silent_auth_middleware'),
