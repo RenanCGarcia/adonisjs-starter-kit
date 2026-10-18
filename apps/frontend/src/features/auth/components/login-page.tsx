@@ -18,6 +18,11 @@ export function LoginPage() {
   const createToken = useMutation(queries.auth.accessTokens.store.mutationOptions())
   const [challenge, setChallenge] = useState<string | null>(null)
 
+  // The alert shows the server's message; this adds the way to a fresh link once the mailed one expired.
+  const passwordResetRequired =
+    createToken.error instanceof TuyauError &&
+    apiErrorCode(createToken.error) === 'E_PASSWORD_RESET_REQUIRED'
+
   const form = useAppForm({
     defaultValues: { email: '', password: '' },
     onSubmit: async ({ value, formApi }) => {
@@ -62,6 +67,14 @@ export function LoginPage() {
         <form.Form>
           <FieldGroup>
             <form.FormAlert />
+            {passwordResetRequired && (
+              <Link
+                to="/forgot-password"
+                className="text-sm text-foreground underline underline-offset-4"
+              >
+                {t('auth.loginPage.requestResetLink')}
+              </Link>
+            )}
             <form.AppField name="email">
               {field => (
                 <field.TextField

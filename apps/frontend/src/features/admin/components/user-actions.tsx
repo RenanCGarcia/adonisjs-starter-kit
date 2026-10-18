@@ -135,7 +135,8 @@ export function UserActions({ row }: { row: AdminUserRow }) {
 
   if (row.platformAdmin && isSelf) return null
 
-  // The API refuses a platform admin's: `node ace admin:reset-two-factor` covers them.
+  // The API refuses a platform admin's (`node ace admin:reset-two-factor` covers them) and a
+  // disabled user's.
   const resetAction: RowAction[] = row.user.twoFactorEnabled
     ? [
         {
@@ -167,7 +168,6 @@ export function UserActions({ row }: { row: AdminUserRow }) {
             disabled: enable.isPending,
             onSelect: () => enable.mutate(params),
           },
-          ...resetAction,
         ]
       : [
           {

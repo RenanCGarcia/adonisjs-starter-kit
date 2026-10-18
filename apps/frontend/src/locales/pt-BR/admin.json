@@ -92,7 +92,7 @@
     "removedAdmin": "{name} não é mais administrador da plataforma",
     "resetTwoFactor": "Redefinir dois fatores",
     "resetTwoFactorTitle": "Redefinir a autenticação em dois fatores de {name}?",
-    "resetTwoFactorDescription": "A autenticação em dois fatores da pessoa é desativada e ela é desconectada de todos os lugares, então volta a entrar só com a senha. Ela recebe um e-mail pedindo para ativá-la de novo.",
+    "resetTwoFactorDescription": "A autenticação em dois fatores da pessoa é desativada e ela é desconectada de todos os lugares. Ela recebe um e-mail com um link para escolher uma nova senha e só consegue entrar depois disso. Então pode ativar a autenticação em dois fatores de novo.",
     "resetTwoFactorToast": "Dois fatores redefinidos para {name}"
   }
 }

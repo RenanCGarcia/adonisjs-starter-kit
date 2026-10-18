@@ -92,7 +92,7 @@
     "removedAdmin": "{name} is no longer a platform admin",
     "resetTwoFactor": "Reset two-factor",
     "resetTwoFactorTitle": "Reset {name}’s two-factor?",
-    "resetTwoFactorDescription": "Their two-factor authentication is turned off and they’re signed out everywhere, so they sign in again with their password alone. They get an email asking them to turn it back on.",
+    "resetTwoFactorDescription": "Their two-factor authentication is turned off and they’re signed out everywhere. They get an email with a link to choose a new password, and can’t sign in until they do. Then they can turn two-factor back on.",
     "resetTwoFactorToast": "Two-factor reset for {name}"
   }
 }

@@ -19,6 +19,7 @@ const API_ERROR_CODES = [
   'E_INVALID_TWO_FACTOR_CODE',
   'E_TWO_FACTOR_REQUIRED',
   'E_IMPERSONATING',
+  'E_PASSWORD_RESET_REQUIRED',
 ] as const
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number]

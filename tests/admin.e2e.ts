@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { test } from '@e2e-dev/web'
 import { expect } from 'e2e'
 import {
@@ -5,6 +6,7 @@ import {
   createTenant,
   enableTwoFactor,
   grantPlatformAdmin,
+  resetPasswordToken,
   signInAs,
   signOut,
   signUp,
@@ -186,7 +188,7 @@ test('an admin impersonates a member and comes back as themself', async ({
   await expect(browser).toHaveURL(/\/login/)
 })
 
-test('an admin resets a member’s two-factor and the member signs in with the password alone', async ({
+test('an admin resets a member’s two-factor and the member signs in again with a mailed new password', async ({
   app,
   screen,
   browser,
@@ -194,6 +196,7 @@ test('an admin resets a member’s two-factor and the member signs in with the p
   const admin = await signUpAdmin()
   const member = await signUp('Lou Lost-Device')
   await enableTwoFactor(member)
+  const newPassword = randomUUID().slice(0, 24)
   const row = () => screen.getByRole('row').filter({ hasText: member.email })
 
   await signInAs(browser, admin)
@@ -208,6 +211,24 @@ test('an admin resets a member’s two-factor and the member signs in with the p
   await app.open('/login')
   await screen.getByLabel('Email').fill(member.email)
   await screen.getByLabel('Password').fill(member.password)
+  await screen.getByRole('button', 'Sign in').tap()
+  await expect(
+    screen.getByText('Choose a new password before you sign in.', { exact: false }),
+  ).toBeVisible()
+  await expect(screen.getByRole('link', 'Ask for a new link to choose a password')).toHaveAttribute(
+    'href',
+    '/forgot-password',
+  )
+  await expect(browser).toHaveURL('/login')
+
+  await app.open(`/reset-password/${await resetPasswordToken(member.email)}`)
+  await screen.getByLabel('New password').fill(newPassword)
+  await screen.getByLabel('Confirm password').fill(newPassword)
+  await screen.getByRole('button', 'Reset password').tap()
+  await expect(browser).toHaveURL('/login')
+
+  await screen.getByLabel('Email').fill(member.email)
+  await screen.getByLabel('Password').fill(newPassword)
   await screen.getByRole('button', 'Sign in').tap()
   await expect(browser).toHaveURL('/onboarding')
 })
