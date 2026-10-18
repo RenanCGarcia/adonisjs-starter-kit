@@ -24,5 +24,9 @@
     "removePhoto": "Remover foto",
     "photoUpdated": "Foto atualizada",
     "photoRemoved": "Foto removida"
+  },
+  "unverifiedEmailBanner": {
+    "message": "Verifique seu e-mail: enviamos um link para {email}",
+    "resend": "Reenviar"
   }
 }

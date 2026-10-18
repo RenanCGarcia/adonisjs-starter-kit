@@ -6,7 +6,7 @@
 | --------- | ----------------------------------------------------------------------------------------------------- |
 | `core`    | The API client, the query client, the session store, the form kit, error messages, shared components. |
 | `users`   | The profile query, the avatar, the account menu, the profile page.                                    |
-| `auth`    | The login and sign-up pages.                                                                          |
+| `auth`    | The login, sign-up, forgot-password, reset-password and verify-email pages.                           |
 | `tenancy` | The tenant list, the chosen workspace, the switcher, onboarding.                                      |
 | `access`  | Permissions, the workspace pages (overview, members, invitations, roles), accepting an invitation.    |
 | `audit`   | The event timeline and its texts, the audit trail page, a record's history, the account activity.     |

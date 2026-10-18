@@ -1,7 +1,7 @@
 import { test } from '@e2e-dev/web'
 import { expect } from 'e2e'
 import { randomUUID } from 'node:crypto'
-import { signUp, uniqueEmail } from './support/api.ts'
+import { resetPasswordToken, signUp, uniqueEmail, verifyEmailToken } from './support/api.ts'
 
 test('a visitor signs up and lands on workspace onboarding', async ({ app, screen, browser }) => {
   const password = randomUUID().slice(0, 24)
@@ -73,4 +73,62 @@ test('a wrong password keeps the member on the login form with an alert', async 
 
   await expect(screen.getByRole('alert')).toHaveText('Invalid email or password.')
   await expect(browser).toHaveURL('/login')
+})
+
+test('a member resets a forgotten password from the mailed link and signs in with it', async ({
+  app,
+  screen,
+  browser,
+}) => {
+  const member = await signUp()
+  const newPassword = randomUUID().slice(0, 24)
+
+  await app.open('/login')
+  await screen.getByRole('link', 'Forgot password?').tap()
+  await expect(browser).toHaveURL('/forgot-password')
+
+  await screen.getByLabel('Email').fill(member.email)
+  await screen.getByRole('button', 'Send reset link').tap()
+  await expect(
+    screen.getByText('If an account uses this email, a link to reset its password is on its way.'),
+  ).toBeVisible()
+
+  const token = await resetPasswordToken(member.email)
+
+  await app.open(`/reset-password/${token}`)
+  await screen.getByLabel('New password').fill(newPassword)
+  await screen.getByLabel('Confirm password').fill(newPassword)
+  await screen.getByRole('button', 'Reset password').tap()
+
+  await expect(browser).toHaveURL('/login')
+
+  await screen.getByLabel('Email').fill(member.email)
+  await screen.getByLabel('Password').fill(newPassword)
+  await screen.getByRole('button', 'Sign in').tap()
+  await expect(browser).toHaveURL('/onboarding')
+})
+
+test('a signed-up member sees the unverified banner until they open the mailed link', async ({
+  app,
+  screen,
+}) => {
+  const email = uniqueEmail('verify')
+  const password = randomUUID().slice(0, 24)
+
+  await app.open('/signup')
+  await screen.getByLabel('Full name').fill('Ada Lovelace')
+  await screen.getByLabel('Email').fill(email)
+  await screen.getByLabel('Password').fill(password)
+  await screen.getByLabel('Confirm password').fill(password)
+  await screen.getByRole('button', 'Create account').tap()
+
+  await expect(screen.getByText(`we sent a link to ${email}`, { exact: false })).toBeVisible()
+
+  const token = await verifyEmailToken(email)
+
+  await app.open(`/verify-email/${token}`)
+  await expect(screen.getByRole('heading', 'Email verified')).toBeVisible()
+  await screen.getByRole('link', 'Continue').tap()
+
+  await expect(screen.getByText('we sent a link to', { exact: false })).toBeHidden()
 })

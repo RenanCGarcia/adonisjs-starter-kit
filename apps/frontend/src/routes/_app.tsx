@@ -22,6 +22,7 @@ import { t } from '@/features/core/i18n'
 import { session, useIsImpersonating } from '@/features/core/session'
 import { WorkspaceSwitcher } from '@/features/tenancy/components/workspace-switcher'
 import { tenantsQuery } from '@/features/tenancy/workspace'
+import { UnverifiedEmailBanner } from '@/features/users/components/unverified-email-banner'
 import { UserMenu } from '@/features/users/components/user-menu'
 import { profileQuery } from '@/features/users/profile'
 
@@ -54,6 +55,7 @@ function AppLayout() {
   return (
     <div className="flex min-h-svh flex-col">
       {impersonating && <ImpersonationBanner user={user.data} />}
+      {!user.data.emailVerifiedAt && <UnverifiedEmailBanner email={user.data.email} />}
       <header className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b bg-background px-3 md:px-4">
         <AppMark />
         <Separator orientation="vertical" className="mx-1 my-3" />

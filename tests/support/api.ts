@@ -205,38 +205,55 @@ export async function signOut(browser: Browser) {
   await browser.evaluate(key => localStorage.removeItem(key), SESSION_KEY)
 }
 
-/** Reads the newest invitation mailed to `email`; throws until the queue worker has sent it. */
-async function readInvitationToken(email: string) {
+/**
+ * Reads `email`'s mail for a `/<path>/<token>` link. A signup's verification mail and a forgot-
+ * password's reset mail can land in the same millisecond, so this scans every recent message
+ * for `email` rather than trusting Mailpit's newest-first order to pick the right one.
+ */
+async function readMailedToken(email: string, path: string) {
   const search = await fetch(`${MAILPIT_URL}/search?query=${encodeURIComponent(`to:"${email}"`)}`)
-  // SAFETY: Mailpit's search answers { messages: [{ ID }] }, newest first.
+  // SAFETY: Mailpit's search answers { messages: [{ ID }] }.
   const { messages } = (await search.json()) as { messages: { ID: string }[] }
-  const [newest] = messages
 
-  if (!newest) throw new Error(`No mail to ${email} in Mailpit yet`)
+  if (messages.length === 0) throw new Error(`No mail to ${email} in Mailpit yet`)
 
-  const message = await fetch(`${MAILPIT_URL}/message/${newest.ID}`)
-  // SAFETY: Mailpit's message endpoint answers the plain-text and HTML bodies.
-  const { Text, HTML } = (await message.json()) as { Text: string; HTML: string }
-  const token = /\/invitations\/([^\s"'<>]+)/.exec(`${Text}\n${HTML}`)?.[1]
+  for (const { ID } of messages) {
+    const response = await fetch(`${MAILPIT_URL}/message/${ID}`)
+    // SAFETY: Mailpit's message endpoint answers the plain-text and HTML bodies.
+    const { Text, HTML } = (await response.json()) as { Text: string; HTML: string }
+    const token = new RegExp(`/${path}/([^\\s"'<>]+)`).exec(`${Text}\n${HTML}`)?.[1]
 
-  if (!token) throw new Error(`The mail to ${email} has no /invitations/<token> link`)
+    if (token) return token
+  }
 
-  return token
+  throw new Error(`None of the mail to ${email} has a /${path}/<token> link`)
 }
 
-export async function invitationToken(email: string) {
+async function pollMailedToken(email: string, path: string) {
   let token = ''
 
   await expect
     .poll(
       async () => {
-        token = await readInvitationToken(email)
+        token = await readMailedToken(email, path)
 
         return token
       },
-      { timeout: 15_000, message: `an invitation mail to ${email}` },
+      { timeout: 15_000, message: `a mail to ${email} with a /${path}/<token> link` },
     )
     .toBeTruthy()
 
   return token
+}
+
+export function invitationToken(email: string) {
+  return pollMailedToken(email, 'invitations')
+}
+
+export function resetPasswordToken(email: string) {
+  return pollMailedToken(email, 'reset-password')
+}
+
+export function verifyEmailToken(email: string) {
+  return pollMailedToken(email, 'verify-email')
 }

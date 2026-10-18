@@ -64,6 +64,12 @@ export function LoginPage() {
                 />
               )}
             </form.AppField>
+            <Link
+              to="/forgot-password"
+              className="self-end text-xs text-muted-foreground underline underline-offset-4"
+            >
+              {t('auth.loginPage.forgotPassword')}
+            </Link>
             <form.SubmitButton size="lg">{t('auth.loginPage.submit')}</form.SubmitButton>
           </FieldGroup>
         </form.Form>

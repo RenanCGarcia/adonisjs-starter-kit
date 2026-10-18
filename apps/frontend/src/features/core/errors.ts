@@ -13,6 +13,8 @@ const API_ERROR_CODES = [
   'E_TENANT_SUSPENDED',
   'E_INVALID_TENANT_HEADER',
   'E_INVALID_ATTACHMENT',
+  'E_INVALID_RESET_TOKEN',
+  'E_INVALID_VERIFICATION_TOKEN',
 ] as const
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number]
