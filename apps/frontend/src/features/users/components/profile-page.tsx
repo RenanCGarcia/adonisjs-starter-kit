@@ -16,6 +16,7 @@ import { PendingButton } from '@/features/core/components/pending-button'
 import { DATE_LONG, formatDate, useTimeZone } from '@/features/core/datetime'
 import { errorMessage } from '@/features/core/errors'
 import { t } from '@/features/core/i18n'
+import { useIsImpersonating } from '@/features/core/session'
 import { PreferencesCard } from '@/features/users/components/preferences-card'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 import { profileQuery } from '@/features/users/profile'
@@ -24,6 +25,7 @@ import { profileQuery } from '@/features/users/profile'
 export function ProfilePage({ children }: { children?: ReactNode }) {
   const user = useSuspenseQuery(profileQuery()).data.data
   const timeZone = useTimeZone()
+  const impersonating = useIsImpersonating()
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6">
@@ -51,7 +53,9 @@ export function ProfilePage({ children }: { children?: ReactNode }) {
           </dl>
         </CardContent>
       </Card>
-      <PreferencesCard />
+      {/* Saving this card writes the viewer's own browser language/zone: hidden while an admin
+          impersonates, so it never switches the admin's own browser instead of the user's. */}
+      {!impersonating && <PreferencesCard />}
       {children}
     </main>
   )

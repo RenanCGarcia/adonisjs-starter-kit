@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { test } from '@e2e-dev/web'
 import { expect } from 'e2e'
 import { signInAs, signUp } from './support/api.ts'
@@ -42,4 +43,37 @@ test('a member changes their time zone and their language from the profile page'
   await screen.getByRole('option', 'Português (Brasil)').tap()
   await expect(screen.getByRole('heading', 'Perfil')).toBeVisible()
   await expect(screen.getByText('Preferências')).toBeVisible()
+})
+
+// Regression: on a shared browser, signing out after choosing pt-BR left that choice as the
+// stored "locale", and a fresh signup sent it as the new account's own choice.
+test('signing out and signing up again does not inherit the previous account’s language', async ({
+  screen,
+  app,
+  browser,
+}) => {
+  const member = await signUp('Lena Leaver')
+
+  await signInAs(browser, member)
+  await app.open('/profile')
+  await screen.getByRole('combobox', 'Language').tap()
+  await screen.getByRole('option', 'Português (Brasil)').tap()
+  await expect(screen.getByRole('heading', 'Perfil')).toBeVisible()
+
+  await screen.getByRole('button', 'Menu da conta').tap()
+  await screen.getByRole('menuitem', 'Sair').tap()
+  await expect(browser).toHaveURL(/\/login/)
+
+  await screen.getByRole('link', 'Crie uma').tap()
+  await screen.getByRole('textbox', 'Nome completo').fill('Noor New')
+  await screen.getByRole('textbox', 'E-mail').fill(`${randomUUID()}@example.com`)
+  await screen.getByRole('textbox', 'Senha').fill('password123')
+  await screen.getByRole('textbox', 'Confirmar senha').fill('password123')
+  await screen.getByRole('button', 'Criar conta').tap()
+
+  // The signup form itself still rendered in pt-BR (the login page's own language choice, kept
+  // on purpose). The new account's stored locale must be the browser's own (en-US here), not
+  // the leftover pt-BR: once the app loads, it reads that mismatch, corrects the stored UI
+  // language and reloads into English, landing here on the English workspace onboarding page.
+  await expect(screen.getByRole('heading', 'Create your workspace')).toBeVisible()
 })

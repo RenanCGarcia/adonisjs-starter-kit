@@ -164,6 +164,12 @@ test('an admin impersonates a member and comes back as themself', async ({
   await expect(banner()).toContainText(`${member.fullName} (${member.email})`)
   await expect(screen.getByRole('heading', tenant.name, { level: 1 })).toBeVisible()
 
+  // Regression: saving the preferences card while impersonating switched the admin's own
+  // browser language instead of the member's, so the card must not show at all.
+  await app.open('/profile')
+  await expect(screen.getByRole('heading', 'Profile')).toBeVisible()
+  await expect(screen.getByRole('combobox', 'Language')).toBeHidden()
+
   await banner().getByRole('button', 'Stop impersonating').tap()
   await expect(browser).toHaveURL('/admin/users')
   await expect(banner()).toBeHidden()

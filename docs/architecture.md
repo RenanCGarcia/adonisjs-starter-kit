@@ -337,10 +337,11 @@ An impersonation token is an ordinary access token whose `impersonator_id` names
 `users.locale` and `users.timezone` are nullable: null means "not known yet", which only existing
 users (signed up before this) can be. A later unit fills them in from the browser on the user's
 next load; nothing backfills them. `#users/validators/user.ts` exports `localeRule` (the
-`supportedLocales` of `config/i18n.ts`, so there's one list) and `timezoneRule` (every IANA zone
-`Intl.supportedValuesOf('timeZone')` names, plus `UTC`, built once at import time); both signup
-(`auth/validators/auth.ts`) and `PATCH /api/v1/account/profile` (`users/validators/user.ts`)
-import them rather than repeating the list.
+`supportedLocales` of `config/i18n.ts`, so there's one list) and `timezoneRule` (any zone name
+`Intl.DateTimeFormat` accepts: `Intl.supportedValuesOf('timeZone')` alone misses aliases browsers
+report, such as `Asia/Kolkata` or `Etc/UTC`; the rule resolves and stores the canonical name);
+both signup (`auth/validators/auth.ts`) and `PATCH /api/v1/account/profile`
+(`users/validators/user.ts`) import them rather than repeating the list.
 
 Sign-up accepts optional `locale` and `timezone`; an absent `locale` stores the request's resolved
 locale (`ctx.i18n.locale`), and an absent `timezone` stays null. `PATCH /api/v1/account/profile`

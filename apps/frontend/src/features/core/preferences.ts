@@ -22,6 +22,12 @@ export const preferences = {
   timeZone: () => preferencesStore.getState().timeZone,
   set: (next: { locale?: Locale; timeZone?: string }) =>
     preferencesStore.setState(current => ({ ...current, ...next })),
+  /**
+   * Drops the stored time zone, kept distinct from `locale`: the login page still shows the
+   * browser's last UI language after sign-out, but a stale zone from the signed-out account must
+   * never carry into whoever signs in next.
+   */
+  clearTimeZone: () => preferencesStore.setState(current => ({ ...current, timeZone: null })),
 }
 
 /** The active time zone, re-rendering a component when it changes. `undefined` defers to the runtime's own. */

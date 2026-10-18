@@ -4,7 +4,7 @@ import { getRouteApi, Link } from '@tanstack/react-router'
 import { AuthCard } from '@/features/auth/components/auth-card'
 import { queries } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
-import { locale, t } from '@/features/core/i18n'
+import { resolveLocale, t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
 
 const route = getRouteApi('/signup')
@@ -23,7 +23,10 @@ export function SignupPage() {
           body: {
             ...value,
             fullName: value.fullName.trim() || null,
-            locale,
+            // Fresh browser detection, not the persisted UI language: on a shared browser the
+            // persisted value can be a previous account's choice, and a new signup must never
+            // inherit it.
+            locale: resolveLocale(navigator.languages),
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           },
         }),

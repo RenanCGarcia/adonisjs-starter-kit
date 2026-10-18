@@ -76,8 +76,36 @@ function offsetMinutes(label: string): number {
   return sign * (Number(match[2]) * 60 + Number(match[3]))
 }
 
-/** Every IANA time zone, labelled with its current UTC offset, sorted by offset then name. */
-export const TIME_ZONES: { value: string; label: string }[] = Intl.supportedValuesOf('timeZone')
+/**
+ * The UTC instant of a calendar day's first (`'start'`) or last (`'end'`) moment as lived in
+ * `timeZone`, for a filter that must bound the day the viewer meant rather than the day in the
+ * browser's own zone. Guesses the instant by treating the wall clock as UTC, reads that zone's
+ * offset at the guess, and re-reads it once more after applying the offset: the second read
+ * only differs from the first right at a DST transition, and using it resolves the ambiguity by
+ * the zone's post-transition offset.
+ */
+export function zonedDayBoundary(day: string, timeZone: string, edge: 'start' | 'end'): Date {
+  const wallTime = `${day}T${edge === 'start' ? '00:00:00.000' : '23:59:59.999'}Z`
+  const guess = new Date(wallTime)
+  const firstOffset = offsetMinutes(offsetLabel(timeZone, guess))
+  const adjusted = new Date(guess.getTime() - firstOffset * 60_000)
+  const secondOffset = offsetMinutes(offsetLabel(timeZone, adjusted))
+
+  return new Date(guess.getTime() - secondOffset * 60_000)
+}
+
+/**
+ * Every IANA time zone, labelled with its current UTC offset, sorted by offset then name. Some
+ * browsers report a zone (via `resolvedOptions().timeZone`) that this browser's own
+ * `Intl.supportedValuesOf('timeZone')` doesn't list, so the detected zone is always included even
+ * then: the preferences card must always be able to show and keep the account's current zone.
+ */
+const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+const zoneNames = new Set(Intl.supportedValuesOf('timeZone'))
+
+zoneNames.add(browserTimeZone)
+
+export const TIME_ZONES: { value: string; label: string }[] = [...zoneNames]
   .map(zone => {
     const offset = offsetLabel(zone, new Date())
 
