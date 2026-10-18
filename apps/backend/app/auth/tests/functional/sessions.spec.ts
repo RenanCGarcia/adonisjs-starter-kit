@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import { test } from '@japa/runner'
 import { sessionOf } from '#tests/sessions'
 import db from '@adonisjs/lucid/services/db'
@@ -143,5 +144,55 @@ test.group('Auth | sessions', group => {
 
     const destroyAll = await client.visit('profile.sessions.destroy_all').bearerToken(token)
     destroyAll.assertStatus(403)
+  })
+
+  // Regression: a session issued with no expiry (or one whose idle timeout already passed)
+  // would stay usable forever instead of dying after 30 days of no activity.
+  test('a token unused past its 30-day idle timeout answers 401', async ({ client }) => {
+    const token = await signUp(client, 'ada@example.com')
+
+    await db
+      .from('auth_access_tokens')
+      .where('id', sessionIdOf(token))
+      .update({ expires_at: DateTime.now().minus({ days: 1 }).toJSDate() })
+
+    const response = await client.visit('profile.profile.show').bearerToken(token)
+    response.assertStatus(401)
+  })
+
+  // Regression: a token pushed just past the 30-day mark should die; one short of it, from a
+  // request made since, should keep working. Proves the slide, not just the initial expiry.
+  test('using a token pushes its 30-day idle timeout forward', async ({ client, assert }) => {
+    const token = await signUp(client, 'ada@example.com')
+
+    await db
+      .from('auth_access_tokens')
+      .where('id', sessionIdOf(token))
+      .update({ expires_at: DateTime.now().plus({ days: 1 }).toJSDate() })
+
+    const used = await client.visit('profile.profile.show').bearerToken(token)
+    used.assertStatus(200)
+
+    const row = await db.from('auth_access_tokens').where('id', sessionIdOf(token)).first()
+    assert.isAbove(DateTime.fromJSDate(row.expires_at).diffNow('days').days, 29)
+  })
+
+  // Regression: extending impersonation would let an admin's time-boxed access to an account
+  // outlive the 1-hour cap just by using it.
+  test('does not extend an impersonation token’s expiry', async ({ client, assert }) => {
+    const token = await signUp(client, 'ada@example.com')
+    const ada = await db.from('users').where('email', 'ada@example.com').first()
+    const originalExpiry = DateTime.now().plus({ minutes: 1 }).toJSDate()
+
+    await db
+      .from('auth_access_tokens')
+      .where('id', sessionIdOf(token))
+      .update({ impersonator_id: ada.id, expires_at: originalExpiry })
+
+    const response = await client.visit('profile.profile.show').bearerToken(token)
+    response.assertStatus(200)
+
+    const row = await db.from('auth_access_tokens').where('id', sessionIdOf(token)).first()
+    assert.equal(row.expires_at.getTime(), originalExpiry.getTime())
   })
 })

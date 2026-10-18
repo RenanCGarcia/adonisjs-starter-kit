@@ -120,6 +120,10 @@ A code is accepted one step either side of the server's clock.
 
 `POST /api/v1/auth/login/two-factor` (`{ challenge, code }` or `{ challenge, recoveryCode }`) answers `{ user, token }` like a login. A forged or expired challenge, or one whose user has turned two-factor off since, answers 400 `E_INVALID_TWO_FACTOR_CHALLENGE`; a disabled account 403 `E_ACCOUNT_DISABLED`; a wrong or used code 400 `E_INVALID_TWO_FACTOR_CODE`, recorded as `auth.two_factor_failed`, and the challenge stays usable. Five wrong codes in 15 minutes block the user's second step for 15 minutes, whatever the IP or challenge (`penalizeTwoFactorFailure`); the route also allows 30 requests per IP per 15 minutes. A success records `auth.logged_in` with the `factor` used, and a recovery code also `auth.recovery_code_used` with the codes `remaining`.
 
+### Sessions expire after 30 days of idle time
+
+An access token from a real sign-in (not impersonation) carries a sliding idle timeout: `OpenSession` sets `expires_at` to `SESSION_IDLE_TIMEOUT_DAYS` (30) from now, and `UuidAccessTokensProvider.verify()` in `#users/models/user` pushes it forward by the same amount on every verified request, in the same `UPDATE` that already bumps `last_used_at`. A session stops working only after 30 days with no request; using it keeps it alive indefinitely. Impersonation tokens are excluded, so their 1-hour cap still holds. `PruneExpiredTokensJob` (`app/auth/jobs/`) deletes expired rows from `auth_access_tokens` and `user_tokens` daily at 03:15 UTC from `start/scheduler.ts`, and on demand with `node ace auth:prune-tokens`; a run that deletes anything records one `auth.tokens_pruned` system event with both counts.
+
 ### Every session passed a second factor
 
 Confirming two-factor revokes every other session of the user, keeping only the one that just confirmed with a code. Login re-reads the user after creating its token: a confirmation that committed meanwhile turns the answer into a challenge and deletes the token, the way a disable does. So every live session of a user with two-factor confirmed has passed a second factor, and the admin requirement only checks `two_factor_confirmed_at`.

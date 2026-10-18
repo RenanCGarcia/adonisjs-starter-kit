@@ -1,4 +1,4 @@
-import type { AccountEvent } from '#core/audit/types'
+import type { AccountEvent, SystemEvent } from '#core/audit/types'
 
 declare module '#core/audit/types' {
   interface AuditEvents {
@@ -22,5 +22,6 @@ declare module '#core/audit/types' {
     'auth.two_factor_enabled': AccountEvent<'user', { email: string }>
     'auth.two_factor_disabled': AccountEvent<'user', { email: string }>
     'auth.recovery_codes_regenerated': AccountEvent<'user', { email: string }>
+    'auth.tokens_pruned': SystemEvent<{ accessTokens: number; userTokens: number }>
   }
 }

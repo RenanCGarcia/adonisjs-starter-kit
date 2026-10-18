@@ -1,5 +1,5 @@
-import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
+import User, { SESSION_IDLE_TIMEOUT_DAYS } from '#users/models/user'
 import AccountDisabledException from '#auth/exceptions/account_disabled_exception'
 
 export interface OpenSessionInput {
@@ -14,7 +14,9 @@ export interface OpenSessionInput {
  */
 export default class OpenSession {
   async handle({ user, userAgent, ipAddress }: OpenSessionInput) {
-    const token = await User.accessTokens.create(user)
+    const token = await User.accessTokens.create(user, ['*'], {
+      expiresIn: `${SESSION_IDLE_TIMEOUT_DAYS}d`,
+    })
 
     // The provider's insert takes no extra columns, so the device info follows as its own write.
     await db
