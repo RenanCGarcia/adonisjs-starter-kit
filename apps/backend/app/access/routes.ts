@@ -23,8 +23,8 @@ apiRoutes(() => {
 
       router.get('roles', [Roles, 'index'])
       router.post('roles', [Roles, 'store'])
-      router.put('roles/:id', [Roles, 'update']).where('id', router.matchers.uuid())
-      router.delete('roles/:id', [Roles, 'destroy']).where('id', router.matchers.uuid())
+      router.put('roles/:id', [Roles, 'update'])
+      router.delete('roles/:id', [Roles, 'destroy'])
 
       router.get('members', [Members, 'index'])
       router
@@ -36,7 +36,7 @@ apiRoutes(() => {
 
       router.get('invitations', [Invitations, 'index'])
       router.post('invitations', [Invitations, 'store']).use(invitationsCreateThrottle)
-      router.delete('invitations/:id', [Invitations, 'destroy']).where('id', router.matchers.uuid())
+      router.delete('invitations/:id', [Invitations, 'destroy'])
     })
     .as('access')
     .use([middleware.auth(), middleware.tenant()])
