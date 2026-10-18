@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import type {} from '#auth/types/audit'
+import InvalidPasswordException from '#auth/exceptions/invalid_password_exception'
 import { replaceRecoveryCodes, verifySecondFactor } from '#auth/services/two_factor'
 import TwoFactorNotStartedException from '#auth/exceptions/two_factor_not_started_exception'
 import InvalidTwoFactorCodeException from '#auth/exceptions/invalid_two_factor_code_exception'
@@ -10,15 +11,19 @@ import TwoFactorAlreadyEnabledException from '#auth/exceptions/two_factor_alread
 
 export interface ConfirmTwoFactorInput {
   user: User
+  password: string
   code: string
 }
 
 /**
  * Turns the pending secret on once a code of it proves the app holds it, and returns the recovery
- * codes in clear, the only time they are. The caller then revokes every other session.
+ * codes in clear, the only time they are. The caller then revokes every other session. Needs the
+ * password, so a stolen session alone can't enroll its own app and lock the owner out.
  */
 export default class ConfirmTwoFactor {
-  async handle({ user, code }: ConfirmTwoFactorInput) {
+  async handle({ user, password, code }: ConfirmTwoFactorInput) {
+    if (!(await user.verifyPassword(password))) throw new InvalidPasswordException()
+
     return db.transaction(async trx => {
       const locked = await User.query({ client: trx })
         .where('id', user.id)

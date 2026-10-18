@@ -118,7 +118,7 @@ export async function enableTwoFactor(account: Account) {
 
   await api('/account/two-factor/confirmation', {
     token: account.token,
-    body: { code: totpCode(secret) },
+    body: { password: account.password, code: totpCode(secret) },
   })
 
   return secret

@@ -33,7 +33,7 @@ export function TwoFactorEnrollCard({
   const secretId = useId()
 
   const form = useAppForm({
-    defaultValues: { code: '' },
+    defaultValues: { password: '', code: '' },
     onSubmit: async ({ value, formApi }) => {
       const confirmed = await withFormErrors(formApi, confirm.mutateAsync({ body: value }))
 
@@ -86,6 +86,16 @@ export function TwoFactorEnrollCard({
           <form.AppForm>
             <form.Form className="flex flex-col gap-4">
               <form.FormAlert />
+              <form.AppField name="password">
+                {field => (
+                  <field.TextField
+                    label={t('auth.twoFactorCard.password')}
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                  />
+                )}
+              </form.AppField>
               <form.AppField name="code">
                 {field => (
                   <field.TextField

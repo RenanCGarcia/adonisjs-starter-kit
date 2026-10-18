@@ -17,6 +17,7 @@ test('a member enrolls two-factor from the profile, then signs in with a fresh c
   await screen.getByRole('button', 'Enable').tap()
   const secret = await screen.getByLabel('Can’t scan it? Enter this secret manually').inputValue()
 
+  await screen.getByLabel('Password').fill(user.password)
   await screen.getByLabel('Code').fill(totpCode(secret))
   await screen.getByRole('button', 'Confirm').tap()
 
@@ -54,7 +55,7 @@ test('a member signs in with a recovery code instead of their authenticator app'
 
   const { recoveryCodes } = await api<{ recoveryCodes: string[] }>(
     '/account/two-factor/confirmation',
-    { token: user.token, body: { code: totpCode(secret) } },
+    { token: user.token, body: { password: user.password, code: totpCode(secret) } },
   )
 
   await app.open('/login')

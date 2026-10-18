@@ -15,6 +15,7 @@ export const twoFactorLoginValidator = vine.create({
 })
 
 export const confirmTwoFactorValidator = vine.create({
+  password: vine.string(),
   code: code(),
 })
 

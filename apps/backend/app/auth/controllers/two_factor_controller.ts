@@ -44,9 +44,9 @@ export default class TwoFactorController {
 
   async confirm(ctx: HttpContext) {
     const user = ownUser(ctx)
-    const { code } = await ctx.request.validateUsing(confirmTwoFactorValidator)
+    const { password, code } = await ctx.request.validateUsing(confirmTwoFactorValidator)
 
-    const recoveryCodes = await new ConfirmTwoFactor().handle({ user, code })
+    const recoveryCodes = await new ConfirmTwoFactor().handle({ user, password, code })
 
     // Every session must have passed a second factor: only this one, which just did, stays.
     const keepTokenId = String(user.currentAccessToken!.identifier)

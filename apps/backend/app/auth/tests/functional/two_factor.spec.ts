@@ -37,7 +37,7 @@ async function enroll(client: ApiClient, token: string) {
 
   const confirmed = await client
     .visit('profile.two_factor.confirm')
-    .json({ code: totpCode(secret, -1) })
+    .json({ password: account.password, code: totpCode(secret, -1) })
     .bearerToken(token)
 
   return { secret, recoveryCodes: confirmed.body().data.recoveryCodes }
@@ -245,16 +245,24 @@ test.group('Auth | two-factor enrollment', group => {
     assert.match(uri, /^otpauth:\/\/totp\/.+:ada%40example\.com\?/)
     assert.include(uri, `secret=${secret}`)
 
+    const wrongPassword = await client
+      .visit('profile.two_factor.confirm')
+      .json({ password: 'not-the-password', code: totpCode(secret) })
+      .bearerToken(current)
+
+    wrongPassword.assertStatus(400)
+    wrongPassword.assertBodyContains({ code: 'E_INVALID_PASSWORD' })
+
     const wrong = await client
       .visit('profile.two_factor.confirm')
-      .json({ code: '000000' })
+      .json({ password: account.password, code: '000000' })
       .bearerToken(current)
 
     wrong.assertStatus(400)
 
     const confirmed = await client
       .visit('profile.two_factor.confirm')
-      .json({ code: totpCode(secret) })
+      .json({ password: account.password, code: totpCode(secret) })
       .bearerToken(current)
 
     confirmed.assertStatus(200)
@@ -315,7 +323,7 @@ test.group('Auth | two-factor enrollment', group => {
 
     const confirmed = await client
       .visit('profile.two_factor.confirm')
-      .json({ code: '123456' })
+      .json({ password: account.password, code: '123456' })
       .bearerToken(token)
 
     confirmed.assertStatus(403)
