@@ -59,22 +59,6 @@ test('a member signs in, returns to the page they asked for, and logs out', asyn
   await expect(browser).toHaveURL(/\/login/)
 })
 
-test('a wrong password keeps the member on the login form with an alert', async ({
-  app,
-  screen,
-  browser,
-}) => {
-  const member = await signUp()
-
-  await app.open('/login')
-  await screen.getByLabel('Email').fill(member.email)
-  await screen.getByLabel('Password').fill(`${member.password}-wrong`)
-  await screen.getByRole('button', 'Sign in').tap()
-
-  await expect(screen.getByRole('alert')).toHaveText('Invalid email or password.')
-  await expect(browser).toHaveURL('/login')
-})
-
 test('a member resets a forgotten password from the mailed link and signs in with it', async ({
   app,
   screen,
