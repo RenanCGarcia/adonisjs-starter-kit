@@ -11,14 +11,13 @@ export const Route = createFileRoute('/_app/admin')({
   beforeLoad: async ({ context: { queryClient } }) => {
     const { platformAdmin, twoFactorRequired } = (await queryClient.query(adminMeQuery())).data
 
-    return { platformAdmin, twoFactorRequired }
+    return { platformAdmin, canUseArea: platformAdmin && !twoFactorRequired }
   },
   component: AdminLayout,
 })
 
 function AdminLayout() {
-  const { platformAdmin, twoFactorRequired } = Route.useRouteContext()
-  const canUseArea = platformAdmin && !twoFactorRequired
+  const { platformAdmin, canUseArea } = Route.useRouteContext()
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 md:flex-row md:gap-8 md:p-6">
