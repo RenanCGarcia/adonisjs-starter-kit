@@ -8,6 +8,19 @@ import { errors as limiterErrors } from '@adonisjs/limiter'
 import UserTransformer from '#users/transformers/user_transformer'
 import { penalizeLoginFailure } from '#start/limiter'
 import AccountDisabledException from '#auth/exceptions/account_disabled_exception'
+import { issueTwoFactorChallenge } from '#auth/services/two_factor'
+
+/** The password was right, but the account needs a second factor before a session opens. */
+async function challenge(user: User) {
+  await audit.note('auth.two_factor_challenged', {
+    tenantId: null,
+    subject: { type: 'user', id: user.id },
+    actorId: user.id,
+    data: { email: user.email },
+  })
+
+  return { twoFactorRequired: true as const, challenge: issueTwoFactorChallenge(user.id) }
+}
 
 export default class AccessTokensController {
   async store({ request, serialize }: HttpContext) {
@@ -38,18 +51,20 @@ export default class AccessTokensController {
     // After the password check, so the answer doesn't tell whether an email is disabled.
     if (user.disabledAt) throw new AccountDisabledException()
 
+    if (user.twoFactorConfirmedAt) return serialize(await challenge(user))
+
     const token = await new OpenSession().handle({
       user,
       userAgent: request.header('user-agent'),
       ipAddress: request.ip(),
     })
 
-    // A disable committing since the check above may have deleted the tokens before this one existed.
-    await user.refresh()
-
-    if (user.disabledAt) {
+    // Enabling 2FA revokes every other session once it commits: a token created before that is
+    // revoked, and one created after sees the confirmation here.
+    if (user.twoFactorConfirmedAt) {
       await User.accessTokens.delete(user, token.identifier)
-      throw new AccountDisabledException()
+
+      return serialize(await challenge(user))
     }
 
     await audit.note('auth.logged_in', {
@@ -61,6 +76,7 @@ export default class AccessTokensController {
     })
 
     return serialize({
+      twoFactorRequired: false as const,
       user: UserTransformer.transform(user),
       token: token.value!.release(),
     })

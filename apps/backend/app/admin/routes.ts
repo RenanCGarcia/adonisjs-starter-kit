@@ -7,10 +7,18 @@ const { Me, Tenants, TenantSuspensions, Users, UserSuspensions, Impersonations, 
   controllers.admin
 
 apiRoutes(() => {
+  // The admin area's gate, outside the two-factor requirement: it tells a platform admin who
+  // hasn't enabled two-factor yet that they must, rather than refusing them.
   router
     .group(() => {
       router.get('me', [Me, 'show'])
+    })
+    .prefix('admin')
+    .as('admin')
+    .use(middleware.auth())
 
+  router
+    .group(() => {
       router.get('tenants', [Tenants, 'index'])
       router.get('tenants/:id', [Tenants, 'show']).where('id', router.matchers.uuid())
       router.put('tenants/:id', [Tenants, 'update']).where('id', router.matchers.uuid())
@@ -40,5 +48,5 @@ apiRoutes(() => {
     })
     .prefix('admin')
     .as('admin')
-    .use(middleware.auth())
+    .use([middleware.auth(), middleware.twoFactor()])
 })

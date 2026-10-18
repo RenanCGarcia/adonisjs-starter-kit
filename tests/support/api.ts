@@ -3,6 +3,7 @@ import { expect } from 'e2e'
 import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { promisify } from 'node:util'
+import * as OTPAuth from 'otpauth'
 
 /** Arrange steps go straight to the API; only the behavior under test goes through the UI. */
 export const API_URL = 'http://localhost:3333/api/v1'
@@ -96,6 +97,26 @@ const BACKEND_DIR = new URL('../../apps/backend/', import.meta.url)
 /** Makes `account` a platform admin the way an operator makes the first one, from the command line. */
 export async function grantPlatformAdmin(account: Account) {
   await promisify(execFile)('node', ['ace', 'admin:grant', account.email], { cwd: BACKEND_DIR })
+}
+
+/** A code `secret` accepts now, as the account's authenticator app would show it. */
+export function totpCode(secret: string) {
+  return new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(secret) }).generate()
+}
+
+/** Turns on two-factor for `account`, keeping its token, and returns the secret for later codes. */
+export async function enableTwoFactor(account: Account) {
+  const { secret } = await api<{ secret: string }>('/account/two-factor', {
+    method: 'POST',
+    token: account.token,
+  })
+
+  await api('/account/two-factor/confirmation', {
+    token: account.token,
+    body: { code: totpCode(secret) },
+  })
+
+  return secret
 }
 
 export type Role = { id: string; name: string; permissions: string[] }

@@ -283,6 +283,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'auth.two_factor_logins.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/login/two-factor'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/two_factor').twoFactorLoginValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/two_factor').twoFactorLoginValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_logins_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_logins_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'auth.password_resets.store': {
     methods: ["POST"]
     pattern: '/api/v1/auth/password/forgot'
@@ -377,6 +389,66 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/email_verifications_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/email_verifications_controller').default['store']>>>
+    }
+  }
+  'profile.two_factor.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/account/two-factor'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['show']>>>
+    }
+  }
+  'profile.two_factor.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/account/two-factor'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['store']>>>
+    }
+  }
+  'profile.two_factor.confirm': {
+    methods: ["POST"]
+    pattern: '/api/v1/account/two-factor/confirmation'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/two_factor').confirmTwoFactorValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/two_factor').confirmTwoFactorValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['confirm']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['confirm']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.two_factor.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/account/two-factor'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/two_factor').disableTwoFactorValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/two_factor').disableTwoFactorValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.two_factor.regenerate_recovery_codes': {
+    methods: ["POST"]
+    pattern: '/api/v1/account/two-factor/recovery-codes'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/two_factor').regenerateRecoveryCodesValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/two_factor').regenerateRecoveryCodesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['regenerateRecoveryCodes']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/two_factor_controller').default['regenerateRecoveryCodes']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'access.my_permissions.show': {

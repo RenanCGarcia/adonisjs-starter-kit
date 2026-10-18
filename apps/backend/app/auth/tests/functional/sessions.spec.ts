@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { sessionOf } from '#tests/sessions'
 import db from '@adonisjs/lucid/services/db'
 import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
@@ -29,7 +30,7 @@ async function login(client: ApiClient, email: string, userAgent: string) {
     .header('user-agent', userAgent)
     .json({ email, password: account.password })
 
-  const { token }: { token: string } = response.body().data
+  const { token } = sessionOf(response.body().data)
 
   return token
 }

@@ -201,6 +201,32 @@ const ACCOUNT_EVENTS: EventTexts<Exclude<AuditEventType, TenantEventType>> = {
   'auth.email_verified': {
     describe: () => ({ sentence: t('audit.events.emailVerified') }),
   },
+  'auth.two_factor_challenged': {
+    describe: () => ({ sentence: t('audit.events.twoFactorChallenged') }),
+  },
+  'auth.two_factor_failed': {
+    describe: ({ data }) => ({
+      sentence: t('audit.events.twoFactorFailed', { email: data.email }),
+      standalone: true,
+    }),
+  },
+  'auth.recovery_code_used': {
+    describe: ({ data }) => ({
+      sentence: t('audit.events.recoveryCodeUsed', { remaining: data.remaining }),
+    }),
+  },
+  'auth.two_factor_enrollment_started': {
+    describe: () => ({ sentence: t('audit.events.twoFactorEnrollmentStarted') }),
+  },
+  'auth.two_factor_enabled': {
+    describe: () => ({ sentence: t('audit.events.twoFactorEnabled') }),
+  },
+  'auth.two_factor_disabled': {
+    describe: () => ({ sentence: t('audit.events.twoFactorDisabled') }),
+  },
+  'auth.recovery_codes_regenerated': {
+    describe: () => ({ sentence: t('audit.events.recoveryCodesRegenerated') }),
+  },
   'user.avatar_changed': {
     describe: ({ data: { changes } }) => {
       if (!changes.avatarAttachmentId?.to) return { sentence: t('audit.events.avatarRemoved') }

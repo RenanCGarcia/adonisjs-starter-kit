@@ -3,17 +3,32 @@ import type User from '#users/models/user'
 import type { ApiClient } from '@japa/api-client'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { admin } from '#admin/tests/seed'
+import { enableTwoFactor } from '#auth/tests/two_factor'
 import { createUser, makePlatformAdmin, workspace } from '#access/tests/seed'
-
-async function admin() {
-  const holder = await createUser()
-  await makePlatformAdmin(holder)
-
-  return holder
-}
 
 function enter(client: ApiClient, user: User, tenantId: string) {
   return client.visit('access.my_permissions.show').header('X-Tenant-Id', tenantId).loginAs(user)
+}
+
+/** Every admin route but `admin/me`, against a tenant and a user to act on. */
+function everyAdminRoute(client: ApiClient, tenantId: string, userId: string) {
+  const tenant = { id: tenantId }
+  const user = { id: userId }
+
+  return [
+    client.visit('admin.tenants.index'),
+    client.visit('admin.tenants.show', tenant),
+    client.visit('admin.tenants.update', tenant).json({ name: 'Taken' }),
+    client.visit('admin.tenant_suspensions.store', tenant),
+    client.visit('admin.tenant_suspensions.destroy', tenant),
+    client.visit('admin.users.index'),
+    client.visit('admin.user_suspensions.store', user),
+    client.visit('admin.user_suspensions.destroy', user),
+    client.visit('admin.impersonations.store', user),
+    client.visit('admin.platform_admins.store', user),
+    client.visit('admin.platform_admins.destroy', user),
+  ]
 }
 
 test.group('Admin | tenants', group => {
@@ -25,22 +40,7 @@ test.group('Admin | tenants', group => {
     const owner = await acme.member()
     await acme.assign(owner, await acme.role('Owner', ['roles.manage', 'members.manage']))
     const target = await acme.member()
-    const tenant = { id: acme.tenant.id }
-    const user = { id: target.id }
-
-    const requests = [
-      client.visit('admin.tenants.index'),
-      client.visit('admin.tenants.show', tenant),
-      client.visit('admin.tenants.update', tenant).json({ name: 'Taken' }),
-      client.visit('admin.tenant_suspensions.store', tenant),
-      client.visit('admin.tenant_suspensions.destroy', tenant),
-      client.visit('admin.users.index'),
-      client.visit('admin.user_suspensions.store', user),
-      client.visit('admin.user_suspensions.destroy', user),
-      client.visit('admin.impersonations.store', user),
-      client.visit('admin.platform_admins.store', user),
-      client.visit('admin.platform_admins.destroy', user),
-    ]
+    const requests = everyAdminRoute(client, acme.tenant.id, target.id)
 
     const statuses = []
 
@@ -53,8 +53,40 @@ test.group('Admin | tenants', group => {
     const member = await client.visit('admin.me.show').loginAs(owner)
     const platformAdmin = await client.visit('admin.me.show').loginAs(await admin())
 
-    member.assertBody({ data: { platformAdmin: false } })
-    platformAdmin.assertBody({ data: { platformAdmin: true } })
+    member.assertBody({ data: { platformAdmin: false, twoFactorRequired: false } })
+    platformAdmin.assertBody({ data: { platformAdmin: true, twoFactorRequired: false } })
+  })
+
+  // Regression: an admin route, impersonation included, serves a platform admin without
+  // two-factor, or admin/me can't tell them apart from a non-admin.
+  test('refuses every admin route to a platform admin until they enable two-factor', async ({
+    client,
+  }) => {
+    const acme = await workspace()
+    const target = await acme.member()
+    const viewer = await createUser()
+    await makePlatformAdmin(viewer)
+
+    for (const request of everyAdminRoute(client, acme.tenant.id, target.id)) {
+      const response = await request.loginAs(viewer)
+
+      response.assertStatus(403)
+      response.assertBodyContains({ code: 'E_TWO_FACTOR_REQUIRED' })
+    }
+
+    const me = await client.visit('admin.me.show').loginAs(viewer)
+    me.assertBody({ data: { platformAdmin: true, twoFactorRequired: true } })
+
+    await enableTwoFactor(viewer)
+
+    const users = await client.visit('admin.users.index').loginAs(viewer)
+    users.assertStatus(200)
+
+    const impersonation = await client
+      .visit('admin.impersonations.store', { id: target.id })
+      .loginAs(viewer)
+
+    impersonation.assertStatus(200)
   })
 
   // Regression: the search, the order or the member counts are wrong, or pages overlap.

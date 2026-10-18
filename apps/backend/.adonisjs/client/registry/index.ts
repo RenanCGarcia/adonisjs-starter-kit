@@ -144,6 +144,12 @@ const routes = {
     tokens: [{"old":"/api/v1/auth/login","type":0,"val":"api","end":""},{"old":"/api/v1/auth/login","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/login","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/login","type":0,"val":"login","end":""}],
     types: placeholder as Registry['auth.access_tokens.store']['types'],
   },
+  'auth.two_factor_logins.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/login/two-factor',
+    tokens: [{"old":"/api/v1/auth/login/two-factor","type":0,"val":"api","end":""},{"old":"/api/v1/auth/login/two-factor","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/login/two-factor","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/login/two-factor","type":0,"val":"login","end":""},{"old":"/api/v1/auth/login/two-factor","type":0,"val":"two-factor","end":""}],
+    types: placeholder as Registry['auth.two_factor_logins.store']['types'],
+  },
   'auth.password_resets.store': {
     methods: ["POST"],
     pattern: '/api/v1/auth/password/forgot',
@@ -191,6 +197,36 @@ const routes = {
     pattern: '/api/v1/account/email/verification',
     tokens: [{"old":"/api/v1/account/email/verification","type":0,"val":"api","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"v1","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"account","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"email","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"verification","end":""}],
     types: placeholder as Registry['profile.email_verifications.store']['types'],
+  },
+  'profile.two_factor.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/account/two-factor',
+    tokens: [{"old":"/api/v1/account/two-factor","type":0,"val":"api","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"v1","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"account","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"two-factor","end":""}],
+    types: placeholder as Registry['profile.two_factor.show']['types'],
+  },
+  'profile.two_factor.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/account/two-factor',
+    tokens: [{"old":"/api/v1/account/two-factor","type":0,"val":"api","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"v1","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"account","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"two-factor","end":""}],
+    types: placeholder as Registry['profile.two_factor.store']['types'],
+  },
+  'profile.two_factor.confirm': {
+    methods: ["POST"],
+    pattern: '/api/v1/account/two-factor/confirmation',
+    tokens: [{"old":"/api/v1/account/two-factor/confirmation","type":0,"val":"api","end":""},{"old":"/api/v1/account/two-factor/confirmation","type":0,"val":"v1","end":""},{"old":"/api/v1/account/two-factor/confirmation","type":0,"val":"account","end":""},{"old":"/api/v1/account/two-factor/confirmation","type":0,"val":"two-factor","end":""},{"old":"/api/v1/account/two-factor/confirmation","type":0,"val":"confirmation","end":""}],
+    types: placeholder as Registry['profile.two_factor.confirm']['types'],
+  },
+  'profile.two_factor.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/account/two-factor',
+    tokens: [{"old":"/api/v1/account/two-factor","type":0,"val":"api","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"v1","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"account","end":""},{"old":"/api/v1/account/two-factor","type":0,"val":"two-factor","end":""}],
+    types: placeholder as Registry['profile.two_factor.destroy']['types'],
+  },
+  'profile.two_factor.regenerate_recovery_codes': {
+    methods: ["POST"],
+    pattern: '/api/v1/account/two-factor/recovery-codes',
+    tokens: [{"old":"/api/v1/account/two-factor/recovery-codes","type":0,"val":"api","end":""},{"old":"/api/v1/account/two-factor/recovery-codes","type":0,"val":"v1","end":""},{"old":"/api/v1/account/two-factor/recovery-codes","type":0,"val":"account","end":""},{"old":"/api/v1/account/two-factor/recovery-codes","type":0,"val":"two-factor","end":""},{"old":"/api/v1/account/two-factor/recovery-codes","type":0,"val":"recovery-codes","end":""}],
+    types: placeholder as Registry['profile.two_factor.regenerate_recovery_codes']['types'],
   },
   'access.my_permissions.show': {
     methods: ["GET","HEAD"],

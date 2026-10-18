@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { sessionOf } from '#tests/sessions'
 import db from '@adonisjs/lucid/services/db'
 import mail from '@adonisjs/mail/services/main'
 import type { ApiClient } from '@japa/api-client'
@@ -80,11 +81,13 @@ test.group('Auth | password reset', group => {
   }) => {
     const signupSession = await signUp(client, 'ada@example.com')
 
-    const loginSession = (
-      await client
-        .visit('auth.access_tokens.store')
-        .json({ email: 'ada@example.com', password: account.password })
-    ).body().data.token
+    const { token: loginSession } = sessionOf(
+      (
+        await client
+          .visit('auth.access_tokens.store')
+          .json({ email: 'ada@example.com', password: account.password })
+      ).body().data,
+    )
 
     using fake = mail.fake()
     await client.visit('auth.password_resets.store').json({ email: 'ada@example.com' })
@@ -110,7 +113,7 @@ test.group('Auth | password reset', group => {
       .json({ email: 'ada@example.com', password: newPassword.password })
 
     login.assertStatus(200)
-    assert.isNotNull(login.body().data.user.emailVerifiedAt)
+    assert.isNotNull(sessionOf(login.body().data).user.emailVerifiedAt)
 
     const reused = await client
       .visit('auth.password_resets.update')

@@ -27,6 +27,7 @@ export type ScannedRoutes = {
     'health_checks.ready': { paramsTuple?: []; params?: {} }
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
     'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
+    'auth.two_factor_logins.store': { paramsTuple?: []; params?: {} }
     'auth.password_resets.store': { paramsTuple?: []; params?: {} }
     'auth.password_resets.update': { paramsTuple?: []; params?: {} }
     'auth.email_verifications.update': { paramsTuple?: []; params?: {} }
@@ -35,6 +36,11 @@ export type ScannedRoutes = {
     'profile.sessions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'profile.sessions.destroy_all': { paramsTuple?: []; params?: {} }
     'profile.email_verifications.store': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.show': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.store': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.confirm': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.destroy': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.regenerate_recovery_codes': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'access.permission_catalog.show': { paramsTuple?: []; params?: {} }
     'access.roles.index': { paramsTuple?: []; params?: {} }
@@ -61,6 +67,7 @@ export type ScannedRoutes = {
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.show': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'access.permission_catalog.show': { paramsTuple?: []; params?: {} }
     'access.roles.index': { paramsTuple?: []; params?: {} }
@@ -79,6 +86,7 @@ export type ScannedRoutes = {
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.show': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
     'access.permission_catalog.show': { paramsTuple?: []; params?: {} }
     'access.roles.index': { paramsTuple?: []; params?: {} }
@@ -101,11 +109,15 @@ export type ScannedRoutes = {
     'admin.platform_admins.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
     'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
+    'auth.two_factor_logins.store': { paramsTuple?: []; params?: {} }
     'auth.password_resets.store': { paramsTuple?: []; params?: {} }
     'auth.password_resets.update': { paramsTuple?: []; params?: {} }
     'auth.email_verifications.update': { paramsTuple?: []; params?: {} }
     'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
     'profile.email_verifications.store': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.store': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.confirm': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.regenerate_recovery_codes': { paramsTuple?: []; params?: {} }
     'access.roles.store': { paramsTuple?: []; params?: {} }
     'access.invitations.store': { paramsTuple?: []; params?: {} }
     'invitation_accept.store': { paramsTuple?: []; params?: {} }
@@ -116,6 +128,7 @@ export type ScannedRoutes = {
     'admin.platform_admins.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'profile.sessions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'profile.sessions.destroy_all': { paramsTuple?: []; params?: {} }
+    'profile.two_factor.destroy': { paramsTuple?: []; params?: {} }
     'access.roles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'access.invitations.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }

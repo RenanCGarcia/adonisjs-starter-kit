@@ -19,7 +19,7 @@ export function LoginPage() {
     onSubmit: async ({ value, formApi }) => {
       const created = await withFormErrors(formApi, createToken.mutateAsync({ body: value }))
 
-      if (created) session.signIn(created.data.token)
+      if (created && !created.data.twoFactorRequired) session.signIn(created.data.token)
     },
   })
 

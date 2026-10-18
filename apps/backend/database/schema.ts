@@ -243,6 +243,19 @@ export class TenantSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class TwoFactorRecoveryCodeSchema extends BaseModel {
+  static $columns = ['codeHash', 'createdAt', 'id', 'userId'] as const
+  $columns = TwoFactorRecoveryCodeSchema.$columns
+  @column()
+  declare codeHash: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare userId: string
+}
+
 export class UserTokenSchema extends BaseModel {
   static $columns = ['createdAt', 'expiresAt', 'id', 'purpose', 'tokenHash', 'userId'] as const
   $columns = UserTokenSchema.$columns
@@ -270,6 +283,9 @@ export class UserSchema extends BaseModel {
     'fullName',
     'id',
     'password',
+    'twoFactorConfirmedAt',
+    'twoFactorLastStep',
+    'twoFactorSecret',
     'updatedAt',
   ] as const
   $columns = UserSchema.$columns
@@ -289,6 +305,12 @@ export class UserSchema extends BaseModel {
   declare id: string
   @column({ serializeAs: null })
   declare password: string
+  @column.dateTime()
+  declare twoFactorConfirmedAt: DateTime | null
+  @column()
+  declare twoFactorLastStep: number | null
+  @column({ serializeAs: null })
+  declare twoFactorSecret: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

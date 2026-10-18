@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { sessionOf } from '#tests/sessions'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
 
@@ -62,7 +63,7 @@ test.group('Auth | accounts', group => {
       .visit('auth.access_tokens.store')
       .json({ email: 'ada@example.com', password: account.password })
 
-    const { token, user } = login.body().data
+    const { token, user } = sessionOf(login.body().data)
     await client.visit('profile.access_tokens.destroy').bearerToken(token)
 
     const events = await AuditEvent.query()

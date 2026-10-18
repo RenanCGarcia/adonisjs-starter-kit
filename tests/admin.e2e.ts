@@ -3,6 +3,7 @@ import { expect } from 'e2e'
 import {
   api,
   createTenant,
+  enableTwoFactor,
   grantPlatformAdmin,
   signInAs,
   signOut,
@@ -13,6 +14,8 @@ import {
 async function signUpAdmin() {
   const admin = await signUp('E2E Admin')
   await grantPlatformAdmin(admin)
+  // The admin area refuses a platform admin without two-factor.
+  await enableTwoFactor(admin)
 
   return admin
 }

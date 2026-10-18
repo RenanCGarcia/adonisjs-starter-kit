@@ -1,5 +1,6 @@
 import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
+import AccountDisabledException from '#auth/exceptions/account_disabled_exception'
 
 export interface OpenSessionInput {
   user: User
@@ -7,7 +8,10 @@ export interface OpenSessionInput {
   ipAddress: string
 }
 
-/** Issues an access token for a real sign-in, recording the device it was issued to. */
+/**
+ * Issues an access token for a real sign-in, recording the device it was issued to. Refreshes
+ * `user` afterwards, so the caller sees any state committed while the token was being created.
+ */
 export default class OpenSession {
   async handle({ user, userAgent, ipAddress }: OpenSessionInput) {
     const token = await User.accessTokens.create(user)
@@ -17,6 +21,14 @@ export default class OpenSession {
       .from('auth_access_tokens')
       .where('id', String(token.identifier))
       .update({ user_agent: userAgent?.slice(0, 512) ?? null, ip_address: ipAddress })
+
+    // A disable committing since the caller's check may have deleted the tokens before this one existed.
+    await user.refresh()
+
+    if (user.disabledAt) {
+      await User.accessTokens.delete(user, token.identifier)
+      throw new AccountDisabledException()
+    }
 
     return token
   }

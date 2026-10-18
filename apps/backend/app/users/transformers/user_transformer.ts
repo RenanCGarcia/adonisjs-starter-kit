@@ -14,6 +14,7 @@ export default class UserTransformer extends BaseTransformer<User> {
         'updatedAt',
         'initials',
       ]),
+      twoFactorEnabled: this.resource.twoFactorConfirmedAt !== null,
       avatar: AttachmentTransformer.transform(this.whenLoaded(this.resource.avatar)),
     }
   }

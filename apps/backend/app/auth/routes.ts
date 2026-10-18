@@ -10,15 +10,26 @@ import {
   passwordForgotIpThrottle,
   passwordResetThrottle,
   signupThrottle,
+  twoFactorLoginIpThrottle,
+  twoFactorManageThrottle,
 } from '#start/limiter'
 
-const { NewAccount, AccessTokens, Sessions, PasswordResets, EmailVerifications } = controllers.auth
+const {
+  NewAccount,
+  AccessTokens,
+  TwoFactorLogins,
+  TwoFactor,
+  Sessions,
+  PasswordResets,
+  EmailVerifications,
+} = controllers.auth
 
 apiRoutes(() => {
   router
     .group(() => {
       router.post('signup', [NewAccount, 'store']).use(signupThrottle)
       router.post('login', [AccessTokens, 'store']).use(loginIpThrottle)
+      router.post('login/two-factor', [TwoFactorLogins, 'store']).use(twoFactorLoginIpThrottle)
       router
         .post('password/forgot', [PasswordResets, 'store'])
         .use([passwordForgotIpThrottle, passwordForgotEmailThrottle])
@@ -37,6 +48,14 @@ apiRoutes(() => {
       router
         .post('email/verification', [EmailVerifications, 'store'])
         .use(emailVerificationResendThrottle)
+
+      router.get('two-factor', [TwoFactor, 'show'])
+      router.post('two-factor', [TwoFactor, 'store'])
+      router.post('two-factor/confirmation', [TwoFactor, 'confirm']).use(twoFactorManageThrottle)
+      router.delete('two-factor', [TwoFactor, 'destroy']).use(twoFactorManageThrottle)
+      router
+        .post('two-factor/recovery-codes', [TwoFactor, 'regenerateRecoveryCodes'])
+        .use(twoFactorManageThrottle)
     })
     .prefix('account')
     .as('profile')

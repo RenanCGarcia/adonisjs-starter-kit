@@ -2,16 +2,16 @@
 
 `apps/backend/app/` holds one folder per **module**: a bounded context that owns its vocabulary, its tables, and its routes. A module may hold several models; modules are not 1:1 with tables. Code outside `app/` (`start/`, `config/`, `database/`, `providers/`, `tests/`) is application wiring, not a module.
 
-| Module        | Owns                                                                                                                         |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `core`        | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`, health checks, the audit recorder. |
-| `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.                                                |
-| `auth`        | Behavior over that identity: sign-up, login, logout, sessions, password reset, email verification, the auth middleware.      |
-| `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.                                                |
-| `tenancy`     | Tenants and their members, the tenant scope on models, the `tenant` middleware.                                              |
-| `access`      | Roles and grants per tenant, platform admins, and the Bouncer ability every check goes through.                              |
-| `audit`       | Reading and pruning the audit trail: a tenant's events, a user's account activity, which permission opens which history.     |
-| `admin`       | The platform admin's area: every tenant and user, suspending, disabling, impersonating, and `node ace admin:grant`.          |
+| Module        | Owns                                                                                                                                |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `core`        | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`, health checks, the audit recorder.        |
+| `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.                                                       |
+| `auth`        | Behavior over that identity: sign-up, login, two-factor, logout, sessions, password reset, email verification, the auth middleware. |
+| `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.                                                       |
+| `tenancy`     | Tenants and their members, the tenant scope on models, the `tenant` middleware.                                                     |
+| `access`      | Roles and grants per tenant, platform admins, and the Bouncer ability every check goes through.                                     |
+| `audit`       | Reading and pruning the audit trail: a tenant's events, a user's account activity, which permission opens which history.            |
+| `admin`       | The platform admin's area: every tenant and user, suspending, disabling, impersonating, and `node ace admin:grant`.                 |
 
 ## Starting a new module or feature
 
@@ -101,7 +101,42 @@ Background work runs as jobs on `@adonisjs/queue`, backed by Redis through the `
 
 ## Rate limiting
 
-Every named throttle lives in `start/limiter.ts`, enforced everywhere but development (the e2e suite signs up far more often than any limit allows), backed by `@adonisjs/limiter` on the Redis store (`memory` in tests, via `LIMITER_STORE=memory` in `.env.test`). Apply one to a route with `.use(someThrottle)`, next to the other route middleware; a login-style endpoint that must only penalize failures uses the limiter directly in its controller (`penalizeLoginFailure(email, ip, check)`) instead of the HTTP middleware. A throttle that rejects a request throws `@adonisjs/limiter`'s `E_TOO_MANY_REQUESTS`, which `app/core/exceptions/handler.ts` renders like every other exception (`{ code, message }`, translated from `errors.E_TOO_MANY_REQUESTS`) and with the limiter's own `Retry-After` header.
+Every named throttle lives in `start/limiter.ts`, enforced everywhere but development (the e2e suite signs up far more often than any limit allows), backed by `@adonisjs/limiter` on the Redis store (`memory` in tests, via `LIMITER_STORE=memory` in `.env.test`). Apply one to a route with `.use(someThrottle)`, next to the other route middleware; a login-style endpoint that must only penalize failures uses the limiter directly in its controller (`penalizeLoginFailure(email, ip, check)`, `penalizeTwoFactorFailure(userId, check)`) instead of the HTTP middleware. A throttle that rejects a request throws `@adonisjs/limiter`'s `E_TOO_MANY_REQUESTS`, which `app/core/exceptions/handler.ts` renders like every other exception (`{ code, message }`, translated from `errors.E_TOO_MANY_REQUESTS`) and with the limiter's own `Retry-After` header.
+
+## Two-factor authentication
+
+Two-factor (TOTP, RFC 6238) is optional for users and required of platform admins (see [Admin](#admin)). The `auth` module owns it; its state is three columns on `users` and one table:
+
+- **`users.two_factor_secret`**: the base32 secret, encrypted with `APP_KEY` (purpose `two_factor_secret`). Set and unconfirmed while enrolling.
+- **`users.two_factor_confirmed_at`**: two-factor is on only when this is set. A pending secret changes nothing about signing in. A check constraint refuses a confirmation without a secret.
+- **`users.two_factor_last_step`**: the last 30-second time step a code was accepted for. A code at or before it is refused, so a code works once. The write is a conditional update, so two concurrent uses of one code can't both pass.
+- **`two_factor_recovery_codes`**: ten single-use codes (`xxxxx-xxxxx`), stored as `encryption.blindIndex()` hashes, an HMAC keyed from `APP_KEY`, so a database dump alone can't be brute-forced offline. Using one deletes its row. Rotating `APP_KEY` out of `config/encryption.ts` invalidates every secret and recovery code.
+
+A code is accepted one step either side of the server's clock.
+
+### Login
+
+`POST /api/v1/auth/login` answers `{ twoFactorRequired: false, user, token }` for an account without two-factor. With two-factor confirmed, once the password is right (and the account isn't disabled), it opens no session and answers `{ twoFactorRequired: true, challenge }` instead, recording `auth.two_factor_challenged`. The challenge is the user id encrypted with `APP_KEY` (purpose `two_factor_challenge`), valid five minutes: the client can neither read nor forge it, and it opens nothing by itself.
+
+`POST /api/v1/auth/login/two-factor` (`{ challenge, code }` or `{ challenge, recoveryCode }`) answers `{ user, token }` like a login. A forged or expired challenge, or one whose user has turned two-factor off since, answers 400 `E_INVALID_TWO_FACTOR_CHALLENGE`; a disabled account 403 `E_ACCOUNT_DISABLED`; a wrong or used code 400 `E_INVALID_TWO_FACTOR_CODE`, recorded as `auth.two_factor_failed`, and the challenge stays usable. Five wrong codes in 15 minutes block the user's second step for 15 minutes, whatever the IP or challenge (`penalizeTwoFactorFailure`); the route also allows 30 requests per IP per 15 minutes. A success records `auth.logged_in` with the `factor` used, and a recovery code also `auth.recovery_code_used` with the codes `remaining`.
+
+### Every session passed a second factor
+
+Confirming two-factor revokes every other session of the user, keeping only the one that just confirmed with a code. Login re-reads the user after creating its token: a confirmation that committed meanwhile turns the answer into a challenge and deletes the token, the way a disable does. So every live session of a user with two-factor confirmed has passed a second factor, and the admin requirement only checks `two_factor_confirmed_at`.
+
+### Endpoints
+
+Every route below needs `auth`, and the writes answer 403 `E_IMPERSONATING` from an impersonation token: an admin acting as the user never changes how they sign in. Confirm, disable and regenerate allow 10 requests per user per 15 minutes.
+
+| Route                                                                                      | Does                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /api/v1/account/two-factor`                                                           | `{ enabled, recoveryCodesLeft }`. The profile also carries `twoFactorEnabled`.                                                                                                                                                                               |
+| `POST /api/v1/account/two-factor`                                                          | Starts or restarts enrollment: stores a new pending secret and answers `{ secret, uri }`, the base32 secret for manual entry and the `otpauth://` URI for a QR code (issuer `APP_NAME`, label the email). 409 `E_TWO_FACTOR_ALREADY_ENABLED` once confirmed. |
+| `POST /api/v1/account/two-factor/confirmation` (`{ code }`)                                | Confirms with a code of the pending secret, answers `{ recoveryCodes }` (the only time they are readable) and revokes every other session. 409 `E_TWO_FACTOR_NOT_STARTED` without a pending secret.                                                          |
+| `DELETE /api/v1/account/two-factor` (`{ password, code }` or `{ password, recoveryCode }`) | Turns it off: clears the secret and the recovery codes. 400 `E_INVALID_PASSWORD` for a wrong password.                                                                                                                                                       |
+| `POST /api/v1/account/two-factor/recovery-codes` (`{ password, code }`)                    | Replaces every recovery code and answers `{ recoveryCodes }`.                                                                                                                                                                                                |
+
+Disable and regenerate answer 409 `E_TWO_FACTOR_NOT_ENABLED` when two-factor is off. Each write records its event: `auth.two_factor_enrollment_started`, `auth.two_factor_enabled`, `auth.two_factor_disabled`, `auth.recovery_codes_regenerated`. No event holds a secret, a code or a challenge.
 
 ## Tenancy
 
@@ -259,7 +294,9 @@ A scheduled job records as the system: no actor, no session. Declare its event a
 
 ## Admin
 
-The `admin` module is the platform admins' area. Every route needs `auth` and runs outside any tenant, so `bouncer.authorize(can, PERMISSIONS.platformAdmin)` passes only a platform admin; `GET /api/v1/admin/me` answers `{ platformAdmin }` to anyone signed in, for the frontend to show the entry.
+The `admin` module is the platform admins' area. Every route needs `auth` and runs outside any tenant, so `bouncer.authorize(can, PERMISSIONS.platformAdmin)` passes only a platform admin; `GET /api/v1/admin/me` answers `{ platformAdmin, twoFactorRequired }` to anyone signed in, for the frontend to show the entry, or to send a platform admin to enable two-factor first.
+
+A platform admin must have [two-factor](#two-factor-authentication) confirmed to use the area. Every admin route but `admin/me` sits in one route group whose `twoFactor` middleware (`admin/middleware/require_two_factor_middleware.ts`) answers a platform admin without it 403 `E_TWO_FACTOR_REQUIRED`, impersonation included; anyone else passes through to the route's own authorization failure. A new admin route goes in that group. The check is a middleware rather than part of the `can` ability so that `admin/me` can tell "must enroll" from "not an admin", and so a platform admin's checks inside tenants stay as they are. `node ace admin:grant` and the grant endpoint still grant to an account without two-factor; the requirement applies when the account uses the area. A platform admin who turns two-factor off is refused the same way until they turn it back on.
 
 | Route                                                     | Does                                                                                                                   |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |

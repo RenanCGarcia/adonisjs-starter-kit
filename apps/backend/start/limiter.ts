@@ -31,6 +31,16 @@ export const loginIpThrottle = throttle('login_ip', ctx => {
   return limiter.allowRequests(30).every('15 mins').usingKey(ctx.request.ip())
 })
 
+/** Every second-step attempt per IP, valid or not; failures also count per user, below. */
+export const twoFactorLoginIpThrottle = throttle('two_factor_login_ip', ctx => {
+  return limiter.allowRequests(30).every('15 mins').usingKey(ctx.request.ip())
+})
+
+/** The signed-in endpoints that check a code (and a password): confirm, disable, regenerate. */
+export const twoFactorManageThrottle = throttle('two_factor_manage', ctx => {
+  return limiter.allowRequests(10).every('15 mins').usingKey(ctx.auth.user!.id)
+})
+
 export const signupThrottle = throttle('signup', ctx => {
   return limiter.allowRequests(5).every('1 hour').usingKey(ctx.request.ip())
 })
@@ -88,6 +98,23 @@ export async function penalizeLoginFailure<T>(
   const [blocked, result] = await limiter
     .use({ requests: 5, duration: '15 mins', blockDuration: '15 mins' })
     .penalize(`login_failure_${ip}_${email}`, check)
+
+  if (blocked) throw blocked
+
+  return result
+}
+
+/**
+ * Like `penalizeLoginFailure`, for the code of a login's second step. Keyed by the user alone:
+ * whoever gets here knows the password, and keying by IP would let them rotate IPs through the
+ * million TOTP values. The cost is that they can lock the owner out of signing in for a while.
+ */
+export async function penalizeTwoFactorFailure<T>(userId: string, check: () => Promise<T>) {
+  if (app.inDev) return check()
+
+  const [blocked, result] = await limiter
+    .use({ requests: 5, duration: '15 mins', blockDuration: '15 mins' })
+    .penalize(`two_factor_failure_${userId}`, check)
 
   if (blocked) throw blocked
 

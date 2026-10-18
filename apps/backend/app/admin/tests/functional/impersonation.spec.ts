@@ -3,14 +3,8 @@ import type User from '#users/models/user'
 import type { ApiClient } from '@japa/api-client'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { createUser, makePlatformAdmin, workspace } from '#access/tests/seed'
-
-async function admin() {
-  const holder = await createUser()
-  await makePlatformAdmin(holder)
-
-  return holder
-}
+import { admin } from '#admin/tests/seed'
+import { createUser, workspace } from '#access/tests/seed'
 
 function impersonate(client: ApiClient, viewer: User, target: User) {
   return client.visit('admin.impersonations.store', { id: target.id }).loginAs(viewer)

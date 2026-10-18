@@ -20,6 +20,13 @@ export interface ApiDefinition {
     emailVerifications: {
       store: typeof routes['profile.email_verifications.store']
     }
+    twoFactor: {
+      show: typeof routes['profile.two_factor.show']
+      store: typeof routes['profile.two_factor.store']
+      confirm: typeof routes['profile.two_factor.confirm']
+      destroy: typeof routes['profile.two_factor.destroy']
+      regenerateRecoveryCodes: typeof routes['profile.two_factor.regenerate_recovery_codes']
+    }
   }
   attachments: {
     attachments: {
@@ -78,6 +85,9 @@ export interface ApiDefinition {
     }
     accessTokens: {
       store: typeof routes['auth.access_tokens.store']
+    }
+    twoFactorLogins: {
+      store: typeof routes['auth.two_factor_logins.store']
     }
     passwordResets: {
       store: typeof routes['auth.password_resets.store']

@@ -36,6 +36,8 @@ export const controllers = {
     NewAccount: () => import('#app/auth/controllers/new_account_controller'),
     PasswordResets: () => import('#app/auth/controllers/password_resets_controller'),
     Sessions: () => import('#app/auth/controllers/sessions_controller'),
+    TwoFactor: () => import('#app/auth/controllers/two_factor_controller'),
+    TwoFactorLogins: () => import('#app/auth/controllers/two_factor_logins_controller'),
   },
   core: {
     HealthChecks: () => import('#app/core/controllers/health_checks_controller'),

@@ -11,5 +11,13 @@ export default {
         },
       },
     },
+    users: {
+      columns: {
+        two_factor_secret: {
+          decorators: [{ name: '@column', args: { serializeAs: null } }],
+          tsType: 'string',
+        },
+      },
+    },
   },
 } satisfies SchemaRules

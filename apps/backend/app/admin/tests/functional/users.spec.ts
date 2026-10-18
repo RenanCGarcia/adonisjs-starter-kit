@@ -1,16 +1,11 @@
 import { test } from '@japa/runner'
+import { sessionOf } from '#tests/sessions'
 import User from '#users/models/user'
 import AuditEvent from '#core/models/audit_event'
 import PlatformAdmin from '#access/models/platform_admin'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { createUser, makePlatformAdmin, workspace } from '#access/tests/seed'
-
-async function admin() {
-  const holder = await createUser()
-  await makePlatformAdmin(holder)
-
-  return holder
-}
+import { admin } from '#admin/tests/seed'
+import { createUser, workspace } from '#access/tests/seed'
 
 test.group('Admin | users', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
@@ -64,7 +59,7 @@ test.group('Admin | users', group => {
     const credentials = { email: ada.email, password: 'password123' }
 
     const login = await client.visit('auth.access_tokens.store').json(credentials)
-    const token = login.body().data.token
+    const { token } = sessionOf(login.body().data)
 
     const disabled = await client
       .visit('admin.user_suspensions.store', { id: ada.id })
