@@ -70,6 +70,9 @@ export interface ApiDefinition {
     impersonations: {
       store: typeof routes['admin.impersonations.store']
     }
+    twoFactorResets: {
+      destroy: typeof routes['admin.two_factor_resets.destroy']
+    }
     platformAdmins: {
       store: typeof routes['admin.platform_admins.store']
       destroy: typeof routes['admin.platform_admins.destroy']

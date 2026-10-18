@@ -26,6 +26,7 @@ function everyAdminRoute(client: ApiClient, tenantId: string, userId: string) {
     client.visit('admin.user_suspensions.store', user),
     client.visit('admin.user_suspensions.destroy', user),
     client.visit('admin.impersonations.store', user),
+    client.visit('admin.two_factor_resets.destroy', user),
     client.visit('admin.platform_admins.store', user),
     client.visit('admin.platform_admins.destroy', user),
   ]

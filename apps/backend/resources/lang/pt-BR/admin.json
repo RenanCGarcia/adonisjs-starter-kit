@@ -1,0 +1,12 @@
+{
+  "two_factor_reset_mail": {
+    "subject": "Sua autenticação em dois fatores foi desativada",
+    "preview": "Um administrador desativou a autenticação em dois fatores da sua conta no {appName}",
+    "heading": "A autenticação em dois fatores está desativada",
+    "intro": "Um administrador do {appName} desativou a autenticação em dois fatores da sua conta e encerrou todas as suas sessões. Agora você entra só com a senha. Ative a autenticação em dois fatores de novo para proteger sua conta.",
+    "open_link": "Abra este link para ativá-la de novo:",
+    "action": "Ativar a autenticação em dois fatores",
+    "warning": "Se você não pediu isso, troque sua senha e fale com o suporte imediatamente.",
+    "footer": "Você recebeu este e-mail porque a autenticação em dois fatores da sua conta foi desativada."
+  }
+}

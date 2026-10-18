@@ -1,10 +1,15 @@
 import { test } from '@japa/runner'
 import { sessionOf } from '#tests/sessions'
 import User from '#users/models/user'
+import db from '@adonisjs/lucid/services/db'
+import mail from '@adonisjs/mail/services/main'
 import AuditEvent from '#core/models/audit_event'
 import PlatformAdmin from '#access/models/platform_admin'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { admin } from '#admin/tests/seed'
+import { enableTwoFactor } from '#auth/tests/two_factor'
+import TwoFactorResetMail from '#admin/mails/two_factor_reset_mail'
+import { countRecoveryCodes, replaceRecoveryCodes } from '#auth/services/two_factor'
 import { createUser, workspace } from '#access/tests/seed'
 
 test.group('Admin | users', group => {
@@ -117,7 +122,11 @@ test.group('Admin | users', group => {
     const peer = await admin()
 
     for (const target of [viewer, peer]) {
-      for (const route of ['admin.user_suspensions.store', 'admin.impersonations.store'] as const) {
+      for (const route of [
+        'admin.user_suspensions.store',
+        'admin.impersonations.store',
+        'admin.two_factor_resets.destroy',
+      ] as const) {
         const response = await client.visit(route, { id: target.id }).loginAs(viewer)
 
         response.assertStatus(409)
@@ -125,7 +134,77 @@ test.group('Admin | users', group => {
       }
     }
 
-    assert.isNull((await User.findOrFail(peer.id)).disabledAt)
+    const untouched = await User.findOrFail(peer.id)
+    assert.isNull(untouched.disabledAt)
+    assert.isNotNull(untouched.twoFactorConfirmedAt)
+  })
+
+  // Regression: a reset leaves a session someone else holds working, keeps the old secret or
+  // recovery codes, doesn't tell the user, or runs again on a user without two-factor.
+  test('resetting two-factor signs the user out, mails them, and the password alone signs in', async ({
+    client,
+    assert,
+  }) => {
+    using fake = mail.fake()
+    const viewer = await admin()
+    const ada = await createUser()
+    await enableTwoFactor(ada)
+    await replaceRecoveryCodes(db.connection(), ada.id)
+    const session = await User.accessTokens.create(ada)
+
+    const listRow = async () => {
+      const list = await client.visit('admin.users.index').qs({ search: ada.email }).loginAs(viewer)
+
+      return list.body().data[0]
+    }
+
+    assert.containsSubset(await listRow(), { user: { twoFactorEnabled: true } })
+
+    const reset = await client
+      .visit('admin.two_factor_resets.destroy', { id: ada.id })
+      .header('accept-language', 'pt-BR')
+      .loginAs(viewer)
+
+    reset.assertBody({ data: { id: ada.id, twoFactorEnabled: false } })
+    assert.containsSubset(await listRow(), { user: { twoFactorEnabled: false } })
+
+    const stale = await client.visit('profile.profile.show').bearerToken(session.value!.release())
+    stale.assertStatus(401)
+
+    const login = await client
+      .visit('auth.access_tokens.store')
+      .json({ email: ada.email, password: 'password123' })
+
+    assert.isFalse(login.body().data.twoFactorRequired)
+    assert.equal(await countRecoveryCodes(db.connection(), ada.id), 0)
+
+    fake.mails.assertQueued(TwoFactorResetMail, ({ message }) => message.hasTo(ada.email))
+    assert.equal(
+      fake.mails.queued()[0]?.message.toJSON().message.subject,
+      'Sua autenticação em dois fatores foi desativada',
+    )
+
+    const again = await client
+      .visit('admin.two_factor_resets.destroy', { id: ada.id })
+      .loginAs(viewer)
+
+    again.assertStatus(409)
+    again.assertBodyContains({ code: 'E_TWO_FACTOR_NOT_ENABLED' })
+
+    const unknown = await client
+      .visit('admin.two_factor_resets.destroy', { id: crypto.randomUUID() })
+      .loginAs(viewer)
+
+    unknown.assertStatus(404)
+
+    const events = await AuditEvent.query()
+      .where('subject_id', ada.id)
+      .where('type', 'admin.two_factor_reset')
+
+    assert.deepEqual(
+      events.map(event => [event.tenantId, event.actorId, event.data]),
+      [[null, viewer.id, { email: ada.email }]],
+    )
   })
 
   // Regression: granting twice fails or adds a second row, revoking leaves the admin in place, or

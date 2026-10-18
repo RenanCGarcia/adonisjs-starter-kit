@@ -3,7 +3,7 @@ import * as OTPAuth from 'otpauth'
 import env from '#start/env'
 import type User from '#users/models/user'
 import encryption from '@adonisjs/core/services/encryption'
-import type { QueryClientContract } from '@adonisjs/lucid/types/database'
+import type { QueryClientContract, TransactionClientContract } from '@adonisjs/lucid/types/database'
 import TwoFactorRecoveryCode from '#auth/models/two_factor_recovery_code'
 
 /** What a user offers as their second factor: a code from their app, or one recovery code. */
@@ -103,6 +103,14 @@ async function consumeRecoveryCode(client: QueryClientContract, userId: string, 
     .delete()
 
   return Number(deleted) === 1
+}
+
+/** Turns two-factor off: the secret, its last step and every recovery code. `user` is locked. */
+export async function clearTwoFactor(trx: TransactionClientContract, user: User) {
+  user.merge({ twoFactorSecret: null, twoFactorConfirmedAt: null, twoFactorLastStep: null })
+  await user.useTransaction(trx).save()
+
+  await TwoFactorRecoveryCode.query({ client: trx }).where('user_id', user.id).delete()
 }
 
 export function verifySecondFactor(client: QueryClientContract, user: User, factor: SecondFactor) {

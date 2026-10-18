@@ -250,6 +250,11 @@ const ACCOUNT_EVENTS: EventTexts<Exclude<AuditEventType, TenantEventType>> = {
       sentence: t('audit.events.impersonationStarted', { email: data.email }),
     }),
   },
+  'admin.two_factor_reset': {
+    describe: ({ data }) => ({
+      sentence: t('audit.events.twoFactorReset', { email: data.email }),
+    }),
+  },
   'admin.platform_admin_granted': {
     describe: ({ data }) => ({
       sentence: t('audit.events.platformAdminGranted', { email: data.email }),

@@ -21,6 +21,7 @@ export type ScannedRoutes = {
     'admin.user_suspensions.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.user_suspensions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.impersonations.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.two_factor_resets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.platform_admins.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.platform_admins.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
@@ -125,6 +126,7 @@ export type ScannedRoutes = {
   DELETE: {
     'admin.tenant_suspensions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.user_suspensions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.two_factor_resets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.platform_admins.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'profile.sessions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'profile.sessions.destroy_all': { paramsTuple?: []; params?: {} }

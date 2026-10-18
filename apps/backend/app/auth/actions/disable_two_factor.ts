@@ -2,9 +2,8 @@ import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import type {} from '#auth/types/audit'
-import TwoFactorRecoveryCode from '#auth/models/two_factor_recovery_code'
 import InvalidPasswordException from '#auth/exceptions/invalid_password_exception'
-import { verifySecondFactor, type SecondFactor } from '#auth/services/two_factor'
+import { clearTwoFactor, verifySecondFactor, type SecondFactor } from '#auth/services/two_factor'
 import TwoFactorNotEnabledException from '#auth/exceptions/two_factor_not_enabled_exception'
 import InvalidTwoFactorCodeException from '#auth/exceptions/invalid_two_factor_code_exception'
 
@@ -32,10 +31,7 @@ export default class DisableTwoFactor {
         throw new InvalidTwoFactorCodeException()
       }
 
-      locked.merge({ twoFactorSecret: null, twoFactorConfirmedAt: null, twoFactorLastStep: null })
-      await locked.save()
-
-      await TwoFactorRecoveryCode.query({ client: trx }).where('user_id', locked.id).delete()
+      await clearTwoFactor(trx, locked)
 
       await audit.record(trx, 'auth.two_factor_disabled', {
         tenantId: null,

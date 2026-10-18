@@ -11,7 +11,7 @@
 | `tenancy`     | Tenants and their members, the tenant scope on models, the `tenant` middleware.                                                     |
 | `access`      | Roles and grants per tenant, platform admins, and the Bouncer ability every check goes through.                                     |
 | `audit`       | Reading and pruning the audit trail: a tenant's events, a user's account activity, which permission opens which history.            |
-| `admin`       | The platform admin's area: every tenant and user, suspending, disabling, impersonating, and `node ace admin:grant`.                 |
+| `admin`       | The platform admin's area: every tenant and user, suspending, disabling, impersonating, resetting two-factor, `node ace admin:*`.   |
 
 ## Starting a new module or feature
 
@@ -140,7 +140,11 @@ Every route below needs `auth`, and the writes answer 403 `E_IMPERSONATING` from
 | `DELETE /api/v1/account/two-factor` (`{ password, code }` or `{ password, recoveryCode }`) | Turns it off: clears the secret and the recovery codes. 400 `E_INVALID_PASSWORD` for a wrong password.                                                                                                                                                       |
 | `POST /api/v1/account/two-factor/recovery-codes` (`{ password, code }`)                    | Replaces every recovery code and answers `{ recoveryCodes }`.                                                                                                                                                                                                |
 
-Disable and regenerate answer 409 `E_TWO_FACTOR_NOT_ENABLED` when two-factor is off. Each write records its event: `auth.two_factor_enrollment_started`, `auth.two_factor_enabled`, `auth.two_factor_disabled`, `auth.recovery_codes_regenerated`. No event holds a secret, a code or a challenge.
+Disable and regenerate answer 409 `E_TWO_FACTOR_NOT_ENABLED` when two-factor is off. Disable and the admin reset share `clearTwoFactor` (`auth/services/two_factor.ts`), the one write that turns it off. Each write records its event: `auth.two_factor_enrollment_started`, `auth.two_factor_enabled`, `auth.two_factor_disabled`, `auth.recovery_codes_regenerated`. No event holds a secret, a code or a challenge.
+
+### Lost device
+
+A user who lost both their authenticator and their recovery codes can't turn two-factor off themselves. A platform admin resets it from the users page (`DELETE /api/v1/admin/users/:id/two-factor`, see [Admin](#admin)): it clears the secret and the recovery codes, signs the user out of every session, so whoever holds one loses it, and mails them to turn it back on. They sign in with their password alone from then on. The API refuses a platform admin's account; an operator resets one with `node ace admin:reset-two-factor <email>`, which does the same as the system.
 
 ## Tenancy
 
@@ -302,22 +306,24 @@ The `admin` module is the platform admins' area. Every route needs `auth` and ru
 
 A platform admin must have [two-factor](#two-factor-authentication) confirmed to use the area. Every admin route but `admin/me` sits in one route group whose `twoFactor` middleware (`admin/middleware/require_two_factor_middleware.ts`) answers a platform admin without it 403 `E_TWO_FACTOR_REQUIRED`, impersonation included; anyone else passes through to the route's own authorization failure. A new admin route goes in that group. The `can` ability already denies such an admin `platform.admin`, so the routes would refuse them anyway; the middleware and `admin/me` read `platform_admins` directly so they can tell "must enroll" from "not an admin". `node ace admin:grant` and the grant endpoint still grant to an account without two-factor; the requirement applies when the account uses the area. A platform admin who turns two-factor off is refused the same way until they turn it back on.
 
-| Route                                                     | Does                                                                                                                   |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/v1/admin/tenants` (`search`, `page`, `perPage`) | Every tenant by name, with `memberCount` and `suspendedAt`.                                                            |
-| `GET /api/v1/admin/tenants/:id`                           | The tenant and its members, each with `disabledAt`, `platformAdmin` and their role's name.                             |
-| `PUT /api/v1/admin/tenants/:id` (`{ name }`)              | Renames it: `admin.tenant_renamed` on the tenant's trail.                                                              |
-| `POST`, `DELETE /api/v1/admin/tenants/:id/suspension`     | Suspends and reactivates it: `admin.tenant_suspended`, `admin.tenant_reactivated`.                                     |
-| `GET /api/v1/admin/users` (`search`, `page`, `perPage`)   | Every user by email, searched by email or name, with `disabledAt`, `platformAdmin` and `tenantCount`.                  |
-| `POST`, `DELETE /api/v1/admin/users/:id/suspension`       | Disables and enables the account: `admin.user_disabled`, `admin.user_enabled`, in the user's account activity.         |
-| `POST /api/v1/admin/users/:id/impersonation`              | `{ user, token }` like login: a one-hour token that acts as the user. `admin.impersonation_started` in their activity. |
-| `POST`, `DELETE /api/v1/admin/users/:id/platform-admin`   | Grants and revokes platform admin: `admin.platform_admin_granted`, `admin.platform_admin_revoked`, in their activity.  |
+| Route                                                     | Does                                                                                                                           |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /api/v1/admin/tenants` (`search`, `page`, `perPage`) | Every tenant by name, with `memberCount` and `suspendedAt`.                                                                    |
+| `GET /api/v1/admin/tenants/:id`                           | The tenant and its members, each with `disabledAt`, `platformAdmin` and their role's name.                                     |
+| `PUT /api/v1/admin/tenants/:id` (`{ name }`)              | Renames it: `admin.tenant_renamed` on the tenant's trail.                                                                      |
+| `POST`, `DELETE /api/v1/admin/tenants/:id/suspension`     | Suspends and reactivates it: `admin.tenant_suspended`, `admin.tenant_reactivated`.                                             |
+| `GET /api/v1/admin/users` (`search`, `page`, `perPage`)   | Every user by email, searched by email or name, with `disabledAt`, `platformAdmin`, `tenantCount` and `user.twoFactorEnabled`. |
+| `POST`, `DELETE /api/v1/admin/users/:id/suspension`       | Disables and enables the account: `admin.user_disabled`, `admin.user_enabled`, in the user's account activity.                 |
+| `POST /api/v1/admin/users/:id/impersonation`              | `{ user, token }` like login: a one-hour token that acts as the user. `admin.impersonation_started` in their activity.         |
+| `POST`, `DELETE /api/v1/admin/users/:id/platform-admin`   | Grants and revokes platform admin: `admin.platform_admin_granted`, `admin.platform_admin_revoked`, in their activity.          |
+| `DELETE /api/v1/admin/users/:id/two-factor`               | Resets the user's two-factor (see [Lost device](#lost-device)): `admin.two_factor_reset` in their activity.                    |
 
 The states are nullable timestamps, and each holds an invariant at its write rather than a check on every request:
 
 - **A suspended tenant (`tenants.suspended_at`) lets nobody in.** The `tenant` middleware answers its members 403 `E_TENANT_SUSPENDED`, after the membership check, so a non-member still gets `E_TENANT_ACCESS_DENIED`. `GET /api/v1/tenants` keeps listing it with its `suspendedAt`, for the frontend to say why.
 - **A disabled user (`users.disabled_at`) holds no access token.** Disabling deletes every token of theirs in the same transaction, and again after the commit; login answers 403 `E_ACCOUNT_DISABLED` once the password is right, and re-reads `disabled_at` after creating its token, deleting it if set. Without row locks, a login racing the disable either sees the committed `disabled_at` or inserted its token before the commit, where the second delete finds it. and impersonating them answers 409 `E_USER_DISABLED`.
-- **A platform admin is never disabled or impersonated through the API**, the caller included: 409 `E_PLATFORM_ADMIN_PROTECTED`. Revoke their platform admin first. Enabling isn't protected, so someone disabled before being granted can still be enabled.
+- **A platform admin is never disabled, impersonated or has their two-factor reset through the API**, the caller included: 409 `E_PLATFORM_ADMIN_PROTECTED`. Revoke their platform admin first, or reset an admin's two-factor with `node ace admin:reset-two-factor <email>`: one admin resetting another's would let a single stolen admin session take over a second admin account.
+- **A two-factor reset leaves the user no session.** `ResetTwoFactor` clears it under a row lock, records the event and emits `admin:two_factor_reset`, whose listener (`admin/start/events.ts`) mails `TwoFactorResetMail`; the controller and the command then run `RevokeSessions` with no kept token. The mail is in the admin's request locale, like an invitation, since the user's own isn't stored; the command uses the default locale. A user without two-factor confirmed answers 409 `E_TWO_FACTOR_NOT_ENABLED`, unlike the idempotent writes below: a repeat would sign them out and mail them again about a reset that didn't happen. Enabling isn't protected, so someone disabled before being granted can still be enabled.
 - **An admin can't revoke their own platform admin**: 409 `E_CANNOT_REVOKE_SELF`. Since the caller is an admin, a revoke never removes the last one; only two admins revoking each other at the same moment can, and `node ace admin:grant` recovers. `node ace admin:grant` and the grant endpoint share `grantPlatformAdmin` (`services/grant_platform_admin.ts`), which keeps an existing grant.
 
 Suspending, disabling, granting and their reverses are idempotent: a repeat keeps the first date and answers 200, and records its event again, since every successful write records one (see [The guard](#the-guard)).

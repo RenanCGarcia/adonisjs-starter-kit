@@ -104,6 +104,7 @@ export default defineConfig({
 
     // admin
     () => import('#admin/routes'),
+    () => import('#admin/start/events'),
   ],
 
   /*

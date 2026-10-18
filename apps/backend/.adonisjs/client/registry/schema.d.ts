@@ -211,6 +211,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/admin/controllers/impersonations_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'admin.two_factor_resets.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/admin/users/:id/two-factor'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#admin/validators/user').userParamsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#admin/validators/user').userParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/admin/controllers/two_factor_resets_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/admin/controllers/two_factor_resets_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'admin.platform_admins.store': {
     methods: ["POST"]
     pattern: '/api/v1/admin/users/:id/platform-admin'

@@ -108,6 +108,12 @@ const routes = {
     tokens: [{"old":"/api/v1/admin/users/:id/impersonation","type":0,"val":"api","end":""},{"old":"/api/v1/admin/users/:id/impersonation","type":0,"val":"v1","end":""},{"old":"/api/v1/admin/users/:id/impersonation","type":0,"val":"admin","end":""},{"old":"/api/v1/admin/users/:id/impersonation","type":0,"val":"users","end":""},{"old":"/api/v1/admin/users/:id/impersonation","type":1,"val":"id","end":""},{"old":"/api/v1/admin/users/:id/impersonation","type":0,"val":"impersonation","end":""}],
     types: placeholder as Registry['admin.impersonations.store']['types'],
   },
+  'admin.two_factor_resets.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/admin/users/:id/two-factor',
+    tokens: [{"old":"/api/v1/admin/users/:id/two-factor","type":0,"val":"api","end":""},{"old":"/api/v1/admin/users/:id/two-factor","type":0,"val":"v1","end":""},{"old":"/api/v1/admin/users/:id/two-factor","type":0,"val":"admin","end":""},{"old":"/api/v1/admin/users/:id/two-factor","type":0,"val":"users","end":""},{"old":"/api/v1/admin/users/:id/two-factor","type":1,"val":"id","end":""},{"old":"/api/v1/admin/users/:id/two-factor","type":0,"val":"two-factor","end":""}],
+    types: placeholder as Registry['admin.two_factor_resets.destroy']['types'],
+  },
   'admin.platform_admins.store': {
     methods: ["POST"],
     pattern: '/api/v1/admin/users/:id/platform-admin',

@@ -1,0 +1,12 @@
+{
+  "two_factor_reset_mail": {
+    "subject": "Your two-factor authentication was turned off",
+    "preview": "An administrator turned off two-factor on your {appName} account",
+    "heading": "Two-factor authentication is off",
+    "intro": "An administrator of {appName} turned off two-factor authentication on your account and signed you out everywhere. You now sign in with your password alone. Turn two-factor back on to protect your account.",
+    "open_link": "Open this link to turn it back on:",
+    "action": "Turn two-factor back on",
+    "warning": "If you didn’t ask for this, change your password and contact support right away.",
+    "footer": "You received this because two-factor authentication was turned off on your account."
+  }
+}

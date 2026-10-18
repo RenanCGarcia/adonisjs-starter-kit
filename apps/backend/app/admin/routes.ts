@@ -3,8 +3,16 @@ import { middleware } from '#start/kernel'
 import { apiRoutes } from '#core/api_routes'
 import { controllers } from '#generated/controllers'
 
-const { Me, Tenants, TenantSuspensions, Users, UserSuspensions, Impersonations, PlatformAdmins } =
-  controllers.admin
+const {
+  Me,
+  Tenants,
+  TenantSuspensions,
+  Users,
+  UserSuspensions,
+  Impersonations,
+  PlatformAdmins,
+  TwoFactorResets,
+} = controllers.admin
 
 apiRoutes(() => {
   // The admin area's gate, outside the two-factor requirement: it tells a platform admin who
@@ -38,6 +46,9 @@ apiRoutes(() => {
         .where('id', router.matchers.uuid())
       router
         .post('users/:id/impersonation', [Impersonations, 'store'])
+        .where('id', router.matchers.uuid())
+      router
+        .delete('users/:id/two-factor', [TwoFactorResets, 'destroy'])
         .where('id', router.matchers.uuid())
       router
         .post('users/:id/platform-admin', [PlatformAdmins, 'store'])

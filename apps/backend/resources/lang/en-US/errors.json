@@ -17,7 +17,7 @@
   "E_INVITATION_NOT_FOUND": "This invitation doesn’t exist or has expired.",
   "E_LAST_MANAGER": "Someone must still be able to manage members. Give that permission to another member first.",
   "E_MEMBER_NOT_FOUND": "This person is no longer a member of the workspace.",
-  "E_PLATFORM_ADMIN_PROTECTED": "Platform admins can’t be disabled or impersonated.",
+  "E_PLATFORM_ADMIN_PROTECTED": "Platform admins can’t be disabled, impersonated or have their two-factor reset.",
   "E_ROLE_IN_USE": "Move this role’s members to another role before deleting it.",
   "E_ROW_NOT_FOUND": "This item doesn’t exist.",
   "E_SESSION_NOT_FOUND": "This session doesn’t exist.",

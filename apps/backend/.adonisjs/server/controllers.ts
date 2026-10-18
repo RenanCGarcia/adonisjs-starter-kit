@@ -20,6 +20,7 @@ export const controllers = {
     PlatformAdmins: () => import('#app/admin/controllers/platform_admins_controller'),
     TenantSuspensions: () => import('#app/admin/controllers/tenant_suspensions_controller'),
     Tenants: () => import('#app/admin/controllers/tenants_controller'),
+    TwoFactorResets: () => import('#app/admin/controllers/two_factor_resets_controller'),
     UserSuspensions: () => import('#app/admin/controllers/user_suspensions_controller'),
     Users: () => import('#app/admin/controllers/users_controller'),
   },
