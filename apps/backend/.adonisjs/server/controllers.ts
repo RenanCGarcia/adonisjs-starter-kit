@@ -32,7 +32,9 @@ export const controllers = {
   },
   auth: {
     AccessTokens: () => import('#app/auth/controllers/access_tokens_controller'),
+    EmailVerifications: () => import('#app/auth/controllers/email_verifications_controller'),
     NewAccount: () => import('#app/auth/controllers/new_account_controller'),
+    PasswordResets: () => import('#app/auth/controllers/password_resets_controller'),
     Sessions: () => import('#app/auth/controllers/sessions_controller'),
   },
   core: {

@@ -283,6 +283,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/access_tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'auth.password_resets.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/password/forgot'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/auth').forgotPasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/auth').forgotPasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/password_resets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/password_resets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auth.password_resets.update': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/password/reset'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/auth').resetPasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/auth').resetPasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/password_resets_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/password_resets_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auth.email_verifications.update': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/email/verify'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/auth').verifyEmailValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/auth').verifyEmailValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/email_verifications_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/email_verifications_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'profile.access_tokens.destroy': {
     methods: ["POST"]
     pattern: '/api/v1/account/logout'
@@ -329,6 +365,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['destroyAll']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/sessions_controller').default['destroyAll']>>>
+    }
+  }
+  'profile.email_verifications.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/account/email/verification'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/email_verifications_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/email_verifications_controller').default['store']>>>
     }
   }
   'access.my_permissions.show': {

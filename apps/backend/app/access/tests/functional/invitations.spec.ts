@@ -242,7 +242,10 @@ test.group('Access | invitations', group => {
     response.assertBodyContains({ code: 'E_INVITATION_EMAIL_MISMATCH' })
   })
 
-  test('accept creates the membership and role, and is idempotent', async ({ client, assert }) => {
+  test('accept creates the membership and role, verifies the email, and is idempotent', async ({
+    client,
+    assert,
+  }) => {
     using fake = mail.fake()
     const { acme, owner } = await setup()
     const editor = await acme.role('Editor', ['roles.manage'])
@@ -266,6 +269,9 @@ test.group('Access | invitations', group => {
       .loginAs(guest)
 
     assert.deepEqual(permissions.body().data.permissions, ['roles.manage'])
+
+    const profile = await client.visit('profile.profile.show').loginAs(guest)
+    assert.isNotNull(profile.body().data.emailVerifiedAt)
 
     // Idempotent: the invitation is gone after the first accept, but a retry with the same
     // token must not throw on the now-existing membership.

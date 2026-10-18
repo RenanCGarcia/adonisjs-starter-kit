@@ -243,12 +243,30 @@ export class TenantSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class UserTokenSchema extends BaseModel {
+  static $columns = ['createdAt', 'expiresAt', 'id', 'purpose', 'tokenHash', 'userId'] as const
+  $columns = UserTokenSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare expiresAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare purpose: 'password_reset' | 'email_verification'
+  @column()
+  declare tokenHash: string
+  @column()
+  declare userId: string
+}
+
 export class UserSchema extends BaseModel {
   static $columns = [
     'avatarAttachmentId',
     'createdAt',
     'disabledAt',
     'email',
+    'emailVerifiedAt',
     'fullName',
     'id',
     'password',
@@ -263,6 +281,8 @@ export class UserSchema extends BaseModel {
   declare disabledAt: DateTime | null
   @column()
   declare email: string
+  @column.dateTime()
+  declare emailVerifiedAt: DateTime | null
   @column()
   declare fullName: string | null
   @column({ isPrimary: true })

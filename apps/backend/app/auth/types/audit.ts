@@ -8,5 +8,10 @@ declare module '#core/audit/types' {
     'auth.login_failed': AccountEvent<'user' | null, { email: string }>
     'auth.logged_out': AccountEvent<'user', { email: string }>
     'auth.session_revoked': AccountEvent<'user', { email: string }>
+    // Recorded for any email, like a failed login: the subject is its account, if any.
+    'auth.password_reset_requested': AccountEvent<'user' | null, { email: string }>
+    'auth.password_reset': AccountEvent<'user', { email: string }>
+    'auth.email_verification_requested': AccountEvent<'user', { email: string }>
+    'auth.email_verified': AccountEvent<'user', { email: string }>
   }
 }

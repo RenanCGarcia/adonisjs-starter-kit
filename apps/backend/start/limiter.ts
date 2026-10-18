@@ -46,6 +46,32 @@ export const invitationAcceptThrottle = throttle('invitation_accept', ctx => {
   return limiter.allowRequests(10).every('15 mins').usingKey(ctx.auth.user!.id)
 })
 
+export const passwordForgotIpThrottle = throttle('password_forgot_ip', ctx => {
+  return limiter.allowRequests(20).every('1 hour').usingKey(ctx.request.ip())
+})
+
+/**
+ * Keyed by email+IP like login failures, so a stranger can't use up the owner's resets. Runs
+ * before validation, hence the raw input.
+ */
+export const passwordForgotEmailThrottle = throttle('password_forgot_email', ctx => {
+  const email = String(ctx.request.input('email', '')).toLowerCase()
+
+  return limiter.allowRequests(3).every('1 hour').usingKey(`${ctx.request.ip()}_${email}`)
+})
+
+export const passwordResetThrottle = throttle('password_reset', ctx => {
+  return limiter.allowRequests(10).every('15 mins').usingKey(ctx.request.ip())
+})
+
+export const emailVerifyThrottle = throttle('email_verify', ctx => {
+  return limiter.allowRequests(10).every('15 mins').usingKey(ctx.request.ip())
+})
+
+export const emailVerificationResendThrottle = throttle('email_verification_resend', ctx => {
+  return limiter.allowRequests(5).every('1 hour').usingKey(ctx.auth.user!.id)
+})
+
 /**
  * Runs a credential check that counts against the caller only when it throws, so a correct
  * password never uses up the limit and clears the failures before it. Keyed by email+IP rather

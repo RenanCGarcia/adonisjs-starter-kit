@@ -3,15 +3,18 @@ import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import OpenSession from '#auth/actions/open_session'
 import type {} from '#auth/types/audit'
+import type {} from '#auth/types/events'
+import emitter from '@adonisjs/core/services/emitter'
+import { issueUserToken } from '#auth/services/user_tokens'
 import { signupValidator } from '#auth/validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
 import UserTransformer from '#users/transformers/user_transformer'
 
 export default class NewAccountController {
-  async store({ request, serialize }: HttpContext) {
+  async store({ i18n, request, serialize }: HttpContext) {
     const { fullName, email, password } = await request.validateUsing(signupValidator)
 
-    const user = await db.transaction(async trx => {
+    const { user, verificationToken } = await db.transaction(async trx => {
       const created = await User.create({ fullName, email, password }, { client: trx })
 
       await audit.record(trx, 'auth.signed_up', {
@@ -21,7 +24,16 @@ export default class NewAccountController {
         data: { email, fullName },
       })
 
-      return created
+      return {
+        user: created,
+        verificationToken: await issueUserToken(trx, created.id, 'email_verification'),
+      }
+    })
+
+    await emitter.emit('auth:email_verification_requested', {
+      email,
+      token: verificationToken,
+      locale: i18n.locale,
     })
 
     const token = await new OpenSession().handle({

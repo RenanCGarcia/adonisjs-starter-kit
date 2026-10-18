@@ -186,6 +186,21 @@ const ACCOUNT_EVENTS: EventTexts<Exclude<AuditEventType, TenantEventType>> = {
   'auth.session_revoked': {
     describe: () => ({ sentence: t('audit.events.sessionRevoked') }),
   },
+  'auth.password_reset_requested': {
+    describe: ({ data }) => ({
+      sentence: t('audit.events.passwordResetRequested', { email: data.email }),
+      standalone: true,
+    }),
+  },
+  'auth.password_reset': {
+    describe: () => ({ sentence: t('audit.events.passwordReset') }),
+  },
+  'auth.email_verification_requested': {
+    describe: () => ({ sentence: t('audit.events.emailVerificationRequested') }),
+  },
+  'auth.email_verified': {
+    describe: () => ({ sentence: t('audit.events.emailVerified') }),
+  },
   'user.avatar_changed': {
     describe: ({ data: { changes } }) => {
       if (!changes.avatarAttachmentId?.to) return { sentence: t('audit.events.avatarRemoved') }

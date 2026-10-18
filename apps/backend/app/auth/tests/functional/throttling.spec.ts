@@ -79,4 +79,28 @@ test.group('Auth | throttling', group => {
     blocked.assertStatus(429)
     blocked.assertHeader('retry-after')
   })
+
+  test('blocks reset requests per email and IP, in any case, but another email from the same IP still works', async ({
+    client,
+  }) => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const response = await client
+        .visit('auth.password_resets.store')
+        .json({ email: attempt % 2 ? 'Ada@Example.com' : 'ada@example.com' })
+
+      response.assertStatus(200)
+    }
+
+    const blocked = await client
+      .visit('auth.password_resets.store')
+      .json({ email: 'ada@example.com' })
+
+    blocked.assertStatus(429)
+
+    const otherEmail = await client
+      .visit('auth.password_resets.store')
+      .json({ email: 'eve@example.com' })
+
+    otherEmail.assertStatus(200)
+  })
 })

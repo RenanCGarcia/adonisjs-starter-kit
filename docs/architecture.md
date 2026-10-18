@@ -6,7 +6,7 @@
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `core`        | Infrastructure every module builds on: exception handler, global middleware, `apiRoutes`, health checks, the audit recorder. |
 | `users`       | The `User` identity: model, transformer, access tokens, the profile endpoint.                                                |
-| `auth`        | Behavior over that identity: sign-up, login, logout, the auth middleware.                                                    |
+| `auth`        | Behavior over that identity: sign-up, login, logout, sessions, password reset, email verification, the auth middleware.      |
 | `attachments` | Stored files: upload, signed URLs, the claim service consumers call, pruning.                                                |
 | `tenancy`     | Tenants and their members, the tenant scope on models, the `tenant` middleware.                                              |
 | `access`      | Roles and grants per tenant, platform admins, and the Bouncer ability every check goes through.                              |

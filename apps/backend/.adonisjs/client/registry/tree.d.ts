@@ -17,6 +17,9 @@ export interface ApiDefinition {
       destroy: typeof routes['profile.sessions.destroy']
       destroyAll: typeof routes['profile.sessions.destroy_all']
     }
+    emailVerifications: {
+      store: typeof routes['profile.email_verifications.store']
+    }
   }
   attachments: {
     attachments: {
@@ -75,6 +78,13 @@ export interface ApiDefinition {
     }
     accessTokens: {
       store: typeof routes['auth.access_tokens.store']
+    }
+    passwordResets: {
+      store: typeof routes['auth.password_resets.store']
+      update: typeof routes['auth.password_resets.update']
+    }
+    emailVerifications: {
+      update: typeof routes['auth.email_verifications.update']
     }
   }
   access: {

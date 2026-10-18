@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
 import Role from '#access/models/role'
+import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import type {} from '#access/types/audit'
@@ -58,6 +59,12 @@ export default class AcceptInvitation {
             data: { member: await new GetMember().handle(trx, { tenantId, userId }), role },
           })
         }
+
+        // The invitation's link reached this inbox, which is what verifying the email proves.
+        await User.query({ client: trx })
+          .where('id', userId)
+          .whereNull('email_verified_at')
+          .update({ email_verified_at: new Date() })
 
         await invitation.useTransaction(trx).delete()
 

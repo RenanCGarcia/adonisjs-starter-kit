@@ -144,6 +144,24 @@ const routes = {
     tokens: [{"old":"/api/v1/auth/login","type":0,"val":"api","end":""},{"old":"/api/v1/auth/login","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/login","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/login","type":0,"val":"login","end":""}],
     types: placeholder as Registry['auth.access_tokens.store']['types'],
   },
+  'auth.password_resets.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/password/forgot',
+    tokens: [{"old":"/api/v1/auth/password/forgot","type":0,"val":"api","end":""},{"old":"/api/v1/auth/password/forgot","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/password/forgot","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/password/forgot","type":0,"val":"password","end":""},{"old":"/api/v1/auth/password/forgot","type":0,"val":"forgot","end":""}],
+    types: placeholder as Registry['auth.password_resets.store']['types'],
+  },
+  'auth.password_resets.update': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/password/reset',
+    tokens: [{"old":"/api/v1/auth/password/reset","type":0,"val":"api","end":""},{"old":"/api/v1/auth/password/reset","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/password/reset","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/password/reset","type":0,"val":"password","end":""},{"old":"/api/v1/auth/password/reset","type":0,"val":"reset","end":""}],
+    types: placeholder as Registry['auth.password_resets.update']['types'],
+  },
+  'auth.email_verifications.update': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/email/verify',
+    tokens: [{"old":"/api/v1/auth/email/verify","type":0,"val":"api","end":""},{"old":"/api/v1/auth/email/verify","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/email/verify","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/email/verify","type":0,"val":"email","end":""},{"old":"/api/v1/auth/email/verify","type":0,"val":"verify","end":""}],
+    types: placeholder as Registry['auth.email_verifications.update']['types'],
+  },
   'profile.access_tokens.destroy': {
     methods: ["POST"],
     pattern: '/api/v1/account/logout',
@@ -167,6 +185,12 @@ const routes = {
     pattern: '/api/v1/account/sessions',
     tokens: [{"old":"/api/v1/account/sessions","type":0,"val":"api","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"v1","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"account","end":""},{"old":"/api/v1/account/sessions","type":0,"val":"sessions","end":""}],
     types: placeholder as Registry['profile.sessions.destroy_all']['types'],
+  },
+  'profile.email_verifications.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/account/email/verification',
+    tokens: [{"old":"/api/v1/account/email/verification","type":0,"val":"api","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"v1","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"account","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"email","end":""},{"old":"/api/v1/account/email/verification","type":0,"val":"verification","end":""}],
+    types: placeholder as Registry['profile.email_verifications.store']['types'],
   },
   'access.my_permissions.show': {
     methods: ["GET","HEAD"],
