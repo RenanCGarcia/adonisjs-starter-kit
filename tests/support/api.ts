@@ -164,6 +164,20 @@ export function assignRole(owner: Account, tenant: Tenant, userId: string, roleI
   })
 }
 
+export function invite(
+  owner: Account,
+  tenant: Tenant,
+  email: string,
+  roleId: string | null = null,
+) {
+  return api('/invitations', {
+    method: 'POST',
+    token: owner.token,
+    tenantId: tenant.id,
+    body: { email, roleId },
+  })
+}
+
 /**
  * A fresh account invited into `tenant` and accepting through the API, the only way to add a
  * member: there's no direct "add to tenant" endpoint.
@@ -171,12 +185,7 @@ export function assignRole(owner: Account, tenant: Tenant, userId: string, roleI
 export async function addMember(owner: Account, tenant: Tenant, fullName = 'E2E Member') {
   const member = await signUp(fullName)
 
-  await api('/invitations', {
-    method: 'POST',
-    token: owner.token,
-    tenantId: tenant.id,
-    body: { email: member.email, roleId: null },
-  })
+  await invite(owner, tenant, member.email)
 
   const token = await invitationToken(member.email)
   await api('/invitations/accept', { method: 'POST', token: member.token, body: { token } })
