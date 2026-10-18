@@ -87,7 +87,6 @@ jobs:
       APP_NAME: starter
       LOG_LEVEL: info
       APP_KEY: ci-only-test-key-not-a-secret-0123456789
-      APP_URL: http://localhost:3334
       FRONTEND_URL: http://localhost:5173
       MONITORING_SECRET: ci-monitoring-secret
       AUDIT_RETENTION_DAYS: 365
@@ -98,7 +97,6 @@ jobs:
       # database/docker/create_test_database.sh is not run against this plain service container,
       # so point the app straight at the "_test" database the test run migrates.
       DB_DATABASE: starter_test
-      SESSION_DRIVER: memory
       MAIL_MAILER: smtp
       MAIL_FROM_NAME: starter
       MAIL_FROM_ADDRESS: noreply@example.com
