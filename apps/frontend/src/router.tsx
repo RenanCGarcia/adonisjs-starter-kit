@@ -1,7 +1,9 @@
+import type { QueryKey } from '@tanstack/react-query'
 import { createRouter } from '@tanstack/react-router'
 import { TuyauError } from '@tuyau/core/client'
 import { adminMeQuery } from '@/features/admin/queries'
 import { apiErrorCode } from '@/features/core/errors'
+import type { ApiErrorCode } from '@/features/core/errors'
 import { queryClient } from '@/features/core/query-client'
 import { sessionStore } from '@/features/core/session'
 import { tenantsQuery } from '@/features/tenancy/workspace'
@@ -25,42 +27,36 @@ sessionStore.subscribe((state, previous) => {
   void router.invalidate()
 })
 
-// A workspace suspended while a member has it open answers their next request 403. The workspace
-// guard, rerun on a fresh tenant list, sends them to /workspace-suspended.
-function leaveSuspendedWorkspace(error: Error | null) {
-  if (!(error instanceof TuyauError) || error.status !== 403) return
-
-  if (apiErrorCode(error) !== 'E_TENANT_SUSPENDED') return
-
-  void queryClient
-    .invalidateQueries({ queryKey: tenantsQuery().queryKey, refetchType: 'none' })
-    .then(() => router.invalidate())
+/**
+ * A 403 whose code means a route guard decided on stale data: the query that guard reads. A
+ * workspace suspended while a member has it open, or two-factor turned off in another tab for the
+ * admin area, answers the next request this way. Rerunning the guard on a fresh copy sends the
+ * user to /workspace-suspended or to the two-factor prompt.
+ */
+const RERUN_GUARD_ON: Partial<Record<ApiErrorCode, () => QueryKey>> = {
+  E_TENANT_SUSPENDED: () => tenantsQuery().queryKey,
+  E_TWO_FACTOR_REQUIRED: () => adminMeQuery().queryKey,
 }
 
-// Two-factor turned off in another tab answers the admin area's next request 403. Rerunning
-// /admin/me, the way a suspended workspace reruns the tenant list, sends the admin to the prompt.
-function recheckAdminTwoFactor(error: Error | null) {
+function rerunStaleGuard(error: Error | null) {
   if (!(error instanceof TuyauError) || error.status !== 403) return
 
-  if (apiErrorCode(error) !== 'E_TWO_FACTOR_REQUIRED') return
+  const code = apiErrorCode(error)
+  const queryKey = code && RERUN_GUARD_ON[code]?.()
+
+  if (!queryKey) return
 
   void queryClient
-    .invalidateQueries({ queryKey: adminMeQuery().queryKey, refetchType: 'none' })
+    .invalidateQueries({ queryKey, refetchType: 'none' })
     .then(() => router.invalidate())
 }
 
 queryClient.getQueryCache().subscribe(event => {
-  if (event.type === 'updated' && event.action.type === 'error') {
-    leaveSuspendedWorkspace(event.action.error)
-    recheckAdminTwoFactor(event.action.error)
-  }
+  if (event.type === 'updated' && event.action.type === 'error') rerunStaleGuard(event.action.error)
 })
 
 queryClient.getMutationCache().subscribe(event => {
-  if (event.type === 'updated' && event.action.type === 'error') {
-    leaveSuspendedWorkspace(event.action.error)
-    recheckAdminTwoFactor(event.action.error)
-  }
+  if (event.type === 'updated' && event.action.type === 'error') rerunStaleGuard(event.action.error)
 })
 
 declare module '@tanstack/react-router' {
