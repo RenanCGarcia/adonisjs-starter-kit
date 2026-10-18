@@ -2,6 +2,7 @@ import db from '@adonisjs/lucid/services/db'
 import Role from '#access/models/role'
 import { audit } from '#core/audit/main'
 import type {} from '#access/types/audit'
+import { roleSnapshot } from '#access/snapshots'
 import i18nManager from '@adonisjs/i18n/services/main'
 import GetMember from '#access/queries/get_member'
 import RoleAssignment from '#access/models/role_assignment'
@@ -50,7 +51,7 @@ export default class SeedTenantOwner {
             data: {
               member: await new GetMember().handle(trx, { tenantId, userId: creatorId }),
               from: null,
-              to: { id: owner.id, name: owner.name },
+              to: roleSnapshot(owner),
             },
           })
         }

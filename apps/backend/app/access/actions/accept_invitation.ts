@@ -5,6 +5,7 @@ import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import { hashToken } from '#core/tokens'
 import type {} from '#access/types/audit'
+import { roleSnapshot } from '#access/snapshots'
 import GetMember from '#access/queries/get_member'
 import Invitation from '#access/models/invitation'
 import RoleAssignment from '#access/models/role_assignment'
@@ -41,8 +42,7 @@ export default class AcceptInvitation {
           .where('user_id', userId)
           .first()
 
-        const found = roleId ? await Role.findOrFail(roleId, { client: trx }) : null
-        const role = found && { id: found.id, name: found.name }
+        const role = roleSnapshot(roleId ? await Role.findOrFail(roleId, { client: trx }) : null)
 
         // Already a member: the invitation is spent and nothing else changes. Makes a retry
         // after a crash between the membership write and this delete safe to repeat.

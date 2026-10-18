@@ -2,6 +2,7 @@ import Role from '#access/models/role'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import type {} from '#access/types/audit'
+import { roleSnapshot } from '#access/snapshots'
 import GetMember from '#access/queries/get_member'
 import RoleAssignment from '#access/models/role_assignment'
 import { KeepAManager } from '#access/services/keep_a_manager'
@@ -35,8 +36,8 @@ export default class AssignRole {
           subject: { type: 'member', id: userId },
           data: {
             member,
-            from: from && { id: from.id, name: from.name },
-            to: to && { id: to.id, name: to.name },
+            from: roleSnapshot(from),
+            to: roleSnapshot(to),
           },
         })
       }),

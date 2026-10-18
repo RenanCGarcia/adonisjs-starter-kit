@@ -5,6 +5,7 @@ import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import { newToken } from '#core/tokens'
 import type {} from '#access/types/audit'
+import { roleSnapshot } from '#access/snapshots'
 import emitter from '@adonisjs/core/services/emitter'
 import Invitation from '#access/models/invitation'
 import type { MemberInvited } from '#access/types/events'
@@ -50,7 +51,7 @@ export default class InviteMember {
       await audit.record(trx, 'invitation.sent', {
         tenantId,
         subject: { type: 'invitation', id: upserted.id },
-        data: { email, role: role && { id: role.id, name: role.name } },
+        data: { email, role: roleSnapshot(role) },
       })
 
       return upserted
