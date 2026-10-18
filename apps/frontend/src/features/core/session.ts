@@ -22,13 +22,7 @@ export const session = {
   isAuthenticated: () => sessionStore.getState().token !== null,
   isImpersonating: () => sessionStore.getState().impersonation !== null,
   signIn: (token: string) => sessionStore.setState({ token, impersonation: null }),
-  /**
-   * Drops the signed-out account's time zone so the next person on this browser never inherits
-   * it (a stale zone, or one written to an account that had none). Keeps `locale`: the login
-   * page reads it to stay in the last UI language, and no code path writes it to a different
-   * account's profile anymore (signup and the sync-on-load fallback both detect the locale fresh
-   * from the browser instead of reading this store).
-   */
+  /** Also drops the stored time zone (see `preferences.clearTimeZone`). */
   signOut: () => {
     preferences.clearTimeZone()
     sessionStore.setState({ token: null, impersonation: null })

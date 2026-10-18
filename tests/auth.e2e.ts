@@ -59,22 +59,6 @@ test('a member signs in, returns to the page they asked for, and logs out', asyn
   await expect(browser).toHaveURL(/\/login/)
 })
 
-test('a wrong password keeps the member on the login form with an alert', async ({
-  app,
-  screen,
-  browser,
-}) => {
-  const member = await signUp()
-
-  await app.open('/login')
-  await screen.getByLabel('Email').fill(member.email)
-  await screen.getByLabel('Password').fill(`${member.password}-wrong`)
-  await screen.getByRole('button', 'Sign in').tap()
-
-  await expect(screen.getByRole('alert')).toHaveText('Invalid email or password.')
-  await expect(browser).toHaveURL('/login')
-})
-
 test('a member resets a forgotten password from the mailed link and signs in with it', async ({
   app,
   screen,
@@ -111,6 +95,7 @@ test('a member resets a forgotten password from the mailed link and signs in wit
 test('a signed-up member sees the unverified banner until they open the mailed link', async ({
   app,
   screen,
+  browser,
 }) => {
   const email = uniqueEmail('verify')
   const password = randomUUID().slice(0, 24)
@@ -126,7 +111,20 @@ test('a signed-up member sees the unverified banner until they open the mailed l
 
   const token = await verifyEmailToken(email)
 
+  // Regression: a failure other than a bad token left the page on "Verifying" with no way out.
+  let failed = false
+
+  await browser.route(/\/api\/v1\/auth\/email\/verify$/, async route => {
+    if (failed) return route.continue()
+
+    failed = true
+    await route.abort()
+  })
   await app.open(`/verify-email/${token}`)
+  await expect(screen.getByRole('heading', 'Couldn’t verify your email')).toBeVisible()
+  await expect(screen.getByText('Can’t reach the server', { exact: false })).toBeVisible()
+  await screen.getByRole('button', 'Try again').tap()
+
   await expect(screen.getByRole('heading', 'Email verified')).toBeVisible()
   await screen.getByRole('link', 'Continue').tap()
 

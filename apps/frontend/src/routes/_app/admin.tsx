@@ -1,9 +1,9 @@
-import { buttonVariants } from '@monorepo/ui/components/button'
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { AdminAccessDenied } from '@/features/admin/components/admin-access-denied'
 import { AdminTwoFactorRequired } from '@/features/admin/components/admin-two-factor-required'
 import { ADMIN_NAV } from '@/features/admin/nav'
 import { adminMeQuery } from '@/features/admin/queries'
+import { SideNav } from '@/features/core/components/side-nav'
 import { t } from '@/features/core/i18n'
 
 /** The platform admin area. Its pages' loaders skip their requests for anyone else. */
@@ -11,36 +11,17 @@ export const Route = createFileRoute('/_app/admin')({
   beforeLoad: async ({ context: { queryClient } }) => {
     const { platformAdmin, twoFactorRequired } = (await queryClient.query(adminMeQuery())).data
 
-    return { platformAdmin, twoFactorRequired }
+    return { platformAdmin, canUseArea: platformAdmin && !twoFactorRequired }
   },
   component: AdminLayout,
 })
 
 function AdminLayout() {
-  const { platformAdmin, twoFactorRequired } = Route.useRouteContext()
-  const canUseArea = platformAdmin && !twoFactorRequired
+  const { platformAdmin, canUseArea } = Route.useRouteContext()
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 md:flex-row md:gap-8 md:p-6">
-      {canUseArea && (
-        <nav
-          aria-label={t('routes.admin.nav')}
-          className="-mx-1 flex shrink-0 gap-1 overflow-x-auto px-1 md:w-48 md:flex-col"
-        >
-          {ADMIN_NAV.map(item => (
-            <Link
-              key={item.to}
-              to={item.to}
-              activeOptions={{ exact: true, includeSearch: false }}
-              className={buttonVariants({ variant: 'ghost', className: 'justify-start' })}
-              activeProps={{ className: 'bg-muted text-foreground' }}
-            >
-              <item.icon data-icon="inline-start" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      )}
+      {canUseArea && <SideNav label={t('routes.admin.nav')} items={ADMIN_NAV} />}
       <main className="flex min-w-0 flex-1 flex-col gap-6">
         {canUseArea ? (
           <Outlet />

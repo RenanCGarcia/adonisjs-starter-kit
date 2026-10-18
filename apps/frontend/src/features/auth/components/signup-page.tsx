@@ -1,7 +1,7 @@
 import { FieldGroup } from '@monorepo/ui/components/field'
 import { useMutation } from '@tanstack/react-query'
 import { getRouteApi, Link } from '@tanstack/react-router'
-import { AuthCard } from '@/features/auth/components/auth-card'
+import { AuthCard } from '@/features/core/components/auth-card'
 import { queries } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
 import { resolveLocale, t } from '@/features/core/i18n'

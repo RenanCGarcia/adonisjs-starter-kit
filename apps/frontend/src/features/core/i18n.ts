@@ -5,10 +5,6 @@ import { LOCALES } from '@/features/core/locales'
 import type { Locale } from '@/features/core/locales'
 import { preferences } from '@/features/core/preferences'
 
-export { LOCALES }
-
-export type { Locale }
-
 /**
  * The first preferred language a supported locale shares a primary subtag with (`pt-PT` reads
  * pt-BR), else en-US. The backend resolves Accept-Language the same way.

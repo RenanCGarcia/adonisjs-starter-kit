@@ -11,9 +11,10 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { ArrowLeftIcon } from 'lucide-react'
 import { TenantStatus } from '@/features/admin/components/tenants-page'
-import { UserActions, UserStatus, displayName } from '@/features/admin/components/user-actions'
+import { UserActions, UserStatus } from '@/features/admin/components/user-actions'
 import { adminTenantQuery } from '@/features/admin/queries'
 import { PageHeader } from '@/features/core/components/page-header'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
@@ -58,7 +59,7 @@ export function TenantPage({ tenantId }: { tenantId: string }) {
                 <div className="flex items-center gap-2">
                   <UserAvatar user={member.user} className="size-7" />
                   <div className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">{displayName(member)}</span>
+                    <span className="truncate font-medium">{displayName(member.user)}</span>
                     <span className="truncate text-muted-foreground">{member.user.email}</span>
                   </div>
                 </div>

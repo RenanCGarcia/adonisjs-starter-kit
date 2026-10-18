@@ -9,7 +9,6 @@ import { useId } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
 import { PendingButton } from '@/features/core/components/pending-button'
 import { formErrors } from '@/features/core/errors'
-import type { FormErrors } from '@/features/core/errors'
 
 const { fieldContext, formContext, useFieldContext, useFormContext } = createFormHookContexts()
 
@@ -105,14 +104,13 @@ export const { useAppForm } = createFormHook({
 export async function withFormErrors<Result>(
   formApi: AnyFormApi,
   write: Promise<Result>,
-  toErrors: (error: TuyauError) => FormErrors = formErrors,
 ): Promise<Result | null> {
   try {
     return await write
   } catch (error) {
     if (!(error instanceof TuyauError)) throw error
 
-    formApi.setErrorMap({ onSubmit: toErrors(error) })
+    formApi.setErrorMap({ onSubmit: formErrors(error) })
 
     return null
   }

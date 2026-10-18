@@ -2,14 +2,15 @@
 
 `apps/frontend/src/features/` holds one folder per **feature**, named after the backend module whose API it calls. `src/routes/` holds the TanStack Router file routes. They are wiring, like the backend's `start/`: guards, loaders, and the page component a path renders.
 
-| Feature   | Owns                                                                                                  |
-| --------- | ----------------------------------------------------------------------------------------------------- |
-| `core`    | The API client, the query client, the session store, the form kit, error messages, shared components. |
-| `users`   | The profile query, the avatar, the account menu, the profile page.                                    |
-| `auth`    | The login, sign-up, forgot-password, reset-password and verify-email pages.                           |
-| `tenancy` | The tenant list, the chosen workspace, the switcher, onboarding.                                      |
-| `access`  | Permissions, the workspace pages (overview, members, invitations, roles), accepting an invitation.    |
-| `audit`   | The event timeline and its texts, the audit trail page, a record's history, the account activity.     |
+| Feature   | Owns                                                                                                                                |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `core`    | The API client, the query client, the session store, the form kit, error messages, shared components (the auth card, the side nav). |
+| `users`   | The profile query, the avatar, the account menu, the profile page.                                                                  |
+| `auth`    | The login, sign-up, forgot-password, reset-password and verify-email pages.                                                         |
+| `tenancy` | The tenant list, the chosen workspace, the switcher, onboarding.                                                                    |
+| `access`  | Permissions, the workspace pages (overview, members, invitations, roles), accepting an invitation.                                  |
+| `audit`   | The event timeline and its texts, the audit trail page, a record's history, the account activity.                                   |
+| `admin`   | The platform admin area (workspaces, users), impersonation and its banner, the account menu's admin item.                           |
 
 A page that shows another feature's section composes it in its route: `routes/_app/profile.tsx` renders `ProfilePage` from `users` with `AccountActivity` from `audit` as its children, since `users` can't import `audit`.
 
@@ -33,7 +34,7 @@ Every date or time a person reads formats through `core/datetime.ts`, never a ba
 
 ## Server state
 
-API reads and writes go through TanStack Query, with `queries` from `@/features/core/api` (`@tuyau/react-query`). Logout is the exception: it calls `api` directly, since no screen shows what it changes.
+API reads and writes go through TanStack Query, with `queries` from `@/features/core/api` (`@tuyau/react-query`). Ending a session is the exception: logging out (`logOut` in `core/api.ts`) and stopping an impersonation call `api` directly, since no screen shows what they change.
 
 - **Reads**: a feature exports a query factory per endpoint (`membersQuery(tenantId)`), used by both the route loader and the component, so they share one cache entry.
 - **Workspace requests** pass `tenantHeaders(tenantId)`. Tuyau keys a query by its whole request, header included, so each workspace caches apart.
@@ -53,7 +54,7 @@ Build forms with `useAppForm` from `@/features/core/form`, which provides `form.
 Browser-persisted state is a store from `createPersistedStore(name, schema, initial, storage?)` (`core/persisted-store.ts`), in localStorage unless `storage` says otherwise. Never read or write `localStorage` or `sessionStorage` directly.
 
 - What it reads back is parsed with the zod `schema`. Data that is missing or doesn't parse leaves `initial`.
-- Blocked storage keeps the store in memory.
+- Blocked storage keeps the store in memory, with its `persists` flag false.
 - Another tab's localStorage writes apply live.
 
 The session (`core/session.ts`, the access token) is shared by every tab. The workspace choice (`tenancy/workspace.ts`) is per tab, in sessionStorage, so two tabs can show two workspaces. A new tab starts from the workspace last chosen in any tab. `router.tsx` subscribes to the session: a token change clears the query cache and reruns the route guards. Choosing a workspace navigates, which reruns them too.

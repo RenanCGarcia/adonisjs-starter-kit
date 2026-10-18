@@ -21,8 +21,8 @@ import { queries } from '@/features/core/api'
 import { AppMark } from '@/features/core/components/app-mark'
 import { errorMessage } from '@/features/core/errors'
 import { locale, resolveLocale, t } from '@/features/core/i18n'
-import type { Locale } from '@/features/core/i18n'
 import { LOCALES } from '@/features/core/locales'
+import type { Locale } from '@/features/core/locales'
 import { preferences } from '@/features/core/preferences'
 import { session, useIsImpersonating } from '@/features/core/session'
 import { WorkspaceSwitcher } from '@/features/tenancy/components/workspace-switcher'
@@ -71,33 +71,34 @@ function useSyncPreferences(
 
     synced.current = true
 
-    if (user.locale === null || user.timezone === null) {
-      // Fresh browser detection, not the persisted `locale`: on a shared browser that value can
-      // be a previous account's choice, and this account must never inherit it.
-      const resolvedLocale = user.locale ?? resolveLocale(navigator.languages)
-      const resolvedTimezone = user.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+    // Fresh browser detection, not the persisted `locale`: on a shared browser that value can be a
+    // previous account's choice, and this account must never inherit it.
+    const nextLocale = user.locale ?? resolveLocale(navigator.languages)
+    const nextTimeZone = user.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
 
-      preferences.set({ locale: resolvedLocale, timeZone: resolvedTimezone })
-      updateProfile.mutate({
-        body: {
-          ...(user.locale === null && { locale: resolvedLocale }),
-          ...(user.timezone === null && { timezone: resolvedTimezone }),
-        },
-      })
+    preferences.set({ locale: nextLocale, timeZone: nextTimeZone })
 
-      return
+    // Only reload for a locale the next load can read back: one LOCALES lacks would reload
+    // forever, and with blocked storage the reload would also drop the in-memory session.
+    const reloadIfStale = () => {
+      if (nextLocale !== locale && LOCALES.includes(nextLocale) && preferences.persists) {
+        window.location.reload()
+      }
     }
 
-    preferences.set({ locale: user.locale, timeZone: user.timezone })
-
-    // Only reload for a locale this store can actually hold: LOCALES lacking it, or a blocked
-    // localStorage write, would otherwise reload forever since the mismatch never resolves.
-    if (
-      user.locale !== locale &&
-      LOCALES.includes(user.locale) &&
-      preferences.locale() === user.locale
-    ) {
-      window.location.reload()
+    if (user.locale === null || user.timezone === null) {
+      // After the write settles, so the reload doesn't abort it.
+      updateProfile.mutate(
+        {
+          body: {
+            ...(user.locale === null && { locale: nextLocale }),
+            ...(user.timezone === null && { timezone: nextTimeZone }),
+          },
+        },
+        { onSettled: reloadIfStale },
+      )
+    } else {
+      reloadIfStale()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once per page load, guarded above.
   }, [])

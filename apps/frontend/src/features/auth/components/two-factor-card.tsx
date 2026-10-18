@@ -138,15 +138,17 @@ export function TwoFactorCard() {
             </div>
           ))}
 
-        <DisableTwoFactorDialog open={disableOpen} onOpenChange={setDisableOpen} />
-        <RegenerateRecoveryCodesDialog
-          open={regenerateOpen}
-          onOpenChange={setRegenerateOpen}
-          onRegenerated={codes => {
-            setRegenerateOpen(false)
-            setRecoveryCodes({ codes, warnOtherSessions: false })
-          }}
-        />
+        {disableOpen && <DisableTwoFactorDialog open onOpenChange={setDisableOpen} />}
+        {regenerateOpen && (
+          <RegenerateRecoveryCodesDialog
+            open
+            onOpenChange={setRegenerateOpen}
+            onRegenerated={codes => {
+              setRegenerateOpen(false)
+              setRecoveryCodes({ codes, warnOtherSessions: false })
+            }}
+          />
+        )}
       </CardContent>
     </Card>
   )

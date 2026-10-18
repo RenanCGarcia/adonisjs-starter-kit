@@ -6,7 +6,7 @@ import { promisify } from 'node:util'
 import * as OTPAuth from 'otpauth'
 
 /** Arrange steps go straight to the API; only the behavior under test goes through the UI. */
-export const API_URL = 'http://localhost:3333/api/v1'
+const API_URL = 'http://localhost:3333/api/v1'
 
 const MAILPIT_URL = 'http://localhost:8025/api/v1'
 
@@ -19,10 +19,10 @@ export type Account = {
   token: string
 }
 
-export type Tenant = { id: string; name: string }
+type Tenant = { id: string; name: string }
 
 type RequestOptions = {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   token?: string
   tenantId?: string
   body?: Record<string, string | string[] | null>
@@ -164,6 +164,20 @@ export function assignRole(owner: Account, tenant: Tenant, userId: string, roleI
   })
 }
 
+export function invite(
+  owner: Account,
+  tenant: Tenant,
+  email: string,
+  roleId: string | null = null,
+) {
+  return api('/invitations', {
+    method: 'POST',
+    token: owner.token,
+    tenantId: tenant.id,
+    body: { email, roleId },
+  })
+}
+
 /**
  * A fresh account invited into `tenant` and accepting through the API, the only way to add a
  * member: there's no direct "add to tenant" endpoint.
@@ -171,12 +185,7 @@ export function assignRole(owner: Account, tenant: Tenant, userId: string, roleI
 export async function addMember(owner: Account, tenant: Tenant, fullName = 'E2E Member') {
   const member = await signUp(fullName)
 
-  await api('/invitations', {
-    method: 'POST',
-    token: owner.token,
-    tenantId: tenant.id,
-    body: { email: member.email, roleId: null },
-  })
+  await invite(owner, tenant, member.email)
 
   const token = await invitationToken(member.email)
   await api('/invitations/accept', { method: 'POST', token: member.token, body: { token } })
@@ -203,10 +212,12 @@ export async function signInAs(browser: Browser, account: Account, tenant?: Tena
   if (tenant) seeds.push([WORKSPACE_KEY, persisted({ tenantId: tenant.id })])
 
   await browser.addInitScript(entries => {
-    if (sessionStorage.getItem('e2e:seeded')) return
+    if (sessionStorage.getItem('e2e:seeded')) return null
 
     for (const [key, value] of entries) localStorage.setItem(key, value)
     sessionStorage.setItem('e2e:seeded', '1')
+
+    return null
   }, seeds)
 }
 
@@ -217,7 +228,11 @@ export async function signInAs(browser: Browser, account: Account, tenant?: Tena
  */
 export async function switchAccount(browser: Browser, account: Account) {
   await browser.evaluate(
-    ([key, value]) => localStorage.setItem(key, value),
+    ([key, value]) => {
+      localStorage.setItem(key, value)
+
+      return null
+    },
     [SESSION_KEY, persisted({ token: account.token })],
   )
 }
@@ -228,7 +243,11 @@ export async function switchAccount(browser: Browser, account: Account) {
  * switches back to later still works.
  */
 export async function signOut(browser: Browser) {
-  await browser.evaluate(key => localStorage.removeItem(key), SESSION_KEY)
+  await browser.evaluate(key => {
+    localStorage.removeItem(key)
+
+    return null
+  }, SESSION_KEY)
 }
 
 /**

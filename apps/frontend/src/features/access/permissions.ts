@@ -8,14 +8,12 @@ type MyPermissions = Awaited<ReturnType<typeof api.access.myPermissions.show>>['
 
 export type Permission = MyPermissions['permissions'][number]
 
-type CatalogGroup = Awaited<
+/** One catalog group: its key and the assignable permissions under it, in catalog order. */
+export type PermissionGroup = Awaited<
   ReturnType<typeof api.access.permissionCatalog.show>
 >['data']['groups'][number]
 
-export type PermissionGroupKey = CatalogGroup['key']
-
-/** One catalog group: its key and the assignable permissions under it, in catalog order. */
-export type PermissionGroup = CatalogGroup
+type PermissionGroupKey = PermissionGroup['key']
 
 /**
  * What a role or grant may hold, matching the request body a role or grant endpoint accepts.

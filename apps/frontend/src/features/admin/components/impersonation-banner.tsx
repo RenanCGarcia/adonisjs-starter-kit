@@ -2,6 +2,7 @@ import { Button } from '@monorepo/ui/components/button'
 import { useNavigate } from '@tanstack/react-router'
 import { VenetianMaskIcon } from 'lucide-react'
 import { api } from '@/features/core/api'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
 
@@ -27,7 +28,7 @@ export function ImpersonationBanner({
       <VenetianMaskIcon className="size-4" aria-hidden />
       <span>
         {t('admin.impersonationBanner.signedInAs', {
-          name: user.fullName ?? user.email,
+          name: displayName(user),
           email: user.email,
         })}
       </span>

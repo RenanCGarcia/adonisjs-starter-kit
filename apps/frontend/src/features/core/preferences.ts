@@ -8,7 +8,7 @@ import type { Locale } from '@/features/core/locales'
  * The language and time zone the account is known to use, mirrored from the profile. A reload
  * before the profile loads already renders in the right language and zone.
  */
-export const preferencesStore = createPersistedStore(
+const preferencesStore = createPersistedStore(
   'starter:preferences',
   z.object({
     locale: z.enum(LOCALES).nullable(),
@@ -18,6 +18,7 @@ export const preferencesStore = createPersistedStore(
 )
 
 export const preferences = {
+  persists: preferencesStore.persists,
   locale: () => preferencesStore.getState().locale,
   timeZone: () => preferencesStore.getState().timeZone,
   set: (next: { locale?: Locale; timeZone?: string }) =>

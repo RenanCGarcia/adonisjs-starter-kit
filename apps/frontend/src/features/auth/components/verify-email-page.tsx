@@ -1,9 +1,9 @@
-import { buttonVariants } from '@monorepo/ui/components/button'
+import { Button, buttonVariants } from '@monorepo/ui/components/button'
 import { useMutation } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
-import { AuthCard } from '@/features/auth/components/auth-card'
+import { AuthCard } from '@/features/core/components/auth-card'
 import { queries } from '@/features/core/api'
 import { PendingButton } from '@/features/core/components/pending-button'
 import { apiErrorCode, errorMessage } from '@/features/core/errors'
@@ -86,6 +86,19 @@ export function VerifyEmailPage({ token, isAuthenticated, verifiedAt }: Props) {
             {t('auth.verifyEmailPage.resend')}
           </PendingButton>
         )}
+      </AuthCard>
+    )
+  }
+
+  if (verify.isError) {
+    return (
+      <AuthCard
+        title={t('auth.verifyEmailPage.failedTitle')}
+        description={errorMessage(verify.error)}
+      >
+        <Button size="lg" className="w-full" onClick={() => verify.mutate({ body: { token } })}>
+          {t('auth.verifyEmailPage.tryAgain')}
+        </Button>
       </AuthCard>
     )
   }

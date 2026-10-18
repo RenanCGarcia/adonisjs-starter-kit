@@ -1,27 +1,21 @@
 import { Badge } from '@monorepo/ui/components/badge'
-import { Button } from '@monorepo/ui/components/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@monorepo/ui/components/dropdown-menu'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import {
   BanIcon,
   CircleCheckIcon,
   KeyRoundIcon,
-  MoreHorizontalIcon,
   ShieldMinusIcon,
   ShieldPlusIcon,
   VenetianMaskIcon,
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { RowActionsMenu } from '@/features/admin/components/row-actions-menu'
+import type { RowAction } from '@/features/admin/components/row-actions-menu'
 import { queries } from '@/features/core/api'
 import { ConfirmDialog } from '@/features/core/components/confirm-dialog'
+import { displayName } from '@/features/core/display-name'
 import { errorMessage } from '@/features/core/errors'
 import { t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
@@ -32,8 +26,6 @@ export type AdminUserRow = {
   disabledAt: string | null
   platformAdmin: boolean
 }
-
-export const displayName = ({ user }: AdminUserRow) => user.fullName ?? user.email
 
 export function UserStatus({ row }: { row: AdminUserRow }) {
   if (row.platformAdmin) return <Badge variant="secondary">{t('admin.userActions.admin')}</Badge>
@@ -53,18 +45,9 @@ export function TwoFactorStatus({ row }: { row: AdminUserRow }) {
 
 type Confirming = 'disable' | 'grant' | 'revoke' | 'resetTwoFactor' | null
 
-type RowAction = {
-  key: 'impersonate' | 'makeAdmin' | 'disable' | 'enable' | 'removeAdmin' | 'resetTwoFactor'
-  label: string
-  icon: LucideIcon
-  destructive?: boolean
-  disabled?: boolean
-  onSelect: () => void
-}
-
 /** A platform admin can only lose the role, and never from themself: the API refuses the rest. */
 export function UserActions({ row }: { row: AdminUserRow }) {
-  const name = displayName(row)
+  const name = displayName(row.user)
   const navigate = useNavigate()
   const { data: me } = useSuspenseQuery(profileQuery())
   const [confirming, setConfirming] = useState<Confirming>(null)
@@ -195,33 +178,7 @@ export function UserActions({ row }: { row: AdminUserRow }) {
 
   return (
     <div className="flex justify-end">
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={t('admin.userActions.actionsFor', { name })}
-            />
-          }
-        >
-          <MoreHorizontalIcon />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-auto max-w-xs">
-          {actions.map(action => (
-            <DropdownMenuItem
-              key={action.key}
-              variant={action.destructive ? 'destructive' : 'default'}
-              disabled={action.disabled}
-              onClick={action.onSelect}
-              className="whitespace-nowrap"
-            >
-              <action.icon />
-              <span className="truncate">{action.label}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RowActionsMenu label={t('admin.userActions.actionsFor', { name })} actions={actions} />
 
       <ConfirmDialog
         open={confirming === 'revoke'}

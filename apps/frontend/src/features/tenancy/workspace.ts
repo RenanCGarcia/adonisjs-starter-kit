@@ -11,7 +11,7 @@ const choice = z.object({ tenantId: z.uuid().nullable() })
 const lastChoiceStore = createPersistedStore('starter:last-workspace', choice, { tenantId: null })
 
 /** This tab's workspace, so two tabs can each show their own; it survives a reload of the tab. */
-export const workspaceStore = createPersistedStore(
+const workspaceStore = createPersistedStore(
   'starter:workspace',
   choice,
   lastChoiceStore.getState(),

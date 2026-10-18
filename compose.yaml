@@ -1,2 +1,5 @@
+# Containers have fixed names, so every checkout (worktrees included) must share one project.
+name: starter
+
 include:
   - apps/backend/compose.yaml

@@ -22,6 +22,8 @@ test('onboarding creates the first workspace and opens it', async ({ app, screen
       if (document.querySelector('h1')?.textContent === 'Create your workspace')
         document.documentElement.dataset.onboardingShown = 'true'
     }).observe(document.body, { childList: true, subtree: true })
+
+    return null
   })
   await screen.getByRole('link', 'Starter').tap()
   await expect(screen.getByRole('heading', name, { level: 1 })).toBeVisible()

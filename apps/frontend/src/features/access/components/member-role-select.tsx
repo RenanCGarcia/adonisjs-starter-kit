@@ -7,14 +7,12 @@ import {
 } from '@monorepo/ui/components/select'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { NO_ROLE, roleItems, toRoleId } from '@/features/access/role-options'
 import { queries, tenantHeaders } from '@/features/core/api'
 import { errorMessage } from '@/features/core/errors'
 import { t } from '@/features/core/i18n'
 
 type Role = { id: string; name: string }
-
-/** No role is a real, selectable state, so it needs its own value distinct from an empty string. */
-const NO_ROLE = 'none'
 
 /**
  * Bound to the server's `roleId`, not local state: a failed change leaves it showing the role
@@ -45,15 +43,12 @@ export function MemberRoleSelect({
 
     updateRole.mutate({
       params: { userId },
-      body: { roleId: value === NO_ROLE ? null : value },
+      body: { roleId: toRoleId(value) },
       ...tenantHeaders(tenantId),
     })
   }
 
-  const items = [
-    { value: NO_ROLE, label: t('access.memberRoleSelect.noRole') },
-    ...roles.map(role => ({ value: role.id, label: role.name })),
-  ]
+  const items = roleItems(roles)
 
   return (
     <Select
@@ -66,10 +61,9 @@ export function MemberRoleSelect({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value={NO_ROLE}>{t('access.memberRoleSelect.noRole')}</SelectItem>
-        {roles.map(role => (
-          <SelectItem key={role.id} value={role.id}>
-            {role.name}
+        {items.map(item => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
           </SelectItem>
         ))}
       </SelectContent>

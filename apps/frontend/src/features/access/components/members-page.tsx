@@ -19,6 +19,7 @@ import { membersQuery, permissionCatalogQuery, rolesQuery } from '@/features/acc
 import { AuditHistoryDialog } from '@/features/audit/components/audit-history-dialog'
 import type { api } from '@/features/core/api'
 import { PageHeader } from '@/features/core/components/page-header'
+import { displayName } from '@/features/core/display-name'
 import { t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 import { UserAvatar } from '@/features/users/components/user-avatar'
@@ -70,7 +71,7 @@ function Members() {
         </TableHeader>
         <TableBody>
           {members.data.members.map(member => {
-            const name = member.user.fullName ?? member.user.email
+            const name = displayName(member.user)
 
             return (
               <TableRow key={member.user.id}>
@@ -141,7 +142,7 @@ function Members() {
           key={editing.user.id}
           member={{
             userId: editing.user.id,
-            name: editing.user.fullName ?? editing.user.email,
+            name: displayName(editing.user),
             permissions: editing.permissions,
           }}
           groups={catalog.data.groups}
@@ -155,7 +156,7 @@ function Members() {
         <AuditHistoryDialog
           key={viewingHistory.user.id}
           subject={{ type: 'member', id: viewingHistory.user.id }}
-          name={viewingHistory.user.fullName ?? viewingHistory.user.email}
+          name={displayName(viewingHistory.user)}
           tenantId={tenantId}
           permissionLabel={key => permissionLabel(key).label}
           open

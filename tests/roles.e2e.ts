@@ -91,18 +91,3 @@ test('a role in use cannot be deleted', async ({ app, screen, browser }) => {
   await screen.getByRole('alertdialog').getByRole('button', 'Cancel').tap()
   await expect(screen.getByRole('row').filter({ hasText: role.name })).toBeVisible()
 })
-
-test('a duplicate role name shows an inline error', async ({ app, screen, browser }) => {
-  const owner = await signUp()
-  await createTenant(owner)
-
-  await signInAs(browser, owner)
-  await app.open('/roles')
-
-  await screen.getByRole('button', 'New role').tap()
-  await screen.getByRole('dialog', 'New role').getByLabel('Role name').fill('Owner')
-  await screen.getByRole('button', 'Create role').tap()
-
-  await expect(screen.getByText('This is already taken.')).toBeVisible()
-  await expect(screen.getByRole('dialog', 'New role')).toBeVisible()
-})

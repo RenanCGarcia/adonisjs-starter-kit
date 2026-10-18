@@ -175,7 +175,7 @@ test('an admin impersonates a member and comes back as themself', async ({
   await expect(banner()).toBeHidden()
   await expect(screen.getByRole('heading', 'Users', { level: 1 })).toBeVisible()
 
-  // The impersonation token was revoked, not just dropped: the browser is the admin's again.
+  // The browser is back on the admin's own token, which survives a reload.
   await browser.reload()
   await expect(screen.getByRole('heading', 'Users', { level: 1 })).toBeVisible()
 
