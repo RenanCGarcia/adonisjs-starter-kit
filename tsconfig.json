@@ -11,5 +11,5 @@
     "allowImportingTsExtensions": true,
     "strict": true
   },
-  "include": ["*.config.ts", "tests/**/*.ts"]
+  "include": ["*.config.ts", "scripts/**/*.ts", "tests/**/*.ts"]
 }

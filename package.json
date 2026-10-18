@@ -17,7 +17,8 @@
     "lint:fix": "oxlint --type-aware --fix",
     "test:e2e": "e2e run",
     "test:e2e:ci": "e2e run --strict-cache",
-    "docs:pull": "sh scripts/pull-docs.sh"
+    "docs:pull": "sh scripts/pull-docs.sh",
+    "screenshots": "node scripts/screenshots.ts"
   },
   "devDependencies": {
     "@adonisjs/eslint-plugin": "^2.2.2",
