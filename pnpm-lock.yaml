@@ -205,8 +205,8 @@ catalogs:
       specifier: ^10.4.0
       version: 10.4.0
     '@adonisjs/queue':
-      specifier: ^0.6.2
-      version: 0.6.2
+      specifier: ^0.7.0
+      version: 0.7.0
     '@adonisjs/redis':
       specifier: ^11.0.0
       version: 11.0.0
@@ -297,9 +297,6 @@ catalogs:
     zustand:
       specifier: ^5.0.15
       version: 5.0.15
-
-patchedDependencies:
-  '@adonisjs/queue@0.6.2': d0ed3125601ec78f6f024a745782981498f6ed13f2ea0a4f2e516c8db8400b9e
 
 importers:
 
@@ -397,7 +394,7 @@ importers:
         version: 10.4.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@types/luxon@3.7.6)(@types/node@26.6.5)(dayjs@1.11.23)(edge.js@6.5.1)(luxon@3.7.2)(mjml@5.4.1(svgo@4.1.0)(typescript@7.0.2))
       '@adonisjs/queue':
         specifier: 'catalog:'
-        version: 0.6.2(patch_hash=d0ed3125601ec78f6f024a745782981498f6ed13f2ea0a4f2e516c8db8400b9e)(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@13.0.3)(luxon@3.7.2)(pg@8.23.1)(supports-color@10.2.2))(@adonisjs/redis@11.0.0(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(supports-color@10.2.2))(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))
+        version: 0.7.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@13.0.3)(luxon@3.7.2)(pg@8.23.1)(supports-color@10.2.2))(@adonisjs/redis@11.0.0(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(supports-color@10.2.2))(ioredis@6.0.0(supports-color@10.2.2))(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))
       '@adonisjs/redis':
         specifier: 'catalog:'
         version: 11.0.0(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(supports-color@10.2.2)
@@ -911,18 +908,21 @@ packages:
       '@adonisjs/assembler':
         optional: true
 
-  '@adonisjs/queue@0.6.2':
-    resolution: {integrity: sha512-je+ynSzFw2RWHZUYZYILCtfLh/VptrMaR6gs4WUjM0KHOa8EMfSAxQskIkDpgq7wEaJ1me1cNGF9xylq/O+sfQ==}
+  '@adonisjs/queue@0.7.0':
+    resolution: {integrity: sha512-nETqDlU0sT17Gv4/9l/HyLuoYynh5qpa1WmNx0Mtd4KDFk+RRtaO3CG1/+3yilNzua93h7OxCQH5fTLjwjMnKA==}
     engines: {node: '>=24.0.0'}
     peerDependencies:
       '@adonisjs/assembler': ^8.0.0
-      '@adonisjs/core': ^7.0.0
+      '@adonisjs/core': ^7.6.0
       '@adonisjs/lucid': ^20.0.0 || ^21.0.0 || ^22.0.0
-      '@adonisjs/redis': ^8.0.0 || ^9.0.0 || ^10.0.0
+      '@adonisjs/redis': ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
+      kysely: ^0.29.0
     peerDependenciesMeta:
       '@adonisjs/lucid':
         optional: true
       '@adonisjs/redis':
+        optional: true
+      kysely:
         optional: true
 
   '@adonisjs/redis@11.0.0':
@@ -1349,15 +1349,16 @@ packages:
     resolution: {integrity: sha512-+UL9erFUngnxNEDdXSKCnGQA8D62C/x2vxLF5vc9zaX7T2JolV/bGjpZAvFLzlY2gIffHyw+KsqsEWod5+zV0w==}
     engines: {node: '>=20.6'}
 
-  '@boringnode/queue@0.6.0':
-    resolution: {integrity: sha512-hgd9zKJUgZH8Y6ua2UKS1LJ4/fonVkJJnXRUxgmEyPpsJcle27WJ4KS30LRtTlCzX188pLUlj4CBzGMNyzVlEA==}
+  '@boringnode/queue@0.9.0':
+    resolution: {integrity: sha512-J0DP83IZuKk9yHu53SqfFb2CCYs7HRxyH0Us4ROeLGOlVsxMPO4OkHqezYIX39WYLRiIHKk5xYPHnIrdlPCI9w==}
     engines: {node: '>=24.0.0'}
     peerDependencies:
       '@opentelemetry/api': ^1.9.0
       '@opentelemetry/core': ^1.30.0 || ^2.0.0
-      '@opentelemetry/instrumentation': ^0.200.0
-      ioredis: ^5.0.0
+      '@opentelemetry/instrumentation': '>=0.200.0 <0.300.0'
+      ioredis: ^5.0.0 || ^6.0.0
       knex: ^3.0.0
+      kysely: ^0.29.0
     peerDependenciesMeta:
       '@opentelemetry/api':
         optional: true
@@ -1368,6 +1369,8 @@ packages:
       ioredis:
         optional: true
       knex:
+        optional: true
+      kysely:
         optional: true
 
   '@boringnode/route-matcher@0.1.1':
@@ -7084,11 +7087,11 @@ snapshots:
     optionalDependencies:
       '@adonisjs/assembler': 8.5.2(typescript@7.0.2)
 
-  '@adonisjs/queue@0.6.2(patch_hash=d0ed3125601ec78f6f024a745782981498f6ed13f2ea0a4f2e516c8db8400b9e)(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@13.0.3)(luxon@3.7.2)(pg@8.23.1)(supports-color@10.2.2))(@adonisjs/redis@11.0.0(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(supports-color@10.2.2))(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))':
+  '@adonisjs/queue@0.7.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@13.0.3)(luxon@3.7.2)(pg@8.23.1)(supports-color@10.2.2))(@adonisjs/redis@11.0.0(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(supports-color@10.2.2))(ioredis@6.0.0(supports-color@10.2.2))(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))':
     dependencies:
       '@adonisjs/assembler': 8.5.2(typescript@7.0.2)
       '@adonisjs/core': 7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1)
-      '@boringnode/queue': 0.6.0(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))
+      '@boringnode/queue': 0.9.0(ioredis@6.0.0(supports-color@10.2.2))(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))
     optionalDependencies:
       '@adonisjs/lucid': 22.4.2(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@13.0.3)(luxon@3.7.2)(pg@8.23.1)(supports-color@10.2.2)
       '@adonisjs/redis': 11.0.0(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))(supports-color@10.2.2)
@@ -7630,12 +7633,13 @@ snapshots:
     dependencies:
       '@poppinss/utils': 7.1.2
 
-  '@boringnode/queue@0.6.0(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))':
+  '@boringnode/queue@0.9.0(ioredis@6.0.0(supports-color@10.2.2))(knex@3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2))':
     dependencies:
       '@lukeed/ms': 2.0.2
       '@poppinss/utils': 7.1.2
       cron-parser: 5.10.2
     optionalDependencies:
+      ioredis: 6.0.0(supports-color@10.2.2)
       knex: 3.3.0(better-sqlite3@13.0.3)(pg@8.23.1)(supports-color@10.2.2)
 
   '@boringnode/route-matcher@0.1.1': {}
