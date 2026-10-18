@@ -212,10 +212,12 @@ export async function signInAs(browser: Browser, account: Account, tenant?: Tena
   if (tenant) seeds.push([WORKSPACE_KEY, persisted({ tenantId: tenant.id })])
 
   await browser.addInitScript(entries => {
-    if (sessionStorage.getItem('e2e:seeded')) return
+    if (sessionStorage.getItem('e2e:seeded')) return null
 
     for (const [key, value] of entries) localStorage.setItem(key, value)
     sessionStorage.setItem('e2e:seeded', '1')
+
+    return null
   }, seeds)
 }
 
@@ -226,7 +228,11 @@ export async function signInAs(browser: Browser, account: Account, tenant?: Tena
  */
 export async function switchAccount(browser: Browser, account: Account) {
   await browser.evaluate(
-    ([key, value]) => localStorage.setItem(key, value),
+    ([key, value]) => {
+      localStorage.setItem(key, value)
+
+      return null
+    },
     [SESSION_KEY, persisted({ token: account.token })],
   )
 }
@@ -237,7 +243,11 @@ export async function switchAccount(browser: Browser, account: Account) {
  * switches back to later still works.
  */
 export async function signOut(browser: Browser) {
-  await browser.evaluate(key => localStorage.removeItem(key), SESSION_KEY)
+  await browser.evaluate(key => {
+    localStorage.removeItem(key)
+
+    return null
+  }, SESSION_KEY)
 }
 
 /**

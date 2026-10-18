@@ -10,7 +10,7 @@
     "codegen": "turbo codegen",
     "build": "turbo build",
     "test": "turbo test",
-    "typecheck": "turbo typecheck",
+    "typecheck": "turbo typecheck && tsc -p tsconfig.json",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint --type-aware",
@@ -38,6 +38,7 @@
     "oxlint": "^1.88.0",
     "oxlint-tsgolint": "^7.0.2004",
     "turbo": "^2.11.3",
+    "typescript": "catalog:",
     "zod": "^4.1.8"
   },
   "engines": {
