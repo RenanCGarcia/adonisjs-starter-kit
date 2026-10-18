@@ -13,16 +13,17 @@ import { toast } from 'sonner'
 import { queries } from '@/features/core/api'
 import { PageHeader } from '@/features/core/components/page-header'
 import { PendingButton } from '@/features/core/components/pending-button'
+import { DATE_LONG, formatDate, useTimeZone } from '@/features/core/datetime'
 import { errorMessage } from '@/features/core/errors'
-import { locale, t } from '@/features/core/i18n'
+import { t } from '@/features/core/i18n'
+import { PreferencesCard } from '@/features/users/components/preferences-card'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 import { profileQuery } from '@/features/users/profile'
-
-const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'long' })
 
 /** `children` render below the profile's own cards: sections other features own. */
 export function ProfilePage({ children }: { children?: ReactNode }) {
   const user = useSuspenseQuery(profileQuery()).data.data
+  const timeZone = useTimeZone()
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-6">
@@ -45,11 +46,12 @@ export function ProfilePage({ children }: { children?: ReactNode }) {
             <dd className="break-all sm:col-span-2">{user.email}</dd>
             <dt className="text-muted-foreground">{t('users.profilePage.memberSince')}</dt>
             <dd className="sm:col-span-2">
-              {user.createdAt ? dateFormat.format(new Date(user.createdAt)) : '—'}
+              {formatDate(user.createdAt, DATE_LONG, timeZone) ?? '—'}
             </dd>
           </dl>
         </CardContent>
       </Card>
+      <PreferencesCard />
       {children}
     </main>
   )

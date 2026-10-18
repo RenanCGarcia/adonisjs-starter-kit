@@ -28,5 +28,12 @@
   "unverifiedEmailBanner": {
     "message": "Verify your email: we sent a link to {email}",
     "resend": "Resend"
+  },
+  "preferencesCard": {
+    "title": "Preferences",
+    "description": "Your language and time zone.",
+    "language": "Language",
+    "timeZone": "Time zone",
+    "saved": "Preferences saved"
   }
 }

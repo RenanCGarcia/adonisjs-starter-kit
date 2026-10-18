@@ -25,7 +25,11 @@ Every string a person reads, labels and placeholders included, lives in `src/loc
 - Dates and numbers format with `Intl` and the exported `locale`.
 - The lint rule `i18n/no-untranslated-text` rejects text written straight into JSX, text props, and `toast()` calls.
 
-The locale is resolved once per page load from the system languages (`navigator.languages`): the first one whose primary subtag a supported locale shares, else en-US. Every API request sends it as `Accept-Language`, so error and validation messages arrive already translated: show them as they come, never re-translate them by code.
+The locale is resolved once per page load: the preferences store's choice (`core/preferences.ts`), else the system languages (`navigator.languages`), the first one whose primary subtag a supported locale shares, else en-US. Every API request sends it as `Accept-Language`, so error and validation messages arrive already translated: show them as they come, never re-translate them by code. Every module-level `t()` call and `Intl` cache assumes `locale` never changes mid-session, so changing the UI language (the profile page's preferences card) reloads the page instead of reassigning it. `routes/_app.tsx` mirrors the signed-in profile's `locale` and `timezone` into the store on every load; an account with neither set yet (one from before this unit) gets them written back from the browser.
+
+## Dates and time zones
+
+Every date or time a person reads formats through `core/datetime.ts`, never a bare `new Intl.DateTimeFormat` or `toLocaleString` in a feature file: `formatDate(value, options, timeZone)` with one of its exported presets (`DATE_LONG`, `DATE_MEDIUM`, `DATE_TIME_SHORT`, `DATE_TIME_MEDIUM`), and the `useTimeZone()` hook for the zone, so a component re-renders when the zone changes without a reload. `relativeTime` stays zone-agnostic, since a relative difference doesn't depend on the viewer's zone. `TIME_ZONES` lists every IANA zone labelled with its current UTC offset, for the preferences card's select.
 
 ## Server state
 

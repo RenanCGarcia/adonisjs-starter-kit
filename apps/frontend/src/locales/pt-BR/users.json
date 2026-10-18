@@ -28,5 +28,12 @@
   "unverifiedEmailBanner": {
     "message": "Verifique seu e-mail: enviamos um link para {email}",
     "resend": "Reenviar"
+  },
+  "preferencesCard": {
+    "title": "Preferências",
+    "description": "Seu idioma e fuso horário.",
+    "language": "Idioma",
+    "timeZone": "Fuso horário",
+    "saved": "Preferências salvas"
   }
 }

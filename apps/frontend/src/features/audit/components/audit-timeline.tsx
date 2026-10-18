@@ -3,13 +3,11 @@ import { Badge } from '@monorepo/ui/components/badge'
 import { CogIcon, ShieldAlertIcon } from 'lucide-react'
 import { describeEvent } from '@/features/audit/event-text'
 import type { AuditEventRow, PermissionLabel } from '@/features/audit/event-text'
-import { locale, t } from '@/features/core/i18n'
-import { relativeTime } from '@/features/core/relative-time'
+import { DATE_TIME_MEDIUM, formatDate, relativeTime, useTimeZone } from '@/features/core/datetime'
+import { t } from '@/features/core/i18n'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
 type Actor = NonNullable<AuditEventRow['actor']>
-
-const absoluteFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'medium' })
 
 const actorName = (actor: Actor) => actor.fullName ?? actor.email
 
@@ -59,7 +57,9 @@ function AuditTimelineItem({
 }) {
   const { actor, session } = row
   const { sentence, standalone, permissions } = describeEvent(row, permissionLabel)
+  const timeZone = useTimeZone()
   const createdAt = row.createdAt ? new Date(row.createdAt) : null
+  const absolute = formatDate(row.createdAt, DATE_TIME_MEDIUM, timeZone)
 
   return (
     <li className="flex gap-3 py-3">
@@ -96,7 +96,7 @@ function AuditTimelineItem({
           {createdAt && (
             <time
               dateTime={createdAt.toISOString()}
-              title={absoluteFormat.format(createdAt)}
+              title={absolute ?? undefined}
               className="shrink-0 text-xs text-muted-foreground"
             >
               {relativeTime(createdAt)}
@@ -135,10 +135,7 @@ function AuditTimelineItem({
                 permissionLabel={permissionLabel}
               />
             )}
-            <Detail
-              label={t('audit.timeline.when')}
-              value={createdAt && absoluteFormat.format(createdAt)}
-            />
+            <Detail label={t('audit.timeline.when')} value={absolute} />
             <Detail label={t('audit.timeline.ip')} value={session.ip} />
             <Detail label={t('audit.timeline.userAgent')} value={session.userAgent} />
             <Detail label={t('audit.timeline.requestId')} value={session.requestId} mono />

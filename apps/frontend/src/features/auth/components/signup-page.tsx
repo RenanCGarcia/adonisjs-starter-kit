@@ -4,7 +4,7 @@ import { getRouteApi, Link } from '@tanstack/react-router'
 import { AuthCard } from '@/features/auth/components/auth-card'
 import { queries } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
-import { t } from '@/features/core/i18n'
+import { locale, t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
 
 const route = getRouteApi('/signup')
@@ -19,7 +19,14 @@ export function SignupPage() {
     onSubmit: async ({ value, formApi }) => {
       const created = await withFormErrors(
         formApi,
-        createAccount.mutateAsync({ body: { ...value, fullName: value.fullName.trim() || null } }),
+        createAccount.mutateAsync({
+          body: {
+            ...value,
+            fullName: value.fullName.trim() || null,
+            locale,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          },
+        }),
       )
 
       if (created) session.signIn(created.data.token)

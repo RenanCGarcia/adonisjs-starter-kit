@@ -29,12 +29,11 @@ import type { api } from '@/features/core/api'
 import { ConfirmDialog } from '@/features/core/components/confirm-dialog'
 import { PageHeader } from '@/features/core/components/page-header'
 import { Pagination } from '@/features/core/components/pagination'
+import { DATE_MEDIUM, formatDate, useTimeZone } from '@/features/core/datetime'
 import { errorMessage } from '@/features/core/errors'
-import { locale, t } from '@/features/core/i18n'
+import { t } from '@/features/core/i18n'
 
 type Tenant = Awaited<ReturnType<typeof api.admin.tenants.index>>['data'][number]
-
-const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' })
 
 export function TenantsPage({
   search,
@@ -44,6 +43,7 @@ export function TenantsPage({
   onSearchChange: (search: AdminSearch) => void
 }) {
   const { data: tenants } = useSuspenseQuery(adminTenantsQuery(search))
+  const timeZone = useTimeZone()
   const [renaming, setRenaming] = useState<Tenant | null>(null)
   const [suspending, setSuspending] = useState<Tenant | null>(null)
 
@@ -89,9 +89,7 @@ export function TenantsPage({
                   </Link>
                 </TableCell>
                 <TableCell>{tenant.memberCount}</TableCell>
-                <TableCell>
-                  {tenant.createdAt && dateFormat.format(new Date(tenant.createdAt))}
-                </TableCell>
+                <TableCell>{formatDate(tenant.createdAt, DATE_MEDIUM, timeZone)}</TableCell>
                 <TableCell>
                   <TenantStatus suspendedAt={tenant.suspendedAt} />
                 </TableCell>

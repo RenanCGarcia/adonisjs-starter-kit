@@ -15,15 +15,13 @@ import { toast } from 'sonner'
 import { ConfirmDialog } from '@/features/core/components/confirm-dialog'
 import { PendingButton } from '@/features/core/components/pending-button'
 import { api, queries } from '@/features/core/api'
+import { DATE_TIME_SHORT, formatDate, relativeTime, useTimeZone } from '@/features/core/datetime'
 import { errorMessage } from '@/features/core/errors'
-import { locale, t } from '@/features/core/i18n'
-import { relativeTime } from '@/features/core/relative-time'
+import { t } from '@/features/core/i18n'
 import { parseDeviceLabel } from '@/features/auth/device-label'
 import { sessionsQuery } from '@/features/auth/sessions'
 
 type SessionRow = Awaited<ReturnType<typeof api.profile.sessions.index>>['data'][number]
-
-const absoluteFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' })
 
 function deviceText(userAgent: string | null) {
   const { browser, os, raw } = parseDeviceLabel(userAgent)
@@ -40,6 +38,7 @@ function deviceText(userAgent: string | null) {
 /** The devices signed in to the user's account, each but this one with a sign-out action. */
 export function SessionsCard() {
   const sessions = useQuery(sessionsQuery())
+  const timeZone = useTimeZone()
   const [confirming, setConfirming] = useState<SessionRow | 'all' | null>(null)
 
   const closeDialog = (open: boolean) => {
@@ -108,7 +107,7 @@ export function SessionsCard() {
                       {t('auth.sessionsCard.lastActive', {
                         time: row.lastUsedAt
                           ? relativeTime(new Date(row.lastUsedAt))
-                          : absoluteFormat.format(new Date(row.createdAt)),
+                          : (formatDate(row.createdAt, DATE_TIME_SHORT, timeZone) ?? ''),
                       })}
                       {row.ipAddress && ` · ${row.ipAddress}`}
                     </span>

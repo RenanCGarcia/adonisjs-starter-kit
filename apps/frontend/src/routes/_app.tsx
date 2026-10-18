@@ -8,17 +8,21 @@ import {
   EmptyTitle,
 } from '@monorepo/ui/components/empty'
 import { Separator } from '@monorepo/ui/components/separator'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Outlet, redirect, useRouter } from '@tanstack/react-router'
 import type { ErrorComponentProps } from '@tanstack/react-router'
 import { TuyauError } from '@tuyau/core/client'
 import { CircleAlertIcon } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import { AdminMenuItem } from '@/features/admin/components/admin-menu-item'
 import { ImpersonationBanner } from '@/features/admin/components/impersonation-banner'
 import { adminMeQuery } from '@/features/admin/queries'
+import { queries } from '@/features/core/api'
 import { AppMark } from '@/features/core/components/app-mark'
 import { errorMessage } from '@/features/core/errors'
-import { t } from '@/features/core/i18n'
+import { locale, t } from '@/features/core/i18n'
+import type { Locale } from '@/features/core/i18n'
+import { preferences } from '@/features/core/preferences'
 import { session, useIsImpersonating } from '@/features/core/session'
 import { WorkspaceSwitcher } from '@/features/tenancy/components/workspace-switcher'
 import { tenantsQuery } from '@/features/tenancy/workspace'
@@ -47,10 +51,57 @@ function returnTo(href: string) {
   return href === '/' ? {} : { redirect: href }
 }
 
+/**
+ * Mirrors the profile's locale and time zone into the preferences store, so another device's
+ * choice also applies here. An existing user with no stored locale or time zone yet gets the
+ * active locale and the browser's own zone written up once. Runs once per page load: a second
+ * effect pass (strict mode) or re-render must not repeat the write or the reload. Skipped while
+ * impersonating: the browser and its preferences are the admin's, not the user's.
+ */
+function useSyncPreferences(
+  user: { locale: Locale | null; timezone: string | null },
+  impersonating: boolean,
+) {
+  const synced = useRef(false)
+  const updateProfile = useMutation(queries.profile.profile.update.mutationOptions())
+
+  useEffect(() => {
+    if (synced.current || impersonating) return
+
+    synced.current = true
+
+    if (user.locale === null || user.timezone === null) {
+      const next = {
+        locale: user.locale ?? locale,
+        timezone: user.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }
+
+      preferences.set({ locale: next.locale, timeZone: next.timezone })
+      updateProfile.mutate({ body: next })
+
+      return
+    }
+
+    preferences.set({ locale: user.locale, timeZone: user.timezone })
+
+    if (user.locale !== locale) window.location.reload()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once per page load, guarded above.
+  }, [])
+}
+
 function AppLayout() {
   const { data: user } = useSuspenseQuery(profileQuery())
   const { data: admin } = useSuspenseQuery(adminMeQuery())
   const impersonating = useIsImpersonating()
+
+  useSyncPreferences(
+    {
+      // SAFETY: the backend only ever stores a locale from localeRule()'s supportedLocales.
+      locale: user.data.locale as Locale | null,
+      timezone: user.data.timezone,
+    },
+    impersonating,
+  )
 
   return (
     <div className="flex min-h-svh flex-col">

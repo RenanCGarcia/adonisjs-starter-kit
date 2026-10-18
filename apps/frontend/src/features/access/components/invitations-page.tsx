@@ -27,15 +27,14 @@ import { queries, tenantHeaders } from '@/features/core/api'
 import type { api } from '@/features/core/api'
 import { ConfirmDialog } from '@/features/core/components/confirm-dialog'
 import { PageHeader } from '@/features/core/components/page-header'
+import { DATE_MEDIUM, formatDate, useTimeZone } from '@/features/core/datetime'
 import { errorMessage } from '@/features/core/errors'
-import { locale, t } from '@/features/core/i18n'
+import { t } from '@/features/core/i18n'
 import { useActiveTenant } from '@/features/tenancy/workspace'
 
 type Invitation = Awaited<ReturnType<typeof api.access.invitations.index>>['data'][number]
 
 type Role = Awaited<ReturnType<typeof api.access.roles.index>>['data'][number]
-
-const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' })
 
 function roleName(roles: readonly Role[], roleId: string | null) {
   return roleId ? (roles.find(role => role.id === roleId)?.name ?? null) : null
@@ -46,8 +45,8 @@ function isExpired(expiresAt: string | null) {
   return expiresAt !== null && new Date(expiresAt).getTime() <= Date.now()
 }
 
-function formattedDate(value: string | null) {
-  return value ? dateFormat.format(new Date(value)) : t('access.invitationsPage.noDate')
+function formattedDate(value: string | null, timeZone: string | undefined) {
+  return formatDate(value, DATE_MEDIUM, timeZone) ?? t('access.invitationsPage.noDate')
 }
 
 export function InvitationsPage() {
@@ -60,6 +59,7 @@ export function InvitationsPage() {
 
 function Invitations() {
   const { id: tenantId } = useActiveTenant()
+  const timeZone = useTimeZone()
 
   const [{ data: invitations }, { data: roles }] = useSuspenseQueries({
     queries: [invitationsQuery(tenantId), rolesQuery(tenantId)],
@@ -138,12 +138,12 @@ function Invitations() {
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">
                     <span className="text-muted-foreground">
-                      {formattedDate(invitation.createdAt)}
+                      {formattedDate(invitation.createdAt, timeZone)}
                     </span>
                   </TableCell>
                   <TableCell>
                     <span className="text-muted-foreground">
-                      {formattedDate(invitation.expiresAt)}
+                      {formattedDate(invitation.expiresAt, timeZone)}
                     </span>
                   </TableCell>
                   <TableCell>

@@ -1,10 +1,13 @@
 import { IntlMessageFormat } from 'intl-messageformat'
 import enUS from '@/locales/en-US'
 import ptBR from '@/locales/pt-BR'
+import { LOCALES } from '@/features/core/locales'
+import type { Locale } from '@/features/core/locales'
+import { preferences } from '@/features/core/preferences'
 
-export const LOCALES = ['en-US', 'pt-BR'] as const
+export { LOCALES }
 
-export type Locale = (typeof LOCALES)[number]
+export type { Locale }
 
 /**
  * The first preferred language a supported locale shares a primary subtag with (`pt-PT` reads
@@ -20,8 +23,12 @@ export function resolveLocale(languages: readonly string[]): Locale {
   return 'en-US'
 }
 
-/** Read once: a change to the system language applies on the next page load. */
-export const locale = resolveLocale(navigator.languages)
+/**
+ * Read once: the preferences store's choice, else the system language. Every module-level `t()`
+ * and `Intl` cache assumes this value never changes mid-session, so changing the UI language
+ * reloads the page instead of reassigning it.
+ */
+export const locale = preferences.locale() ?? resolveLocale(navigator.languages)
 
 type Catalog = { [key: string]: string | Catalog }
 
