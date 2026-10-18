@@ -81,7 +81,6 @@
     "description": "A pessoa receberá um e-mail com um link para entrar neste espaço de trabalho.",
     "email": "E-mail",
     "role": "Papel",
-    "noRole": "Nenhum papel",
     "submit": "Enviar convite",
     "resent": "Convite para {email} reenviado",
     "sent": "Convite enviado para {email}",
@@ -114,7 +113,6 @@
   },
   "memberRoleSelect": {
     "roleUpdated": "Papel de {name} atualizado",
-    "noRole": "Nenhum papel",
     "roleFor": "Papel de {name}"
   },
   "invitationsPage": {
@@ -143,5 +141,8 @@
   "requirePermission": {
     "title": "Você não tem acesso",
     "description": "Esta página exige a permissão “{label}”. Peça a quem gerencia membros neste espaço de trabalho para concedê-la."
+  },
+  "roleOptions": {
+    "noRole": "Nenhum papel"
   }
 }

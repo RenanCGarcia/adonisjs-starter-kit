@@ -17,6 +17,7 @@ import {
 import { useMutation } from '@tanstack/react-query'
 import { useId } from 'react'
 import { toast } from 'sonner'
+import { NO_ROLE, roleItems, toRoleId } from '@/features/access/role-options'
 import { queries, tenantHeaders } from '@/features/core/api'
 import { useAppForm, withFormErrors } from '@/features/core/form'
 import { t } from '@/features/core/i18n'
@@ -24,9 +25,6 @@ import { t } from '@/features/core/i18n'
 type Role = { id: string; name: string }
 
 type Invitation = { email: string }
-
-/** No role is a real, selectable state, so it needs its own value distinct from an empty string. */
-const NO_ROLE = 'none'
 
 /** Invites someone by email; inviting an email that's already pending re-sends it instead of failing. */
 export function InviteMemberDialog({
@@ -54,7 +52,7 @@ export function InviteMemberDialog({
       const sent = await withFormErrors(
         formApi,
         sendInvitation.mutateAsync({
-          body: { email, roleId: value.roleId === NO_ROLE ? null : value.roleId },
+          body: { email, roleId: toRoleId(value.roleId) },
           ...tenantHeaders(tenantId),
         }),
       )
@@ -70,10 +68,7 @@ export function InviteMemberDialog({
     },
   })
 
-  const items = [
-    { value: NO_ROLE, label: t('access.inviteMemberDialog.noRole') },
-    ...roles.map(role => ({ value: role.id, label: role.name })),
-  ]
+  const items = roleItems(roles)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

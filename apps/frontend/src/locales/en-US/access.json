@@ -81,7 +81,6 @@
     "description": "They’ll get an email with a link to join this workspace.",
     "email": "Email",
     "role": "Role",
-    "noRole": "No role",
     "submit": "Send invitation",
     "resent": "Invitation to {email} resent",
     "sent": "Invitation sent to {email}",
@@ -114,7 +113,6 @@
   },
   "memberRoleSelect": {
     "roleUpdated": "Role updated for {name}",
-    "noRole": "No role",
     "roleFor": "Role for {name}"
   },
   "invitationsPage": {
@@ -143,5 +141,8 @@
   "requirePermission": {
     "title": "You don’t have access",
     "description": "This page needs the “{label}” permission. Ask someone who manages members in this workspace to grant it."
+  },
+  "roleOptions": {
+    "noRole": "No role"
   }
 }
