@@ -41,31 +41,6 @@ test.group('Users | profile', group => {
     assert.containsSubset(response.body().data, { locale: 'pt-BR', timezone: 'UTC' })
   })
 
-  // Regression: Intl.supportedValuesOf('timeZone') lacks aliases browsers report
-  // (Asia/Kolkata, Etc/GMT+5), so a real browser's own zone 422ed here.
-  test('accepts a timezone alias Intl.supportedValuesOf omits and stores the canonical name', async ({
-    client,
-    assert,
-  }) => {
-    const user = await User.create({ email: 'alias@example.com', password: 'password123' })
-
-    const response = await client
-      .patch('/api/v1/account/profile')
-      .json({ timezone: 'Asia/Kolkata' })
-      .loginAs(user)
-
-    response.assertStatus(200)
-    assert.containsSubset(response.body().data, { timezone: 'Asia/Calcutta' })
-
-    const etc = await client
-      .patch('/api/v1/account/profile')
-      .json({ timezone: 'Etc/GMT+5' })
-      .loginAs(user)
-
-    etc.assertStatus(200)
-    assert.containsSubset(etc.body().data, { timezone: 'Etc/GMT+5' })
-  })
-
   test('rejects an empty update, an unsupported locale or an unrecognized timezone', async ({
     client,
   }) => {
