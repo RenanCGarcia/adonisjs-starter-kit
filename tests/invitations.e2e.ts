@@ -3,6 +3,7 @@ import { expect } from 'e2e'
 import { randomUUID } from 'node:crypto'
 import {
   addMember,
+  api,
   createRole,
   createTenant,
   invitationToken,
@@ -203,6 +204,14 @@ test('the wrong signed-in account sees the mismatch state', async ({ app, screen
 
   await screen.getByRole('button', 'Sign in with another account').tap()
   await expect(browser).toHaveURL(`/login?redirect=%2Finvitations%2F${token}`)
+
+  // Regression: the button only dropped the token from this browser, leaving it valid server-side.
+  const outcome = await api('/account/profile', { token: wrongAccount.token }).then(
+    () => 'ok',
+    error => String(error),
+  )
+
+  expect(outcome).toContain('answered 401')
 })
 
 test('an unknown token shows the invalid state', async ({ app, screen, browser }) => {

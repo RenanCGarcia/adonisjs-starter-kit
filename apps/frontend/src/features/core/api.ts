@@ -28,3 +28,19 @@ export const queries = createTuyauReactQueryClient({ client })
 export function tenantHeaders(tenantId: string) {
   return { headers: { 'X-Tenant-Id': tenantId } }
 }
+
+/**
+ * Revokes this browser's token and signs out. While impersonating, the admin's own token goes too:
+ * logging out ends the admin's session, not only the impersonation. The token is dropped even if
+ * a call fails, since the user asked to be signed out of this browser.
+ */
+export async function logOut() {
+  await api.profile.accessTokens.destroy({}).safe()
+
+  if (session.isImpersonating()) {
+    session.stopImpersonating()
+    await api.profile.accessTokens.destroy({}).safe()
+  }
+
+  session.signOut()
+}

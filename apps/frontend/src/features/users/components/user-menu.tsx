@@ -18,9 +18,8 @@ import { Link, useRouter } from '@tanstack/react-router'
 import { LogOutIcon, SunMoonIcon, UserIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import type { ReactNode } from 'react'
-import { api } from '@/features/core/api'
+import { logOut } from '@/features/core/api'
 import { t } from '@/features/core/i18n'
-import { session } from '@/features/core/session'
 import { UserAvatar } from '@/features/users/components/user-avatar'
 
 const THEMES = [
@@ -34,17 +33,8 @@ export function UserMenu({ user, children }: { user: Data.Users.User; children?:
   const router = useRouter()
   const { theme, setTheme } = useTheme()
 
-  const logOut = async () => {
-    // The token is dropped even if the call fails: the user asked to be signed out of this browser.
-    await api.profile.accessTokens.destroy({}).safe()
-
-    // Logging out while impersonating ends the admin's session as well, not only the impersonation.
-    if (session.isImpersonating()) {
-      session.stopImpersonating()
-      await api.profile.accessTokens.destroy({}).safe()
-    }
-
-    session.signOut()
+  const onLogOut = async () => {
+    await logOut()
     await router.navigate({ to: '/login' })
   }
 
@@ -88,7 +78,7 @@ export function UserMenu({ user, children }: { user: Data.Users.User; children?:
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logOut}>
+        <DropdownMenuItem onClick={onLogOut}>
           <LogOutIcon />
           {t('users.userMenu.logOut')}
         </DropdownMenuItem>

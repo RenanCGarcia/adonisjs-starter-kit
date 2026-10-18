@@ -3,11 +3,11 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { AuthCard } from '@/features/auth/components/auth-card'
-import { queries } from '@/features/core/api'
+import { logOut, queries } from '@/features/core/api'
 import { PendingButton } from '@/features/core/components/pending-button'
 import { apiErrorCode, errorMessage } from '@/features/core/errors'
 import { t } from '@/features/core/i18n'
-import { session, useIsAuthenticated } from '@/features/core/session'
+import { useIsAuthenticated } from '@/features/core/session'
 import { selectWorkspace } from '@/features/tenancy/workspace'
 import { profileQuery } from '@/features/users/profile'
 
@@ -95,7 +95,7 @@ export function AcceptInvitationPage() {
 
   if (failure === 'E_INVITATION_EMAIL_MISMATCH') {
     const signInWithAnotherAccount = async () => {
-      session.signOut()
+      await logOut()
       await navigate({ to: '/login', search: redirectSearch })
     }
 
