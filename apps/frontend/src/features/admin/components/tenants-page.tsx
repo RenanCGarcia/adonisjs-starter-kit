@@ -1,11 +1,4 @@
 import { Badge } from '@monorepo/ui/components/badge'
-import { Button } from '@monorepo/ui/components/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@monorepo/ui/components/dropdown-menu'
 import {
   Table,
   TableBody,
@@ -16,11 +9,12 @@ import {
 } from '@monorepo/ui/components/table'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { CirclePauseIcon, CirclePlayIcon, MoreHorizontalIcon, PencilIcon } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import { CirclePauseIcon, CirclePlayIcon, PencilIcon } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { RenameTenantDialog } from '@/features/admin/components/rename-tenant-dialog'
+import { RowActionsMenu } from '@/features/admin/components/row-actions-menu'
+import type { RowAction } from '@/features/admin/components/row-actions-menu'
 import { SearchInput } from '@/features/admin/components/search-input'
 import { adminTenantsQuery } from '@/features/admin/queries'
 import type { AdminSearch } from '@/features/admin/queries'
@@ -157,14 +151,7 @@ function TenantRowActions({
     }),
   )
 
-  const actions: {
-    key: string
-    label: string
-    icon: LucideIcon
-    destructive?: boolean
-    disabled?: boolean
-    onSelect: () => void
-  }[] = [
+  const actions: RowAction[] = [
     { key: 'rename', label: t('admin.tenantsPage.rename'), icon: PencilIcon, onSelect: onRename },
     tenant.suspendedAt
       ? {
@@ -185,33 +172,10 @@ function TenantRowActions({
 
   return (
     <div className="flex justify-end">
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={t('admin.tenantsPage.actionsFor', { name: tenant.name })}
-            />
-          }
-        >
-          <MoreHorizontalIcon />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-auto max-w-xs">
-          {actions.map(action => (
-            <DropdownMenuItem
-              key={action.key}
-              variant={action.destructive ? 'destructive' : 'default'}
-              disabled={action.disabled}
-              onClick={action.onSelect}
-              className="whitespace-nowrap"
-            >
-              <action.icon />
-              <span className="truncate">{action.label}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RowActionsMenu
+        label={t('admin.tenantsPage.actionsFor', { name: tenant.name })}
+        actions={actions}
+      />
     </div>
   )
 }
