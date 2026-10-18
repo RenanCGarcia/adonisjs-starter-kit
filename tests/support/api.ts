@@ -6,7 +6,7 @@ import { promisify } from 'node:util'
 import * as OTPAuth from 'otpauth'
 
 /** Arrange steps go straight to the API; only the behavior under test goes through the UI. */
-export const API_URL = 'http://localhost:3333/api/v1'
+const API_URL = 'http://localhost:3333/api/v1'
 
 const MAILPIT_URL = 'http://localhost:8025/api/v1'
 
@@ -19,7 +19,7 @@ export type Account = {
   token: string
 }
 
-export type Tenant = { id: string; name: string }
+type Tenant = { id: string; name: string }
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'

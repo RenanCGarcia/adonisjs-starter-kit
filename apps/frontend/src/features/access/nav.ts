@@ -4,10 +4,10 @@ import type { Permission } from '@/features/access/permissions'
 import type { SideNavItem } from '@/features/core/components/side-nav'
 import { t } from '@/features/core/i18n'
 
-export type NavItem = SideNavItem & { description: string; requires: Permission | null }
+type NavItem = SideNavItem & { description: string; requires: Permission | null }
 
 /** The workspace sections, in sidebar order. The sidebar and the overview cards both render from it. */
-export const TENANT_NAV: readonly NavItem[] = [
+const TENANT_NAV: readonly NavItem[] = [
   {
     to: '/',
     label: t('access.nav.overview'),

@@ -8,9 +8,9 @@ type AccountEventRow = Awaited<ReturnType<typeof api.audit.accountActivity.index
 
 export type AuditEventRow = TenantEventRow | AccountEventRow
 
-export type AuditEvent = AuditEventRow['event']
+type AuditEvent = AuditEventRow['event']
 
-export type AuditEventType = AuditEvent['type']
+type AuditEventType = AuditEvent['type']
 
 export type TenantEventType = TenantEventRow['event']['type']
 
