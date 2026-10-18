@@ -18,6 +18,7 @@ export const preferencesStore = createPersistedStore(
 )
 
 export const preferences = {
+  persists: preferencesStore.persists,
   locale: () => preferencesStore.getState().locale,
   timeZone: () => preferencesStore.getState().timeZone,
   set: (next: { locale?: Locale; timeZone?: string }) =>

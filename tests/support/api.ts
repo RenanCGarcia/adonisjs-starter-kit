@@ -22,7 +22,7 @@ export type Account = {
 export type Tenant = { id: string; name: string }
 
 type RequestOptions = {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   token?: string
   tenantId?: string
   body?: Record<string, string | string[] | null>

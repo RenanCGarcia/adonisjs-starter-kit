@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { test } from '@e2e-dev/web'
 import { expect } from 'e2e'
-import { signInAs, signUp } from './support/api.ts'
+import { api, signInAs, signUp, unique } from './support/api.ts'
 
 test('a member changes their time zone and their language from the profile page', async ({
   screen,
@@ -76,4 +76,38 @@ test('signing out and signing up again does not inherit the previous account’s
   // the leftover pt-BR: once the app loads, it reads that mismatch, corrects the stored UI
   // language and reloads into English, landing here on the English workspace onboarding page.
   await expect(screen.getByRole('heading', 'Create your workspace')).toBeVisible()
+})
+
+// Regression: with storage blocked, an account language other than the browser's reloaded the
+// page right after sign-in, and the reload dropped the in-memory session: the member landed back
+// on the login form every time.
+test('with browser storage blocked, a member whose language differs from the browser’s stays signed in', async ({
+  screen,
+  app,
+  browser,
+}) => {
+  const member = await signUp('Bea Blocked')
+  const name = unique('Blocked')
+
+  await api('/account/profile', {
+    method: 'PATCH',
+    token: member.token,
+    body: { locale: 'pt-BR', timezone: 'UTC' },
+  })
+  await browser.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', {
+      get() {
+        throw new DOMException('Storage is blocked', 'SecurityError')
+      },
+    })
+  })
+
+  await app.open('/login')
+  await screen.getByLabel('Email').fill(member.email)
+  await screen.getByLabel('Password').fill(member.password)
+  await screen.getByRole('button', 'Sign in').tap()
+
+  await screen.getByLabel('Workspace name').fill(name)
+  await screen.getByRole('button', 'Create workspace').tap()
+  await expect(screen.getByRole('heading', name, { level: 1 })).toBeVisible()
 })

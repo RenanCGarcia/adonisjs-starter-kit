@@ -90,13 +90,9 @@ function useSyncPreferences(
 
     preferences.set({ locale: user.locale, timeZone: user.timezone })
 
-    // Only reload for a locale this store can actually hold: LOCALES lacking it, or a blocked
-    // localStorage write, would otherwise reload forever since the mismatch never resolves.
-    if (
-      user.locale !== locale &&
-      LOCALES.includes(user.locale) &&
-      preferences.locale() === user.locale
-    ) {
+    // Only reload for a locale the next load can read back: LOCALES lacking it, or blocked
+    // storage, would otherwise reload forever since the mismatch never resolves.
+    if (user.locale !== locale && LOCALES.includes(user.locale) && preferences.persists) {
       window.location.reload()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once per page load, guarded above.
