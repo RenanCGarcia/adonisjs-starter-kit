@@ -1,5 +1,5 @@
-import crypto from 'node:crypto'
 import { linkToken } from '#tests/mails'
+import { hashToken } from '#core/tokens'
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import mail from '@adonisjs/mail/services/main'
@@ -185,7 +185,7 @@ test.group('Access | invitations', group => {
     await acme.inside(() =>
       Invitation.create({
         email: 'guest@example.com',
-        tokenHash: crypto.createHash('sha256').update('expired-token').digest('hex'),
+        tokenHash: hashToken('expired-token'),
         expiresAt: DateTime.now().minus({ minutes: 1 }),
       }),
     )
