@@ -242,7 +242,7 @@ test.group('Access | invitations', group => {
     response.assertBodyContains({ code: 'E_INVITATION_EMAIL_MISMATCH' })
   })
 
-  test('accept creates the membership and role, verifies the email, and is idempotent', async ({
+  test('accept creates the membership and role, and verifies the email', async ({
     client,
     assert,
   }) => {
@@ -272,11 +272,44 @@ test.group('Access | invitations', group => {
 
     const profile = await client.visit('profile.profile.show').loginAs(guest)
     assert.isNotNull(profile.body().data.emailVerifiedAt)
+  })
 
-    // Idempotent: the invitation is gone after the first accept, but a retry with the same
-    // token must not throw on the now-existing membership.
-    const retried = await client.visit('invitation_accept.store').json({ token }).loginAs(guest)
-    retried.assertStatus(404)
+  // Regression: a retry after a crash between the membership write and the invitation's delete
+  // fails on the existing membership, or joins the member a second time.
+  test('accept by someone already a member only spends the invitation', async ({
+    client,
+    assert,
+  }) => {
+    using fake = mail.fake()
+    const { acme, owner } = await setup()
+    const editor = await acme.role('Editor', ['roles.manage'])
+    const guest = await createUser()
+    await guest.merge({ email: 'guest@example.com' }).save()
+
+    await client
+      .visit('access.invitations.store')
+      .json({ email: 'guest@example.com', roleId: editor.id })
+      .headers(acme.headers)
+      .loginAs(owner)
+    await acme.tenant.related('memberships').create({ userId: guest.id })
+
+    const accepted = await client
+      .visit('invitation_accept.store')
+      .json({ token: lastToken(fake) })
+      .loginAs(guest)
+
+    accepted.assertStatus(200)
+    assert.lengthOf(await acme.tenant.related('memberships').query().where('user_id', guest.id), 1)
+    assert.isNull(await acme.inside(() => Invitation.findBy('email', 'guest@example.com')))
+    const events = await AuditEvent.query().where('tenant_id', acme.tenant.id)
+    assert.notInclude(
+      events.map(event => event.type),
+      'member.joined',
+    )
+    assert.include(
+      events.map(event => event.type),
+      'invitation.accepted',
+    )
   })
 
   test('an invitation from one tenant is invisible and unrevokable from another', async ({

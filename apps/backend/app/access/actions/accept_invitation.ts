@@ -43,11 +43,11 @@ export default class AcceptInvitation {
           .where('user_id', userId)
           .first()
 
-        // Already a member: the invitation is spent and nothing else changes. Makes a retry
-        // after a crash between the membership write and this delete safe to repeat.
         const found = roleId ? await Role.findOrFail(roleId, { client: trx }) : null
         const role = found && { id: found.id, name: found.name }
 
+        // Already a member: the invitation is spent and nothing else changes. Makes a retry
+        // after a crash between the membership write and this delete safe to repeat.
         if (!membership) {
           await TenantMembership.create({ tenantId, userId }, { client: trx })
 
