@@ -2,7 +2,6 @@ import User from '#users/models/user'
 import { BaseCommand, args } from '@adonisjs/core/ace'
 import i18nManager from '@adonisjs/i18n/services/main'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import RevokeSessions from '#auth/actions/revoke_sessions'
 import ResetTwoFactor from '#admin/actions/reset_two_factor'
 import TwoFactorNotEnabledException from '#auth/exceptions/two_factor_not_enabled_exception'
 
@@ -26,21 +25,23 @@ export default class ResetTwoFactorCommand extends BaseCommand {
       return
     }
 
-    try {
-      await new ResetTwoFactor().handle({ id: user.id, locale: i18nManager.defaultLocale })
-    } catch (error) {
-      if (!(error instanceof TwoFactorNotEnabledException)) throw error
+    const reset = await new ResetTwoFactor()
+      .handle({ id: user.id, locale: i18nManager.defaultLocale, protectPlatformAdmins: false })
+      .catch(error => {
+        if (error instanceof TwoFactorNotEnabledException) return null
 
+        throw error
+      })
+
+    if (!reset) {
       this.logger.error(`${user.email} doesn’t have two-factor enabled`)
       this.exitCode = 1
 
       return
     }
 
-    const revoked = await new RevokeSessions().handle({ user })
-
     this.logger.info(
-      `Two-factor is off for ${user.email}: ${revoked} session(s) signed out, user emailed`,
+      `Two-factor is off for ${user.email}: ${reset.revoked} session(s) signed out, user emailed`,
     )
   }
 }
