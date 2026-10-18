@@ -16,6 +16,7 @@
       "required": "This field is required.",
       "sameAs": "This doesn’t match.",
       "string": "Enter text.",
+      "timezone": "Choose a valid time zone.",
       "uuid": "This value isn’t valid."
     }
   }

@@ -16,6 +16,7 @@
       "required": "Este campo é obrigatório.",
       "sameAs": "Isto não confere.",
       "string": "Digite um texto.",
+      "timezone": "Escolha um fuso horário válido.",
       "uuid": "Este valor não é válido."
     }
   }
