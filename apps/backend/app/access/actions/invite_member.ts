@@ -1,10 +1,11 @@
-import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
 import User from '#users/models/user'
 import Role from '#access/models/role'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
+import { newToken } from '#core/tokens'
 import type {} from '#access/types/audit'
+import { roleSnapshot } from '#access/snapshots'
 import emitter from '@adonisjs/core/services/emitter'
 import Invitation from '#access/models/invitation'
 import type { MemberInvited } from '#access/types/events'
@@ -36,8 +37,7 @@ export default class InviteMember {
 
     if (alreadyMember) throw new AlreadyMemberException()
 
-    const token = crypto.randomBytes(32).toString('hex')
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+    const { raw: token, hash: tokenHash } = newToken()
 
     const invitation = await db.transaction(async trx => {
       const upserted = await Invitation.updateOrCreate(
@@ -51,7 +51,7 @@ export default class InviteMember {
       await audit.record(trx, 'invitation.sent', {
         tenantId,
         subject: { type: 'invitation', id: upserted.id },
-        data: { email, role: role && { id: role.id, name: role.name } },
+        data: { email, role: roleSnapshot(role) },
       })
 
       return upserted
@@ -62,7 +62,6 @@ export default class InviteMember {
     const existing = await User.findBy('email', email)
 
     await emitter.emit('access:member_invited', {
-      tenantId,
       email,
       token,
       locale: mailLocaleFor(existing, locale),

@@ -1,5 +1,5 @@
-import crypto from 'node:crypto'
 import User from '#users/models/user'
+import { hashToken, newToken } from '#core/tokens'
 import { DateTime, type DurationLikeObject } from 'luxon'
 import UserToken, { type UserTokenPurpose } from '#auth/models/user_token'
 import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
@@ -8,8 +8,6 @@ export const USER_TOKEN_EXPIRY = {
   password_reset: { minutes: 60 },
   email_verification: { hours: 24 },
 } satisfies Record<UserTokenPurpose, DurationLikeObject>
-
-const hashOf = (token: string) => crypto.createHash('sha256').update(token).digest('hex')
 
 /** Replaces the user's token of this purpose and returns the raw one, for the mailed link only. */
 export async function issueUserToken(
@@ -22,13 +20,13 @@ export async function issueUserToken(
 
   await UserToken.query({ client: trx }).where('user_id', userId).where('purpose', purpose).delete()
 
-  const token = crypto.randomBytes(32).toString('hex')
+  const { raw: token, hash: tokenHash } = newToken()
 
   await UserToken.create(
     {
       userId,
       purpose,
-      tokenHash: hashOf(token),
+      tokenHash,
       expiresAt: DateTime.now().plus(USER_TOKEN_EXPIRY[purpose]),
     },
     { client: trx },
@@ -47,7 +45,7 @@ export async function consumeUserToken(
   token: string,
 ) {
   const row = await UserToken.query({ client: trx })
-    .where('token_hash', hashOf(token))
+    .where('token_hash', hashToken(token))
     .where('purpose', purpose)
     .forUpdate()
     .first()

@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { linkToken } from '#tests/mails'
 import { sessionOf } from '#tests/sessions'
 import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
@@ -190,12 +191,7 @@ test.group('Admin | users', group => {
     const mailed = fake.mails.queued()[0]?.message.toJSON().message
     assert.equal(mailed?.subject, 'Sua autenticação em dois fatores foi desativada')
 
-    // SAFETY: TwoFactorResetMail only ever calls message.htmlView(), which renders to a string.
-    const resetToken = (mailed?.html as string | undefined)?.match(
-      /href="[^"]*\/reset-password\/([a-f0-9]+)"/,
-    )?.[1]
-
-    if (!resetToken) throw new Error('No reset link found in the two-factor reset mail')
+    const resetToken = linkToken(fake, 'reset-password')
 
     const newPassword = 'new-password456'
 

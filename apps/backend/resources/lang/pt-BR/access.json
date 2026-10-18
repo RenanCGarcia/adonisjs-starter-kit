@@ -6,7 +6,7 @@
     "heading": "Você recebeu um convite",
     "intro": "Alguém convidou você para entrar em um espaço de trabalho no {appName}.",
     "open_link": "Abra este link para aceitar:",
-    "accept": "Aceitar o convite",
+    "action": "Aceitar o convite",
     "expires": "Este convite expira em {days} dias.",
     "footer": "Você recebeu este e-mail porque alguém te convidou para um espaço de trabalho. Se não esperava por ele, ignore esta mensagem."
   }

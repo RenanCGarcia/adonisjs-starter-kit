@@ -5,6 +5,8 @@ import type {} from '#auth/types/audit'
 
 export interface RevokeSessionsInput {
   user: User
+  /** Only this session, instead of every one. */
+  sessionId?: string
   /** The token to leave untouched, typically the one making the request. */
   keepTokenId?: string
 }
@@ -15,11 +17,13 @@ export interface RevokeSessionsInput {
  * token: that session belongs to the admin, not the user.
  */
 export default class RevokeSessions {
-  async handle({ user, keepTokenId }: RevokeSessionsInput) {
+  async handle({ user, sessionId, keepTokenId }: RevokeSessionsInput) {
     const query = db
       .from('auth_access_tokens')
       .where('tokenable_id', user.id)
       .whereNull('impersonator_id')
+
+    if (sessionId) query.where('id', sessionId)
 
     if (keepTokenId) query.whereNot('id', keepTokenId)
 

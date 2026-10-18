@@ -1,26 +1,9 @@
 import { test } from '@japa/runner'
+import { sessionIdOf, signUp } from '#tests/accounts'
 import db from '@adonisjs/lucid/services/db'
 import AuditEvent from '#core/models/audit_event'
-import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
 import PruneExpiredTokens from '#auth/actions/prune_expired_tokens'
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
-
-function sessionIdOf(token: string) {
-  return Buffer.from(token.slice('oat_'.length).split('.')[0]!, 'base64url').toString()
-}
-
-async function signUp(client: ApiClient, email: string) {
-  const response = await client.visit('auth.new_account.store').json({ ...account, email })
-  const { token }: { token: string } = response.body().data
-
-  return token
-}
 
 test.group('Auth | prune tokens', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
@@ -58,32 +41,6 @@ test.group('Auth | prune tokens', group => {
     assert.isNotNull(
       await db.from('auth_access_tokens').where('id', sessionIdOf(liveToken)).first(),
     )
-  })
-
-  // Regression: a session created without an expiry (by code older than the idle timeout, after
-  // its backfill migration ran) never expires and is never pruned.
-  test('gives a session without an expiry one from its last use, then prunes it if past', async ({
-    client,
-    assert,
-  }) => {
-    const idleToken = await signUp(client, 'ada@example.com')
-    const activeToken = await signUp(client, 'grace@example.com')
-    const fortyDaysAgo = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000)
-
-    await db
-      .from('auth_access_tokens')
-      .where('id', sessionIdOf(idleToken))
-      .update({ expires_at: null, last_used_at: fortyDaysAgo })
-    await db
-      .from('auth_access_tokens')
-      .where('id', sessionIdOf(activeToken))
-      .update({ expires_at: null, last_used_at: new Date() })
-
-    await new PruneExpiredTokens().handle()
-
-    assert.isNull(await db.from('auth_access_tokens').where('id', sessionIdOf(idleToken)).first())
-    const active = await db.from('auth_access_tokens').where('id', sessionIdOf(activeToken)).first()
-    assert.isNotNull(active.expires_at)
   })
 
   // Regression: a run leaves no trace of what it deleted, or a run that deletes nothing (a

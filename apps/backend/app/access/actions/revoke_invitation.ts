@@ -2,6 +2,7 @@ import Role from '#access/models/role'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import type {} from '#access/types/audit'
+import { roleSnapshot } from '#access/snapshots'
 import Invitation from '#access/models/invitation'
 
 export interface RevokeInvitationInput {
@@ -23,7 +24,7 @@ export default class RevokeInvitation {
       await audit.record(trx, 'invitation.revoked', {
         tenantId,
         subject: { type: 'invitation', id: invitation.id },
-        data: { email: invitation.email, role: role && { id: role.id, name: role.name } },
+        data: { email: invitation.email, role: roleSnapshot(role) },
       })
     })
   }

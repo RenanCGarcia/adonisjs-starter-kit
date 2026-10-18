@@ -1,10 +1,11 @@
-import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
 import Role from '#access/models/role'
 import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
+import { hashToken } from '#core/tokens'
 import type {} from '#access/types/audit'
+import { roleSnapshot } from '#access/snapshots'
 import GetMember from '#access/queries/get_member'
 import Invitation from '#access/models/invitation'
 import RoleAssignment from '#access/models/role_assignment'
@@ -22,10 +23,8 @@ export interface AcceptInvitationInput {
 export default class AcceptInvitation {
   /** Returns the id of the tenant the invitation grants access to. */
   async handle({ token, userId, userEmail }: AcceptInvitationInput): Promise<string> {
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-
     const invitation = await runAsSystem(() =>
-      Invitation.query().where('token_hash', tokenHash).first(),
+      Invitation.query().where('token_hash', hashToken(token)).first(),
     )
 
     if (!invitation || invitation.expiresAt < DateTime.now()) {
@@ -43,11 +42,10 @@ export default class AcceptInvitation {
           .where('user_id', userId)
           .first()
 
+        const role = roleSnapshot(roleId ? await Role.findOrFail(roleId, { client: trx }) : null)
+
         // Already a member: the invitation is spent and nothing else changes. Makes a retry
         // after a crash between the membership write and this delete safe to repeat.
-        const found = roleId ? await Role.findOrFail(roleId, { client: trx }) : null
-        const role = found && { id: found.id, name: found.name }
-
         if (!membership) {
           await TenantMembership.create({ tenantId, userId }, { client: trx })
 

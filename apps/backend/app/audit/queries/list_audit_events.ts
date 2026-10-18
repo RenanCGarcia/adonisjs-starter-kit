@@ -7,8 +7,8 @@ export type AuditTrail = { tenantId: string } | { accountOf: string }
 
 export interface ListAuditEventsInput {
   trail: AuditTrail
-  page: number
-  perPage: number
+  page?: number
+  perPage?: number
   types?: string[]
   actorId?: string
   subjectType?: string
@@ -41,7 +41,7 @@ function queryTrail(trail: AuditTrail) {
 
 /** AuditEvent isn't tenant-scoped (see #core/models/audit_event), so tenant_id is filtered here. */
 export default class ListAuditEvents {
-  async handle(input: ListAuditEventsInput) {
+  async handle({ page = 1, perPage = 20, ...input }: ListAuditEventsInput) {
     const { trail, types, actorId, subjectType, subjectId, from, to } = input
     const query = queryTrail(trail)
 
@@ -57,7 +57,7 @@ export default class ListAuditEvents {
 
     if (to) query.where('created_at', '<=', to.toJSDate())
 
-    const events = await query.orderBy('id', 'desc').paginate(input.page, input.perPage)
+    const events = await query.orderBy('id', 'desc').paginate(page, perPage)
 
     const userIds = events
       .all()

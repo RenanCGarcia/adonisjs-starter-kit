@@ -1,14 +1,3 @@
-/*
-|--------------------------------------------------------------------------
-| Environment variables service
-|--------------------------------------------------------------------------
-|
-| The `Env.create` method creates an instance of the Env service. The
-| service validates the environment variables and also cast values
-| to JavaScript data types.
-|
-*/
-
 import { Env } from '@adonisjs/core/env'
 
 export default await Env.create(new URL('../', import.meta.url), {
@@ -21,10 +10,24 @@ export default await Env.create(new URL('../', import.meta.url), {
   // App
   APP_NAME: Env.schema.string(),
   APP_KEY: Env.schema.secret(),
-  APP_URL: Env.schema.string({ format: 'url', tld: false }),
   FRONTEND_URL: Env.schema.string({ format: 'url', tld: false }),
   MONITORING_SECRET: Env.schema.secret(),
-  CORS_ORIGIN: Env.schema.string.optional(),
+  // @adonisjs/cors compares origins with ===, so 'https://a.com, https://b.com/' would only allow a.
+  CORS_ORIGIN: (key: string, value?: string) => {
+    if (value === undefined || value === '') return undefined
+
+    return value
+      .split(',')
+      .map(entry => entry.trim())
+      .filter(Boolean)
+      .map(entry => {
+        if (!URL.canParse(entry)) {
+          throw new Error(`Invalid value for "${key}": "${entry}" is not an origin URL`)
+        }
+
+        return new URL(entry).origin
+      })
+  },
   // At least a day: 0 or less would delete the whole audit trail on the next prune.
   AUDIT_RETENTION_DAYS: (key: string, value?: string) => {
     if (value === undefined || value === '') return undefined
@@ -44,9 +47,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),
-
-  // Session
-  SESSION_DRIVER: Env.schema.enum(['cookie', 'memory', 'database'] as const),
 
   // Mail
   MAIL_MAILER: Env.schema.enum(['smtp'] as const),

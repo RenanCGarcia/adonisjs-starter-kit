@@ -1,19 +1,9 @@
 import { test } from '@japa/runner'
 import type User from '#users/models/user'
 import type { ApiClient } from '@japa/api-client'
-import { workspace } from '#access/tests/seed'
+import { ownedWorkspace, permissionsOf, type Workspace } from '#access/tests/seed'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
-
-type Workspace = Awaited<ReturnType<typeof workspace>>
-
-async function setup() {
-  const acme = await workspace()
-  const owner = await acme.member()
-  await acme.assign(owner, await acme.role('Owner', ['roles.manage', 'members.manage']))
-
-  return { acme, owner }
-}
 
 function setRole(
   client: ApiClient,
@@ -43,20 +33,11 @@ function setGrants(
     .loginAs(actor)
 }
 
-async function permissionsOf(client: ApiClient, space: Workspace, user: User) {
-  const response = await client
-    .visit('access.my_permissions.show')
-    .headers(space.headers)
-    .loginAs(user)
-
-  return response.body().data.permissions
-}
-
 test.group('Access | members', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
 
   test('requires members.manage', async ({ client }) => {
-    const { acme } = await setup()
+    const { acme } = await ownedWorkspace()
     const roleManager = await acme.member()
     await acme.grant(roleManager, 'roles.manage')
     const target = await acme.member()
@@ -69,26 +50,26 @@ test.group('Access | members', group => {
   })
 
   test('replaces the role and the grants of a member', async ({ client, assert }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const target = await acme.member()
     const editor = await acme.role('Editor', ['roles.manage'])
     const viewer = await acme.role('Viewer', [])
 
     await setRole(client, acme, owner, target.id, editor.id)
-    assert.deepEqual(await permissionsOf(client, acme, target), ['roles.manage'])
+    assert.deepEqual(await permissionsOf(client, target, acme.headers), ['roles.manage'])
 
     await setRole(client, acme, owner, target.id, viewer.id)
     await setGrants(client, acme, owner, target.id, ['roles.manage'])
     await setGrants(client, acme, owner, target.id, ['members.manage'])
-    assert.deepEqual(await permissionsOf(client, acme, target), ['members.manage'])
+    assert.deepEqual(await permissionsOf(client, target, acme.headers), ['members.manage'])
 
     await setRole(client, acme, owner, target.id, null)
     await setGrants(client, acme, owner, target.id, [])
-    assert.deepEqual(await permissionsOf(client, acme, target), [])
+    assert.deepEqual(await permissionsOf(client, target, acme.headers), [])
   })
 
   test('answers 404 for someone who is not a member', async ({ client }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const viewer = await acme.role('Viewer', [])
     const stranger = '01900000-0000-7000-8000-000000000000'
 
@@ -101,7 +82,7 @@ test.group('Access | members', group => {
   })
 
   test('refuses to leave no one able to manage members', async ({ client, assert }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
 
     const alone = await setRole(client, acme, owner, owner.id, null)
     alone.assertStatus(409)
@@ -114,11 +95,11 @@ test.group('Access | members', group => {
 
     const lastGrant = await setGrants(client, acme, deputy, deputy.id, [])
     lastGrant.assertStatus(409)
-    assert.deepEqual(await permissionsOf(client, acme, deputy), ['members.manage'])
+    assert.deepEqual(await permissionsOf(client, deputy, acme.headers), ['members.manage'])
   })
 
   test('lists members with their role and permissions', async ({ client, assert }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const editor = await acme.role('Editor', ['roles.manage'])
     const member = await acme.member()
     await acme.assign(member, editor)
@@ -139,7 +120,7 @@ test.group('Access | members', group => {
     client,
     assert,
   }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const target = await acme.member()
     const editor = await acme.role('Editor', [])
 

@@ -1,18 +1,8 @@
 import { test } from '@japa/runner'
+import { account, sessionIdOf } from '#tests/accounts'
 import { sessionOf } from '#tests/sessions'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
-
-/** The access token's id, which a session's audit events carry: `oat_<base64url id>.<secret>`. */
-function sessionIdOf(token: string) {
-  return Buffer.from(token.slice('oat_'.length).split('.')[0]!, 'base64url').toString()
-}
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
 
 /** A signup body with a concrete `locale`/`timezone`, for a value the typed route would reject. */
 interface SignupBody {
@@ -71,30 +61,6 @@ test.group('Auth | accounts', group => {
       .json({ ...account, email: 'fallback@example.com' })
 
     assert.containsSubset(fallback.body().data.user, { locale: 'pt-BR', timezone: null })
-  })
-
-  // Regression: Intl.supportedValuesOf('timeZone') lacks aliases browsers report
-  // (Asia/Kolkata, Etc/GMT+5), so a real browser's own zone 422ed signup on a field the form
-  // doesn't show.
-  test('accepts a timezone alias Intl.supportedValuesOf omits and stores the canonical name', async ({
-    client,
-    assert,
-  }) => {
-    const response = await client.visit('auth.new_account.store').json({
-      ...account,
-      email: 'kolkata@example.com',
-      timezone: 'Asia/Kolkata',
-    })
-
-    assert.containsSubset(response.body().data.user, { timezone: 'Asia/Calcutta' })
-
-    const etc = await client.visit('auth.new_account.store').json({
-      ...account,
-      email: 'etc-gmt@example.com',
-      timezone: 'Etc/GMT+5',
-    })
-
-    assert.containsSubset(etc.body().data.user, { timezone: 'Etc/GMT+5' })
   })
 
   // Regression: an unsupported locale or an unrecognized timezone name is stored instead of

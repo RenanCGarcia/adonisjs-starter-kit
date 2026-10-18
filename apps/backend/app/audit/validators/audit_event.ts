@@ -1,13 +1,10 @@
 import vine from '@vinejs/vine'
+import { pagination } from '#core/validators/pagination'
 
 const date = () => vine.date({ formats: ['iso8601'] })
 
-const page = () => vine.number().withoutDecimals().min(1).optional()
-const perPage = () => vine.number().withoutDecimals().range([1, 100]).optional()
-
 export const listAuditEventsValidator = vine.create({
-  page: page(),
-  perPage: perPage(),
+  ...pagination(),
   type: vine.array(vine.string()).optional(),
   actorId: vine.string().uuid().optional(),
   subjectType: vine.string().optional(),
@@ -16,7 +13,4 @@ export const listAuditEventsValidator = vine.create({
   to: date().optional(),
 })
 
-export const listAccountActivityValidator = vine.create({
-  page: page(),
-  perPage: perPage(),
-})
+export const listAccountActivityValidator = vine.create(pagination())

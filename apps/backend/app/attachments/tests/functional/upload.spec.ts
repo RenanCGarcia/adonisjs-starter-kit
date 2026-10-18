@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { account } from '#tests/accounts'
 import { PNG_BYTES } from '#tests/files'
 import drive from '@adonisjs/drive/services/main'
 import type { ApiClient } from '@japa/api-client'
@@ -8,9 +9,7 @@ import Attachment from '#attachments/models/attachment'
 
 /** Through the API: attachments may not import the users module. */
 async function signUp(client: ApiClient, email: string) {
-  const response = await client
-    .post('/api/v1/auth/signup')
-    .json({ fullName: null, email, password: 'password123', passwordConfirmation: 'password123' })
+  const response = await client.visit('auth.new_account.store').json({ ...account, email })
 
   const { user, token } = response.body().data
 

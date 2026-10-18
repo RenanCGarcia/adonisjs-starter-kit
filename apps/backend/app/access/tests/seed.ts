@@ -1,4 +1,5 @@
 import User from '#users/models/user'
+import type { ApiClient } from '@japa/api-client'
 import Role from '#access/models/role'
 import Tenant from '#tenancy/models/tenant'
 import PlatformAdmin from '#access/models/platform_admin'
@@ -43,4 +44,29 @@ export async function workspace(name = 'Acme') {
       return joined
     },
   }
+}
+
+export type Workspace = Awaited<ReturnType<typeof workspace>>
+
+/** Acme, with a first member who holds its Owner role: `roles.manage` and `members.manage`. */
+export async function ownedWorkspace() {
+  const acme = await workspace()
+  const owner = await acme.member()
+  const ownerRole = await acme.role('Owner', ['roles.manage', 'members.manage'])
+  await acme.assign(owner, ownerRole)
+
+  return { acme, owner, ownerRole }
+}
+
+/** What `GET /api/v1/access/me` answers `user` in the tenant `headers` select. */
+export async function permissionsOf(
+  client: ApiClient,
+  user: User,
+  headers: Record<string, string>,
+) {
+  const response = await client.visit('access.my_permissions.show').headers(headers).loginAs(user)
+
+  response.assertStatus(200)
+
+  return response.body().data.permissions
 }

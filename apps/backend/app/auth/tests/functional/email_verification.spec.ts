@@ -1,34 +1,9 @@
 import { test } from '@japa/runner'
+import { signUp } from '#tests/accounts'
+import { linkToken } from '#tests/mails'
 import mail from '@adonisjs/mail/services/main'
-import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
 import EmailVerificationMail from '#auth/mails/email_verification_mail'
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
-
-/** Pulls the raw token out of the verification link in the most recently queued mail. */
-function lastVerificationToken(fake: ReturnType<typeof mail.fake>) {
-  const queued = fake.mails.queued()
-  const html = queued[queued.length - 1]?.message.toJSON().message.html
-
-  // SAFETY: EmailVerificationMail only ever calls message.htmlView(), which renders to a string.
-  const token = (html as string | undefined)?.match(/href="[^"]*\/verify-email\/([a-f0-9]+)"/)?.[1]
-
-  if (!token) throw new Error('No verification link found in the last queued mail')
-
-  return token
-}
-
-async function signUp(client: ApiClient, email: string) {
-  const response = await client.visit('auth.new_account.store').json({ ...account, email })
-  const { token }: { token: string } = response.body().data
-
-  return token
-}
 
 test.group('Auth | email verification', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
@@ -49,7 +24,7 @@ test.group('Auth | email verification', group => {
 
     const verified = await client
       .visit('auth.email_verifications.update')
-      .json({ token: lastVerificationToken(fake) })
+      .json({ token: linkToken(fake, 'verify-email') })
 
     verified.assertStatus(200)
 
@@ -69,12 +44,12 @@ test.group('Auth | email verification', group => {
   test('resending mails a new link and voids the previous one', async ({ client }) => {
     using fake = mail.fake()
     const session = await signUp(client, 'ada@example.com')
-    const first = lastVerificationToken(fake)
+    const first = linkToken(fake, 'verify-email')
 
     const resent = await client.visit('profile.email_verifications.store').bearerToken(session)
     resent.assertStatus(200)
     fake.mails.assertQueuedCount(EmailVerificationMail, 2)
-    const second = lastVerificationToken(fake)
+    const second = linkToken(fake, 'verify-email')
 
     const stale = await client.visit('auth.email_verifications.update').json({ token: first })
     stale.assertStatus(400)
@@ -88,7 +63,7 @@ test.group('Auth | email verification', group => {
     const session = await signUp(client, 'ada@example.com')
     await client
       .visit('auth.email_verifications.update')
-      .json({ token: lastVerificationToken(fake) })
+      .json({ token: linkToken(fake, 'verify-email') })
 
     const resent = await client.visit('profile.email_verifications.store').bearerToken(session)
 

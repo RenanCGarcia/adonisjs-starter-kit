@@ -28,34 +28,18 @@ apiRoutes(() => {
   router
     .group(() => {
       router.get('tenants', [Tenants, 'index'])
-      router.get('tenants/:id', [Tenants, 'show']).where('id', router.matchers.uuid())
-      router.put('tenants/:id', [Tenants, 'update']).where('id', router.matchers.uuid())
-      router
-        .post('tenants/:id/suspension', [TenantSuspensions, 'store'])
-        .where('id', router.matchers.uuid())
-      router
-        .delete('tenants/:id/suspension', [TenantSuspensions, 'destroy'])
-        .where('id', router.matchers.uuid())
+      router.get('tenants/:id', [Tenants, 'show'])
+      router.put('tenants/:id', [Tenants, 'update'])
+      router.post('tenants/:id/suspension', [TenantSuspensions, 'store'])
+      router.delete('tenants/:id/suspension', [TenantSuspensions, 'destroy'])
 
       router.get('users', [Users, 'index'])
-      router
-        .post('users/:id/suspension', [UserSuspensions, 'store'])
-        .where('id', router.matchers.uuid())
-      router
-        .delete('users/:id/suspension', [UserSuspensions, 'destroy'])
-        .where('id', router.matchers.uuid())
-      router
-        .post('users/:id/impersonation', [Impersonations, 'store'])
-        .where('id', router.matchers.uuid())
-      router
-        .delete('users/:id/two-factor', [TwoFactorResets, 'destroy'])
-        .where('id', router.matchers.uuid())
-      router
-        .post('users/:id/platform-admin', [PlatformAdmins, 'store'])
-        .where('id', router.matchers.uuid())
-      router
-        .delete('users/:id/platform-admin', [PlatformAdmins, 'destroy'])
-        .where('id', router.matchers.uuid())
+      router.post('users/:id/suspension', [UserSuspensions, 'store'])
+      router.delete('users/:id/suspension', [UserSuspensions, 'destroy'])
+      router.post('users/:id/impersonation', [Impersonations, 'store'])
+      router.delete('users/:id/two-factor', [TwoFactorResets, 'destroy'])
+      router.post('users/:id/platform-admin', [PlatformAdmins, 'store'])
+      router.delete('users/:id/platform-admin', [PlatformAdmins, 'destroy'])
     })
     .prefix('admin')
     .as('admin')

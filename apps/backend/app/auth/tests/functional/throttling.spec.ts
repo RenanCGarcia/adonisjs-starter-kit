@@ -1,13 +1,8 @@
 import { test } from '@japa/runner'
+import { account } from '#tests/accounts'
 import { setTimeout } from 'node:timers/promises'
 import { penalizeTwoFactorFailure } from '#start/limiter'
 import testUtils from '@adonisjs/core/services/test_utils'
-
-const account = {
-  fullName: null,
-  password: 'password123',
-  passwordConfirmation: 'password123',
-}
 
 test.group('Auth | throttling', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())

@@ -2,11 +2,9 @@ import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import type User from '#users/models/user'
 import type { ApiClient } from '@japa/api-client'
-import { workspace } from '#access/tests/seed'
+import { workspace, type Workspace } from '#access/tests/seed'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
-
-type Workspace = Awaited<ReturnType<typeof workspace>>
 
 type Seeded = {
   type: string

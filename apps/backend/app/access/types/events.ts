@@ -1,8 +1,7 @@
 export interface MemberInvited {
-  tenantId: string
   email: string
   token: string
-  /** The inviter's locale: the invitee's isn't known until they open the link. */
+  /** The recipient's stored locale when they already have an account, else the inviter's. */
   locale: string
 }
 

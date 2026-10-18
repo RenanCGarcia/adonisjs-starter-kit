@@ -17,7 +17,7 @@ export type UserAccessToken = AccessToken & { impersonatorId: string | null }
 
 /**
  * A session stays alive while it's used and stops working after this many days of idle time.
- * `OpenSession` sets it on creation; the provider's `verify()` below pushes it forward on use.
+ * `openSession` sets it on creation; the provider's `verify()` below pushes it forward on use.
  */
 export const SESSION_IDLE_TIMEOUT_DAYS = 30
 
@@ -87,7 +87,7 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   declare avatar: BelongsTo<typeof Attachment> | null
 
   get initials() {
-    const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')
+    const [first, last] = this.fullName ? this.fullName.split(' ') : [this.email.split('@')[0]]
 
     if (first && last) {
       return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()

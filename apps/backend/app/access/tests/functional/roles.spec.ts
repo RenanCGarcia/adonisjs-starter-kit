@@ -1,23 +1,14 @@
 import { test } from '@japa/runner'
 import Role from '#access/models/role'
-import { workspace } from '#access/tests/seed'
+import { ownedWorkspace } from '#access/tests/seed'
 import AuditEvent from '#core/models/audit_event'
 import testUtils from '@adonisjs/core/services/test_utils'
-
-async function setup() {
-  const acme = await workspace()
-  const owner = await acme.member()
-  const ownerRole = await acme.role('Owner', ['roles.manage', 'members.manage'])
-  await acme.assign(owner, ownerRole)
-
-  return { acme, owner, ownerRole }
-}
 
 test.group('Access | roles', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
 
   test('requires roles.manage', async ({ client }) => {
-    const { acme } = await setup()
+    const { acme } = await ownedWorkspace()
     const plain = await acme.member()
     const editor = await acme.role('Editor', [])
 
@@ -43,7 +34,7 @@ test.group('Access | roles', group => {
   })
 
   test('lets a members manager list roles, but not write them', async ({ client }) => {
-    const { acme } = await setup()
+    const { acme } = await ownedWorkspace()
     const membersManager = await acme.member()
     await acme.grant(membersManager, 'members.manage')
 
@@ -63,7 +54,7 @@ test.group('Access | roles', group => {
   })
 
   test('creates, lists and updates roles', async ({ client, assert }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
 
     const created = await client
       .visit('access.roles.store')
@@ -98,7 +89,7 @@ test.group('Access | roles', group => {
     client,
     assert,
   }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
 
     const store = (name: string, permissions: string[]) =>
       client.post('/api/v1/roles').json({ name, permissions }).headers(acme.headers).loginAs(owner)
@@ -114,7 +105,7 @@ test.group('Access | roles', group => {
   })
 
   test('deletes a role only once nobody holds it', async ({ client, assert }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
     const editor = await acme.role('Editor', [])
     const assignment = await acme.assign(await acme.member(), editor)
 
@@ -132,7 +123,7 @@ test.group('Access | roles', group => {
   })
 
   test('keeps members.manage on the role of the last manager', async ({ client, assert }) => {
-    const { acme, owner, ownerRole } = await setup()
+    const { acme, owner, ownerRole } = await ownedWorkspace()
 
     const update = () =>
       client
@@ -158,7 +149,7 @@ test.group('Access | roles', group => {
     client,
     assert,
   }) => {
-    const { acme, owner } = await setup()
+    const { acme, owner } = await ownedWorkspace()
 
     const created = await client
       .visit('access.roles.store')

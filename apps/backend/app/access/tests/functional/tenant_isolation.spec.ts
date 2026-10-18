@@ -1,15 +1,12 @@
 import { test } from '@japa/runner'
 import Role from '#access/models/role'
 import testUtils from '@adonisjs/core/services/test_utils'
-import { workspace } from '#access/tests/seed'
+import { ownedWorkspace, workspace } from '#access/tests/seed'
 
 async function setup() {
-  const acme = await workspace('Acme')
-  const globex = await workspace('Globex')
-  const owner = await acme.member()
-  await acme.assign(owner, await acme.role('Owner', ['roles.manage', 'members.manage']))
+  const { acme, owner } = await ownedWorkspace()
 
-  return { acme, globex, owner }
+  return { acme, globex: await workspace('Globex'), owner }
 }
 
 test.group('Access | tenant isolation', group => {
