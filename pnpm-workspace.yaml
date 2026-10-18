@@ -47,3 +47,6 @@ allowBuilds:
   better-sqlite3: true
   esbuild: true
   lefthook: true
+
+patchedDependencies:
+  '@adonisjs/queue@0.6.2': patches/@adonisjs__queue@0.6.2.patch
