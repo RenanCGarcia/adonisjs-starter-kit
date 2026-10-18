@@ -8,7 +8,12 @@ import {
 } from '@monorepo/ui/components/table'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { SearchInput } from '@/features/admin/components/search-input'
-import { UserActions, UserStatus, displayName } from '@/features/admin/components/user-actions'
+import {
+  TwoFactorStatus,
+  UserActions,
+  UserStatus,
+  displayName,
+} from '@/features/admin/components/user-actions'
 import { adminUsersQuery } from '@/features/admin/queries'
 import type { AdminSearch } from '@/features/admin/queries'
 import { PageHeader } from '@/features/core/components/page-header'
@@ -48,6 +53,7 @@ export function UsersPage({
               <TableHead>{t('admin.usersPage.user')}</TableHead>
               <TableHead>{t('admin.usersPage.workspaces')}</TableHead>
               <TableHead>{t('admin.usersPage.status')}</TableHead>
+              <TableHead>{t('admin.usersPage.twoFactor')}</TableHead>
               <TableHead>
                 <span className="sr-only">{t('admin.usersPage.actions')}</span>
               </TableHead>
@@ -68,6 +74,9 @@ export function UsersPage({
                 <TableCell>{row.tenantCount}</TableCell>
                 <TableCell>
                   <UserStatus row={row} />
+                </TableCell>
+                <TableCell>
+                  <TwoFactorStatus row={row} />
                 </TableCell>
                 <TableCell>
                   <UserActions row={row} />

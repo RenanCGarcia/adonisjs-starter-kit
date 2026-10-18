@@ -185,3 +185,29 @@ test('an admin impersonates a member and comes back as themself', async ({
   await app.open('/admin/users')
   await expect(browser).toHaveURL(/\/login/)
 })
+
+test('an admin resets a member’s two-factor and the member signs in with the password alone', async ({
+  app,
+  screen,
+  browser,
+}) => {
+  const admin = await signUpAdmin()
+  const member = await signUp('Lou Lost-Device')
+  await enableTwoFactor(member)
+  const row = () => screen.getByRole('row').filter({ hasText: member.email })
+
+  await signInAs(browser, admin)
+  await app.open(`/admin/users?${searchFor(member.email)}`)
+  await expect(row().getByText('On')).toBeVisible()
+  await screen.getByRole('button', `Actions for ${member.fullName}`).tap()
+  await screen.getByRole('menuitem', 'Reset two-factor').tap()
+  await screen.getByRole('alertdialog').getByRole('button', 'Reset two-factor').tap()
+  await expect(row().getByText('Off')).toBeVisible()
+
+  await signOut(browser)
+  await app.open('/login')
+  await screen.getByLabel('Email').fill(member.email)
+  await screen.getByLabel('Password').fill(member.password)
+  await screen.getByRole('button', 'Sign in').tap()
+  await expect(browser).toHaveURL('/onboarding')
+})

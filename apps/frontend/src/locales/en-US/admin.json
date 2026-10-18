@@ -65,6 +65,9 @@
     "user": "User",
     "workspaces": "Workspaces",
     "status": "Status",
+    "twoFactor": "Two-factor",
+    "twoFactorOn": "On",
+    "twoFactorOff": "Off",
     "actions": "Actions"
   },
   "userActions": {
@@ -86,6 +89,10 @@
     "removeAdmin": "Remove platform admin",
     "removeAdminTitle": "Remove {name} as a platform admin?",
     "removeAdminDescription": "They lose the platform admin area and keep their own workspaces.",
-    "removedAdmin": "{name} is no longer a platform admin"
+    "removedAdmin": "{name} is no longer a platform admin",
+    "resetTwoFactor": "Reset two-factor",
+    "resetTwoFactorTitle": "Reset {name}’s two-factor?",
+    "resetTwoFactorDescription": "Their two-factor authentication is turned off and they’re signed out everywhere, so they sign in again with their password alone. They get an email asking them to turn it back on.",
+    "resetTwoFactorToast": "Two-factor reset for {name}"
   }
 }

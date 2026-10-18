@@ -11,6 +11,7 @@ import { useNavigate } from '@tanstack/react-router'
 import {
   BanIcon,
   CircleCheckIcon,
+  KeyRoundIcon,
   MoreHorizontalIcon,
   ShieldMinusIcon,
   ShieldPlusIcon,
@@ -27,7 +28,7 @@ import { session } from '@/features/core/session'
 import { profileQuery } from '@/features/users/profile'
 
 export type AdminUserRow = {
-  user: { id: string; email: string; fullName: string | null }
+  user: { id: string; email: string; fullName: string | null; twoFactorEnabled: boolean }
   disabledAt: string | null
   platformAdmin: boolean
 }
@@ -42,10 +43,18 @@ export function UserStatus({ row }: { row: AdminUserRow }) {
   return <Badge variant="outline">{t('admin.userActions.active')}</Badge>
 }
 
-type Confirming = 'disable' | 'grant' | 'revoke' | null
+export function TwoFactorStatus({ row }: { row: AdminUserRow }) {
+  if (row.user.twoFactorEnabled) {
+    return <Badge variant="outline">{t('admin.usersPage.twoFactorOn')}</Badge>
+  }
+
+  return <span className="text-muted-foreground">{t('admin.usersPage.twoFactorOff')}</span>
+}
+
+type Confirming = 'disable' | 'grant' | 'revoke' | 'resetTwoFactor' | null
 
 type RowAction = {
-  key: 'impersonate' | 'makeAdmin' | 'disable' | 'enable' | 'removeAdmin'
+  key: 'impersonate' | 'makeAdmin' | 'disable' | 'enable' | 'removeAdmin' | 'resetTwoFactor'
   label: string
   icon: LucideIcon
   destructive?: boolean
@@ -111,10 +120,33 @@ export function UserActions({ row }: { row: AdminUserRow }) {
     }),
   )
 
+  const resetTwoFactor = useMutation(
+    queries.admin.twoFactorResets.destroy.mutationOptions({
+      onSuccess: () => {
+        setConfirming(null)
+        toast.success(t('admin.userActions.resetTwoFactorToast', { name }))
+      },
+      onError: error => toast.error(errorMessage(error)),
+    }),
+  )
+
   const params = { params: { id: row.user.id } }
   const isSelf = row.user.id === me.data.id
 
   if (row.platformAdmin && isSelf) return null
+
+  // The API refuses a platform admin's: `node ace admin:reset-two-factor` covers them.
+  const resetAction: RowAction[] = row.user.twoFactorEnabled
+    ? [
+        {
+          key: 'resetTwoFactor',
+          label: t('admin.userActions.resetTwoFactor'),
+          icon: KeyRoundIcon,
+          destructive: true,
+          onSelect: () => setConfirming('resetTwoFactor'),
+        },
+      ]
+    : []
 
   const actions: RowAction[] = row.platformAdmin
     ? [
@@ -135,6 +167,7 @@ export function UserActions({ row }: { row: AdminUserRow }) {
             disabled: enable.isPending,
             onSelect: () => enable.mutate(params),
           },
+          ...resetAction,
         ]
       : [
           {
@@ -150,6 +183,7 @@ export function UserActions({ row }: { row: AdminUserRow }) {
             icon: ShieldPlusIcon,
             onSelect: () => setConfirming('grant'),
           },
+          ...resetAction,
           {
             key: 'disable',
             label: t('admin.userActions.disable'),
@@ -206,6 +240,15 @@ export function UserActions({ row }: { row: AdminUserRow }) {
         confirmLabel={t('admin.userActions.makeAdmin')}
         pending={grant.isPending}
         onConfirm={() => grant.mutate(params)}
+      />
+      <ConfirmDialog
+        open={confirming === 'resetTwoFactor'}
+        onOpenChange={closeDialog}
+        title={t('admin.userActions.resetTwoFactorTitle', { name })}
+        description={t('admin.userActions.resetTwoFactorDescription')}
+        confirmLabel={t('admin.userActions.resetTwoFactor')}
+        pending={resetTwoFactor.isPending}
+        onConfirm={() => resetTwoFactor.mutate(params)}
       />
       <ConfirmDialog
         open={confirming === 'disable'}

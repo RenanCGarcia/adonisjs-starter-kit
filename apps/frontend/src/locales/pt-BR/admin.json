@@ -65,6 +65,9 @@
     "user": "Usuário",
     "workspaces": "Espaços de trabalho",
     "status": "Situação",
+    "twoFactor": "Dois fatores",
+    "twoFactorOn": "Ativa",
+    "twoFactorOff": "Desativada",
     "actions": "Ações"
   },
   "userActions": {
@@ -86,6 +89,10 @@
     "removeAdmin": "Remover administrador da plataforma",
     "removeAdminTitle": "Remover {name} dos administradores da plataforma?",
     "removeAdminDescription": "A pessoa perde a área de administração da plataforma e mantém seus próprios espaços de trabalho.",
-    "removedAdmin": "{name} não é mais administrador da plataforma"
+    "removedAdmin": "{name} não é mais administrador da plataforma",
+    "resetTwoFactor": "Redefinir dois fatores",
+    "resetTwoFactorTitle": "Redefinir a autenticação em dois fatores de {name}?",
+    "resetTwoFactorDescription": "A autenticação em dois fatores da pessoa é desativada e ela é desconectada de todos os lugares, então volta a entrar só com a senha. Ela recebe um e-mail pedindo para ativá-la de novo.",
+    "resetTwoFactorToast": "Dois fatores redefinidos para {name}"
   }
 }
