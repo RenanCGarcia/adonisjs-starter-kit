@@ -62,7 +62,6 @@ export default class InviteMember {
     const existing = await User.findBy('email', email)
 
     await emitter.emit('access:member_invited', {
-      tenantId,
       email,
       token,
       locale: mailLocaleFor(existing, locale),
