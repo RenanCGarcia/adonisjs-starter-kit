@@ -22,7 +22,7 @@ function permissionsOf(user: User, tenantId: string | null) {
   let permissions = byTenant.get(tenantId)
 
   if (!permissions) {
-    permissions = new GetPermissions().handle({ userId: user.id, tenantId })
+    permissions = new GetPermissions().handle({ user, tenantId })
     byTenant.set(tenantId, permissions)
   }
 

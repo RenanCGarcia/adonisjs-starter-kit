@@ -2,6 +2,7 @@ import { test } from '@japa/runner'
 import type User from '#users/models/user'
 import type { ApiClient } from '@japa/api-client'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { DateTime } from 'luxon'
 import { makePlatformAdmin, workspace } from '#access/tests/seed'
 
 async function permissionsOf(client: ApiClient, user: User, headers: Record<string, string>) {
@@ -38,10 +39,25 @@ test.group('Access | effective permissions', group => {
     assert.deepEqual(await permissionsOf(client, user, acme.headers), ['roles.manage'])
   })
 
-  test('gives a platform admin every permission', async ({ client, assert }) => {
+  // Regression: a platform admin without two-factor gets every permission in a tenant where
+  // they hold no role, or one with two-factor confirmed loses them.
+  test('gives a platform admin every permission once two-factor is confirmed', async ({
+    client,
+    assert,
+  }) => {
     const acme = await workspace()
     const admin = await acme.member()
     await makePlatformAdmin(admin)
+
+    const members = () => client.visit('access.members.index').headers(acme.headers).loginAs(admin)
+
+    assert.deepEqual(await permissionsOf(client, admin, acme.headers), [])
+    const denied = await members()
+    denied.assertStatus(403)
+
+    // The `access` module can't import the `auth` test helper; only the confirmation is read.
+    admin.merge({ twoFactorSecret: 'unused', twoFactorConfirmedAt: DateTime.now() })
+    await admin.save()
 
     assert.deepEqual(await permissionsOf(client, admin, acme.headers), [
       'roles.manage',
@@ -49,6 +65,8 @@ test.group('Access | effective permissions', group => {
       'audit.view',
       'platform.admin',
     ])
+    const allowed = await members()
+    allowed.assertStatus(200)
   })
 })
 

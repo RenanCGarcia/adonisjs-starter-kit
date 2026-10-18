@@ -206,7 +206,7 @@ async destroy({ bouncer, request, serialize }: HttpContext) {
 
 A denial answers 403 with `{ errors: [{ message }] }`, the `errors.E_AUTHORIZATION_FAILURE` translation. Inside a tenant, it also records `access.denied` on that tenant's trail, with the permission, the route pattern and the method: the bouncer middleware wraps `authorize()`, since the exception handler answers before any middleware sees the error. `bouncer.allows()` records nothing, so a screen can ask what to show. Outside a tenant nothing is recorded: only platform admins pass there, and no screen would list it.
 
-A check reads the tenant context: inside `middleware.tenant()` it uses that tenant's role and grants. Outside any tenant (no context, or `runAsSystem()`) only a platform admin passes, so a route that forgets `middleware.tenant()` denies everyone else.
+A check reads the tenant context: inside `middleware.tenant()` it uses that tenant's role and grants. Outside any tenant (no context, or `runAsSystem()`) only a platform admin with two-factor passes, so a route that forgets `middleware.tenant()` denies everyone else.
 
 The permissions load on the first check of a request and are memoized on the request's `User` instance, so a route that never checks runs no query. A `User` kept beyond its request keeps what it loaded.
 
@@ -242,7 +242,7 @@ Send every mail with `mail.sendLater(...)`; the lint rejects `mail.send()`. `sta
 
 ### Platform admins
 
-A user with a row in `platform_admins` passes every check in every tenant, and outside any tenant. `GET /api/v1/access/me` lists every permission for them, `platform.admin` included. No role or grant can hold `platform.admin`. Make the first one with `node ace admin:grant <email>`: it is safe to run again, and records an `admin.granted` system event the first time. Platform admins grant and revoke it from then on (see [Admin](#admin)).
+A user with a row in `platform_admins` and [two-factor](#two-factor-authentication) confirmed passes every check in every tenant, and outside any tenant. `GET /api/v1/access/me` lists every permission for them, `platform.admin` included. Without two-factor, `GetPermissions` treats them like anyone else: their own role and grants inside a tenant, nothing outside one. `can` hands it the request's `User`, so the rule reads `two_factor_confirmed_at` with no extra query. No role or grant can hold `platform.admin`. Make the first one with `node ace admin:grant <email>`: it is safe to run again, and records an `admin.granted` system event the first time. Platform admins grant and revoke it from then on (see [Admin](#admin)).
 
 ### Tenant owner
 
@@ -300,7 +300,7 @@ A scheduled job records as the system: no actor, no session. Declare its event a
 
 The `admin` module is the platform admins' area. Every route needs `auth` and runs outside any tenant, so `bouncer.authorize(can, PERMISSIONS.platformAdmin)` passes only a platform admin; `GET /api/v1/admin/me` answers `{ platformAdmin, twoFactorRequired }` to anyone signed in, for the frontend to show the entry, or to send a platform admin to enable two-factor first.
 
-A platform admin must have [two-factor](#two-factor-authentication) confirmed to use the area. Every admin route but `admin/me` sits in one route group whose `twoFactor` middleware (`admin/middleware/require_two_factor_middleware.ts`) answers a platform admin without it 403 `E_TWO_FACTOR_REQUIRED`, impersonation included; anyone else passes through to the route's own authorization failure. A new admin route goes in that group. The check is a middleware rather than part of the `can` ability so that `admin/me` can tell "must enroll" from "not an admin", and so a platform admin's checks inside tenants stay as they are. `node ace admin:grant` and the grant endpoint still grant to an account without two-factor; the requirement applies when the account uses the area. A platform admin who turns two-factor off is refused the same way until they turn it back on.
+A platform admin must have [two-factor](#two-factor-authentication) confirmed to use the area. Every admin route but `admin/me` sits in one route group whose `twoFactor` middleware (`admin/middleware/require_two_factor_middleware.ts`) answers a platform admin without it 403 `E_TWO_FACTOR_REQUIRED`, impersonation included; anyone else passes through to the route's own authorization failure. A new admin route goes in that group. The `can` ability already denies such an admin `platform.admin`, so the routes would refuse them anyway; the middleware and `admin/me` read `platform_admins` directly so they can tell "must enroll" from "not an admin". `node ace admin:grant` and the grant endpoint still grant to an account without two-factor; the requirement applies when the account uses the area. A platform admin who turns two-factor off is refused the same way until they turn it back on.
 
 | Route                                                     | Does                                                                                                                   |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
