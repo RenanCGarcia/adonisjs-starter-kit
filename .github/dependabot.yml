@@ -8,23 +8,12 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
+    # Majors stay one PR per package so each breaking change is reviewed on its own.
     groups:
-      adonisjs:
-        patterns:
-          - "@adonisjs/*"
-      tanstack:
-        patterns:
-          - "@tanstack/*"
-      types:
-        patterns:
-          - "@types/*"
       minor-patch:
         update-types:
           - minor
           - patch
-      major:
-        update-types:
-          - major
 
   - package-ecosystem: github-actions
     directory: "/"
@@ -42,11 +31,11 @@ updates:
     schedule:
       interval: weekly
     commit-message:
-      prefix: "ci(deps)"
+      prefix: "build(deps)"
 
   - package-ecosystem: docker-compose
     directory: "/apps/backend"
     schedule:
       interval: weekly
     commit-message:
-      prefix: "ci(deps)"
+      prefix: "build(deps)"

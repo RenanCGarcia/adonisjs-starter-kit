@@ -10,6 +10,8 @@ concurrency:
 jobs:
   commitlint:
     name: Lint commit messages
+    # Dependabot bodies carry release notes with lines past the conventional body limit.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
