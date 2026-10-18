@@ -60,32 +60,6 @@ test.group('Auth | prune tokens', group => {
     )
   })
 
-  // Regression: a session created without an expiry (by code older than the idle timeout, after
-  // its backfill migration ran) never expires and is never pruned.
-  test('gives a session without an expiry one from its last use, then prunes it if past', async ({
-    client,
-    assert,
-  }) => {
-    const idleToken = await signUp(client, 'ada@example.com')
-    const activeToken = await signUp(client, 'grace@example.com')
-    const fortyDaysAgo = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000)
-
-    await db
-      .from('auth_access_tokens')
-      .where('id', sessionIdOf(idleToken))
-      .update({ expires_at: null, last_used_at: fortyDaysAgo })
-    await db
-      .from('auth_access_tokens')
-      .where('id', sessionIdOf(activeToken))
-      .update({ expires_at: null, last_used_at: new Date() })
-
-    await new PruneExpiredTokens().handle()
-
-    assert.isNull(await db.from('auth_access_tokens').where('id', sessionIdOf(idleToken)).first())
-    const active = await db.from('auth_access_tokens').where('id', sessionIdOf(activeToken)).first()
-    assert.isNotNull(active.expires_at)
-  })
-
   // Regression: a run leaves no trace of what it deleted, or a run that deletes nothing (a
   // second run, a concurrent one) adds an event anyway.
   test('records one system event for a run that deletes, none for one that doesn’t', async ({

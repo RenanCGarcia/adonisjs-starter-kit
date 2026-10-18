@@ -12,8 +12,6 @@ const BATCH_SIZE = 1000
  */
 export default class PruneExpiredTokens {
   async handle() {
-    await backfillMissingExpiry()
-
     const accessTokens = await pruneTable('auth_access_tokens')
     const userTokens = await pruneTable('user_tokens')
 
@@ -27,19 +25,6 @@ export default class PruneExpiredTokens {
 
     return { accessTokens, userTokens }
   }
-}
-
-/**
- * A session created by code older than the idle timeout has no expiry, which reads as "never".
- * The migration that introduced it backfilled the rows it saw; this catches any created after it
- * ran, so an unused one still expires and gets pruned.
- */
-async function backfillMissingExpiry() {
-  await db.rawQuery(`
-    UPDATE auth_access_tokens
-    SET expires_at = COALESCE(last_used_at, created_at) + INTERVAL '30 days'
-    WHERE expires_at IS NULL AND impersonator_id IS NULL
-  `)
 }
 
 async function pruneTable(table: string) {
