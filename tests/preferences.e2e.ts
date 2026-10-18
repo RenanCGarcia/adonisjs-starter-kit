@@ -111,3 +111,26 @@ test('with browser storage blocked, a member whose language differs from the bro
   await screen.getByRole('button', 'Create workspace').tap()
   await expect(screen.getByRole('heading', name, { level: 1 })).toBeVisible()
 })
+
+// Regression: an account missing a stored language or time zone (signed up before those columns
+// existed; the API helper's accounts have no zone) got them written back but skipped the reload,
+// so it rendered in the previous account's language left in this browser.
+test('an account missing its preferences renders in its own language, not the previous account’s', async ({
+  screen,
+  app,
+  browser,
+}) => {
+  await browser.addInitScript(() => {
+    if (sessionStorage.getItem('e2e:seeded-preferences')) return
+
+    localStorage.setItem(
+      'starter:preferences',
+      JSON.stringify({ state: { locale: 'pt-BR', timeZone: null }, version: 1 }),
+    )
+    sessionStorage.setItem('e2e:seeded-preferences', '1')
+  })
+  await signInAs(browser, await signUp('Lee Legacy'))
+  await app.open('/')
+
+  await expect(screen.getByRole('heading', 'Create your workspace')).toBeVisible()
+})
