@@ -10,6 +10,11 @@
     "title": "You don’t have access",
     "description": "Only platform admins can open this area."
   },
+  "twoFactorRequired": {
+    "title": "Turn on two-factor authentication to use the admin area",
+    "description": "Platform admins must confirm a second factor before opening this area.",
+    "link": "Set up two-factor authentication"
+  },
   "impersonationBanner": {
     "signedInAs": "You’re signed in as {name} ({email}).",
     "stop": "Stop impersonating"

@@ -5,8 +5,8 @@ import { adminSearchSchema, adminTenantsQuery } from '@/features/admin/queries'
 export const Route = createFileRoute('/_app/admin/')({
   validateSearch: adminSearchSchema,
   loaderDeps: ({ search }) => search,
-  loader: async ({ context: { queryClient, platformAdmin }, deps }) => {
-    if (platformAdmin) await queryClient.query(adminTenantsQuery(deps))
+  loader: async ({ context: { queryClient, platformAdmin, twoFactorRequired }, deps }) => {
+    if (platformAdmin && !twoFactorRequired) await queryClient.query(adminTenantsQuery(deps))
   },
   component: TenantsRoute,
 })

@@ -1,8 +1,11 @@
 import { FieldGroup } from '@monorepo/ui/components/field'
 import { useMutation } from '@tanstack/react-query'
 import { getRouteApi, Link } from '@tanstack/react-router'
+import { TuyauError } from '@tuyau/core/client'
+import { useState } from 'react'
 import { AuthCard } from '@/features/auth/components/auth-card'
 import { queries } from '@/features/core/api'
+import { apiErrorCode, errorMessage, formErrors } from '@/features/core/errors'
 import { useAppForm, withFormErrors } from '@/features/core/form'
 import { t } from '@/features/core/i18n'
 import { session } from '@/features/core/session'
@@ -13,6 +16,7 @@ const route = getRouteApi('/login')
 export function LoginPage() {
   const { redirect: redirectTo } = route.useSearch()
   const createToken = useMutation(queries.auth.accessTokens.store.mutationOptions())
+  const [challenge, setChallenge] = useState<string | null>(null)
 
   const form = useAppForm({
     defaultValues: { email: '', password: '' },
@@ -20,8 +24,22 @@ export function LoginPage() {
       const created = await withFormErrors(formApi, createToken.mutateAsync({ body: value }))
 
       if (created && !created.data.twoFactorRequired) session.signIn(created.data.token)
+
+      if (created && created.data.twoFactorRequired) setChallenge(created.data.challenge)
     },
   })
+
+  if (challenge) {
+    return (
+      <TwoFactorStep
+        challenge={challenge}
+        onChallengeExpired={message => {
+          setChallenge(null)
+          form.setErrorMap({ onSubmit: { fields: {}, form: message } })
+        }}
+      />
+    )
+  }
 
   return (
     <AuthCard
@@ -71,6 +89,91 @@ export function LoginPage() {
               {t('auth.loginPage.forgotPassword')}
             </Link>
             <form.SubmitButton size="lg">{t('auth.loginPage.submit')}</form.SubmitButton>
+          </FieldGroup>
+        </form.Form>
+      </form.AppForm>
+    </AuthCard>
+  )
+}
+
+/**
+ * The second step of a login that answered a challenge: a code from the app, or a recovery code.
+ * A challenge the server no longer accepts sends the caller back to email and password.
+ */
+function TwoFactorStep({
+  challenge,
+  onChallengeExpired,
+}: {
+  challenge: string
+  onChallengeExpired: (message: string) => void
+}) {
+  const verify = useMutation(queries.auth.twoFactorLogins.store.mutationOptions())
+  const [useRecoveryCode, setUseRecoveryCode] = useState(false)
+
+  const form = useAppForm({
+    defaultValues: { code: '', recoveryCode: '' },
+    onSubmit: async ({ value, formApi }) => {
+      const body = useRecoveryCode
+        ? { challenge, recoveryCode: value.recoveryCode }
+        : { challenge, code: value.code }
+
+      try {
+        const { data } = await verify.mutateAsync({ body })
+
+        session.signIn(data.token)
+      } catch (error) {
+        if (!(error instanceof TuyauError)) throw error
+
+        if (apiErrorCode(error) === 'E_INVALID_TWO_FACTOR_CHALLENGE') {
+          onChallengeExpired(errorMessage(error))
+
+          return
+        }
+
+        formApi.setErrorMap({ onSubmit: formErrors(error) })
+      }
+    },
+  })
+
+  return (
+    <AuthCard
+      title={t('auth.loginPage.twoFactorTitle')}
+      description={t('auth.loginPage.twoFactorDescription')}
+    >
+      <form.AppForm>
+        <form.Form>
+          <FieldGroup>
+            <form.FormAlert />
+            {useRecoveryCode ? (
+              <form.AppField name="recoveryCode">
+                {field => (
+                  <field.TextField
+                    label={t('auth.loginPage.recoveryCode')}
+                    autoComplete="off"
+                    required
+                  />
+                )}
+              </form.AppField>
+            ) : (
+              <form.AppField name="code">
+                {field => (
+                  <field.TextField
+                    label={t('auth.loginPage.code')}
+                    autoComplete="one-time-code"
+                    inputMode="numeric"
+                    required
+                  />
+                )}
+              </form.AppField>
+            )}
+            <button
+              type="button"
+              onClick={() => setUseRecoveryCode(value => !value)}
+              className="self-end text-xs text-muted-foreground underline underline-offset-4"
+            >
+              {useRecoveryCode ? t('auth.loginPage.useCode') : t('auth.loginPage.useRecoveryCode')}
+            </button>
+            <form.SubmitButton size="lg">{t('auth.loginPage.twoFactorSubmit')}</form.SubmitButton>
           </FieldGroup>
         </form.Form>
       </form.AppForm>

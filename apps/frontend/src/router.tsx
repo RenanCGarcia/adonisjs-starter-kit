@@ -1,5 +1,6 @@
 import { createRouter } from '@tanstack/react-router'
 import { TuyauError } from '@tuyau/core/client'
+import { adminMeQuery } from '@/features/admin/queries'
 import { apiErrorCode } from '@/features/core/errors'
 import { queryClient } from '@/features/core/query-client'
 import { sessionStore } from '@/features/core/session'
@@ -36,15 +37,29 @@ function leaveSuspendedWorkspace(error: Error | null) {
     .then(() => router.invalidate())
 }
 
+// Two-factor turned off in another tab answers the admin area's next request 403. Rerunning
+// /admin/me, the way a suspended workspace reruns the tenant list, sends the admin to the prompt.
+function recheckAdminTwoFactor(error: Error | null) {
+  if (!(error instanceof TuyauError) || error.status !== 403) return
+
+  if (apiErrorCode(error) !== 'E_TWO_FACTOR_REQUIRED') return
+
+  void queryClient
+    .invalidateQueries({ queryKey: adminMeQuery().queryKey, refetchType: 'none' })
+    .then(() => router.invalidate())
+}
+
 queryClient.getQueryCache().subscribe(event => {
   if (event.type === 'updated' && event.action.type === 'error') {
     leaveSuspendedWorkspace(event.action.error)
+    recheckAdminTwoFactor(event.action.error)
   }
 })
 
 queryClient.getMutationCache().subscribe(event => {
   if (event.type === 'updated' && event.action.type === 'error') {
     leaveSuspendedWorkspace(event.action.error)
+    recheckAdminTwoFactor(event.action.error)
   }
 })
 

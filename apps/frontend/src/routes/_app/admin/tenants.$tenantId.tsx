@@ -3,8 +3,9 @@ import { TenantPage } from '@/features/admin/components/tenant-page'
 import { adminTenantQuery } from '@/features/admin/queries'
 
 export const Route = createFileRoute('/_app/admin/tenants/$tenantId')({
-  loader: async ({ context: { queryClient, platformAdmin }, params }) => {
-    if (platformAdmin) await queryClient.query(adminTenantQuery(params.tenantId))
+  loader: async ({ context: { queryClient, platformAdmin, twoFactorRequired }, params }) => {
+    if (platformAdmin && !twoFactorRequired)
+      await queryClient.query(adminTenantQuery(params.tenantId))
   },
   component: TenantRoute,
 })

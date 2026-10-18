@@ -10,6 +10,11 @@
     "title": "Você não tem acesso",
     "description": "Só administradores da plataforma podem abrir esta área."
   },
+  "twoFactorRequired": {
+    "title": "Ative a autenticação em duas etapas para usar a área de administração",
+    "description": "Administradores da plataforma precisam confirmar um segundo fator antes de abrir esta área.",
+    "link": "Configurar a autenticação em duas etapas"
+  },
   "impersonationBanner": {
     "signedInAs": "Você está conectado como {name} ({email}).",
     "stop": "Parar de acessar como"

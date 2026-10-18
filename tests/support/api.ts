@@ -99,9 +99,14 @@ export async function grantPlatformAdmin(account: Account) {
   await promisify(execFile)('node', ['ace', 'admin:grant', account.email], { cwd: BACKEND_DIR })
 }
 
-/** A code `secret` accepts now, as the account's authenticator app would show it. */
-export function totpCode(secret: string) {
-  return new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(secret) }).generate()
+/**
+ * A code `secret` accepts, as the account's authenticator app would show it `stepsAhead` 30-second
+ * steps from now. A step ahead never replays the step a previous code used.
+ */
+export function totpCode(secret: string, stepsAhead = 0) {
+  const totp = new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(secret) })
+
+  return totp.generate({ timestamp: Date.now() + stepsAhead * totp.period * 1000 })
 }
 
 /** Turns on two-factor for `account`, keeping its token, and returns the secret for later codes. */
