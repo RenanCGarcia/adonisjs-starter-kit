@@ -12,8 +12,10 @@ const redisConfig = defineConfig({
       password: env.get('REDIS_PASSWORD')?.release(),
       db: 0,
       keyPrefix: '',
+      // Never give up: ioredis stops for good on null, which would leave the queue worker and
+      // the limiter store broken until a restart that the liveness probe never triggers.
       retryStrategy(times) {
-        return times > 10 ? null : times * 50
+        return Math.min(times * 50, 2000)
       },
     },
   },
