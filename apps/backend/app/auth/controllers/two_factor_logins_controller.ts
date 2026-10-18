@@ -2,7 +2,7 @@ import User from '#users/models/user'
 import db from '@adonisjs/lucid/services/db'
 import { audit } from '#core/audit/main'
 import type {} from '#auth/types/audit'
-import OpenSession from '#auth/actions/open_session'
+import { openSession } from '#auth/services/sessions'
 import type { HttpContext } from '@adonisjs/core/http'
 import { penalizeTwoFactorFailure } from '#start/limiter'
 import UserTransformer from '#users/transformers/user_transformer'
@@ -50,7 +50,7 @@ export default class TwoFactorLoginsController {
       throw error
     }
 
-    const token = await new OpenSession().handle({
+    const token = await openSession({
       user,
       userAgent: request.header('user-agent'),
       ipAddress: request.ip(),

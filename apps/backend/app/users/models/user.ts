@@ -17,7 +17,7 @@ export type UserAccessToken = AccessToken & { impersonatorId: string | null }
 
 /**
  * A session stays alive while it's used and stops working after this many days of idle time.
- * `OpenSession` sets it on creation; the provider's `verify()` below pushes it forward on use.
+ * `openSession` sets it on creation; the provider's `verify()` below pushes it forward on use.
  */
 export const SESSION_IDLE_TIMEOUT_DAYS = 30
 

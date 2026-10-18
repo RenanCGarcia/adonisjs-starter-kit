@@ -1,7 +1,3 @@
-import User from '#users/models/user'
-import db from '@adonisjs/lucid/services/db'
-import { audit } from '#core/audit/main'
-import type {} from '#auth/types/audit'
 import ListSessions from '#auth/queries/list_sessions'
 import type { HttpContext } from '@adonisjs/core/http'
 import RevokeSessions from '#auth/actions/revoke_sessions'
@@ -27,23 +23,9 @@ export default class SessionsController {
 
     const { params } = await request.validateUsing(sessionParamsValidator)
 
-    const row = await db
-      .from('auth_access_tokens')
-      .where('id', params.id)
-      .where('tokenable_id', user.id)
-      .whereNull('impersonator_id')
-      .first()
+    const revoked = await new RevokeSessions().handle({ user, sessionId: params.id })
 
-    if (!row) throw new SessionNotFoundException()
-
-    await User.accessTokens.delete(user, params.id)
-
-    await audit.note('auth.session_revoked', {
-      tenantId: null,
-      subject: { type: 'user', id: user.id },
-      sessionId: params.id,
-      data: { email: user.email },
-    })
+    if (!revoked) throw new SessionNotFoundException()
 
     return serialize({ message: i18n.t('auth.session_revoked') })
   }
