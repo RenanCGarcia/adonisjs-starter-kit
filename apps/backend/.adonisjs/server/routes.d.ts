@@ -27,6 +27,8 @@ export type ScannedRoutes = {
     'admin.platform_admins.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
+    'openapi.ui': { paramsTuple?: []; params?: {} }
+    'openapi.document': { paramsTuple?: []; params?: {} }
     'auth.new_account.store': { paramsTuple?: []; params?: {} }
     'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
     'auth.two_factor_logins.store': { paramsTuple?: []; params?: {} }
@@ -68,6 +70,8 @@ export type ScannedRoutes = {
     'admin.users.index': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
+    'openapi.ui': { paramsTuple?: []; params?: {} }
+    'openapi.document': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
     'profile.two_factor.show': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }
@@ -87,6 +91,8 @@ export type ScannedRoutes = {
     'admin.users.index': { paramsTuple?: []; params?: {} }
     'health_checks.live': { paramsTuple?: []; params?: {} }
     'health_checks.ready': { paramsTuple?: []; params?: {} }
+    'openapi.ui': { paramsTuple?: []; params?: {} }
+    'openapi.document': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
     'profile.two_factor.show': { paramsTuple?: []; params?: {} }
     'access.my_permissions.show': { paramsTuple?: []; params?: {} }

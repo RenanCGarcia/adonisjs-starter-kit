@@ -4,11 +4,32 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { userParamsValidator } from '#admin/validators/user'
 import SetUserDisabled from '#admin/actions/set_user_disabled'
 
+/**
+ * @tags Admin
+ */
 export default class UserSuspensionsController {
+  /**
+   * Disable a user
+   *
+   * Requires `platform.admin`. Signs the user out everywhere and blocks their sign-in. Disabling
+   * a user who is already disabled keeps their first disable date. Records an audit event.
+   *
+   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {404} User not found
+   * @throws {409} The user is a platform admin
+   */
   async store(ctx: HttpContext) {
     return this.set(ctx, true)
   }
 
+  /**
+   * Enable a disabled user
+   *
+   * Requires `platform.admin`. Records an audit event.
+   *
+   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {404} User not found
+   */
   async destroy(ctx: HttpContext) {
     return this.set(ctx, false)
   }

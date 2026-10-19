@@ -2,8 +2,19 @@ import { can } from '#access/abilities'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ALL_PERMISSIONS } from '#access/permissions'
 
+/**
+ * @tags Permissions
+ */
 export default class MyPermissionsController {
-  /** What the signed-in user passes, for the frontend to gate its UI. */
+  /**
+   * List the signed-in user's permissions
+   *
+   * Returns the permission keys the signed-in user holds in the tenant, for the frontend to
+   * show or hide its UI. The server still checks each permission on every request.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, or the tenant is suspended
+   */
   async show({ bouncer, serialize }: HttpContext) {
     const allowed = await Promise.all(
       ALL_PERMISSIONS.map(permission => bouncer.allows(can, permission)),

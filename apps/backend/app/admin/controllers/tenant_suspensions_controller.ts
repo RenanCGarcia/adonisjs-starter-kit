@@ -5,11 +5,32 @@ import { tenantParamsValidator } from '#admin/validators/tenant'
 import SetTenantSuspension from '#admin/actions/set_tenant_suspension'
 import TenantTransformer from '#tenancy/transformers/tenant_transformer'
 
+/**
+ * @tags Admin
+ */
 export default class TenantSuspensionsController {
+  /**
+   * Suspend a tenant
+   *
+   * Requires `platform.admin`. Members of a suspended tenant get `403` on every tenant route.
+   * Suspending a tenant that is already suspended keeps its first suspension date. Records an
+   * audit event.
+   *
+   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {404} Tenant not found
+   */
   async store(ctx: HttpContext) {
     return this.set(ctx, true)
   }
 
+  /**
+   * Reactivate a suspended tenant
+   *
+   * Requires `platform.admin`. Records an audit event.
+   *
+   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {404} Tenant not found
+   */
   async destroy(ctx: HttpContext) {
     return this.set(ctx, false)
   }

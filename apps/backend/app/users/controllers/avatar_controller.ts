@@ -3,7 +3,16 @@ import UpdateAvatar from '#users/actions/update_avatar'
 import { updateAvatarValidator } from '#users/validators/user'
 import UserTransformer from '#users/transformers/user_transformer'
 
+/**
+ * @tags Account
+ */
 export default class AvatarController {
+  /**
+   * Set or remove the avatar
+   *
+   * `attachmentId` is an image the user uploaded through `POST /attachments`: jpg, jpeg, png or
+   * webp, at most 2 MB. Send `null` to remove the avatar. Returns the updated user.
+   */
   async update({ request, auth, serialize }: HttpContext) {
     const { attachmentId } = await request.validateUsing(updateAvatarValidator)
 

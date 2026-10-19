@@ -10,6 +10,7 @@ export default defineConfig({
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/mail/commands'),
     () => import('@adonisjs/queue/commands'),
+    () => import('@enzopita/adonisjs-openapi/commands'),
   ],
 
   providers: [
@@ -112,7 +113,8 @@ export default defineConfig({
           importAlias: '#app',
         },
       }),
-      generateRegistry(),
+      // The docs routes exist only outside production, so the typed client must not offer them.
+      generateRegistry({ routes: { except: [/^openapi\./] } }),
     ],
   },
 })

@@ -4,7 +4,16 @@ import CreateTenant from '#tenancy/actions/create_tenant'
 import { createTenantValidator } from '#tenancy/validators/tenant'
 import TenantTransformer from '#tenancy/transformers/tenant_transformer'
 
+/**
+ * @tags Tenants
+ */
 export default class TenantsController {
+  /**
+   * List the signed-in user's tenants
+   *
+   * Returns the tenants the signed-in user is a member of, suspended ones included, sorted
+   * by name. Send a tenant's id in the X-Tenant-Id header to act inside it.
+   */
   async index({ auth, serialize }: HttpContext) {
     const userId = auth.getUserOrFail().id
 
@@ -15,6 +24,12 @@ export default class TenantsController {
     return serialize(TenantTransformer.transform(tenants))
   }
 
+  /**
+   * Create a tenant
+   *
+   * The signed-in user becomes its first member and holds an Owner role with every
+   * permission, named in the request's language.
+   */
   async store({ request, auth, i18n, serialize }: HttpContext) {
     const { name } = await request.validateUsing(createTenantValidator)
 

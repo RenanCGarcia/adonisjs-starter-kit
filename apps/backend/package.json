@@ -37,7 +37,7 @@
   "dependencies": {
     "@adonisjs/auth": "^10.1.0",
     "@adonisjs/bouncer": "catalog:",
-    "@adonisjs/core": "^7.5.2",
+    "@adonisjs/core": "^7.6.0",
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/drive": "catalog:",
     "@adonisjs/i18n": "catalog:",
@@ -50,6 +50,7 @@
     "@adonisjs/shield": "^9.0.0",
     "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
+    "@enzopita/adonisjs-openapi": "catalog:",
     "@japa/api-client": "^3.2.1",
     "@tuyau/core": "catalog:",
     "@vinejs/vine": "^4.4.0",

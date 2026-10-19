@@ -6,7 +6,17 @@ import SessionTransformer from '#auth/transformers/session_transformer'
 import { sessionParamsValidator } from '#auth/validators/session'
 import SessionNotFoundException from '#auth/exceptions/session_not_found_exception'
 
+/**
+ * @tags Sessions
+ */
 export default class SessionsController {
+  /**
+   * List the active sessions
+   *
+   * The signed-in user's sessions, most recently used first, with the device each was opened on.
+   * `current` marks the session making the request. Sessions an admin opened to act as the user are
+   * not listed.
+   */
   async index({ auth, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
     const currentTokenId = String(user.currentAccessToken!.identifier)
@@ -16,6 +26,14 @@ export default class SessionsController {
     return serialize(SessionTransformer.transform(rows))
   }
 
+  /**
+   * Revoke a session
+   *
+   * Signs that session out. It can be the current one.
+   *
+   * @throws {403} The session is an admin acting as the user
+   * @throws {404} No active session of the user has this id
+   */
   async destroy({ auth, i18n, request, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
 
@@ -30,6 +48,14 @@ export default class SessionsController {
     return serialize({ message: i18n.t('auth.session_revoked') })
   }
 
+  /**
+   * Revoke every other session
+   *
+   * Signs the user out everywhere except the session making the request. `revoked` is how many
+   * sessions were signed out.
+   *
+   * @throws {403} The session is an admin acting as the user
+   */
   async destroyAll({ auth, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
 

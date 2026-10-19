@@ -4,7 +4,19 @@ import RevokeSessions from '#auth/actions/revoke_sessions'
 import RequestPasswordReset from '#auth/actions/request_password_reset'
 import { forgotPasswordValidator, resetPasswordValidator } from '#auth/validators/auth'
 
+/**
+ * @tags Auth
+ */
 export default class PasswordResetsController {
+  /**
+   * Request a password reset link
+   *
+   * Mails a reset link when the email belongs to an enabled account. The answer is the same either
+   * way, so it does not tell whether an account exists. The link expires after 1 hour, and a new
+   * request replaces it.
+   *
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async store({ i18n, request, serialize }: HttpContext) {
     const { email } = await request.validateUsing(forgotPasswordValidator)
 
@@ -13,6 +25,16 @@ export default class PasswordResetsController {
     return serialize({ message: i18n.t('auth.password_reset_requested') })
   }
 
+  /**
+   * Reset the password with an emailed token
+   *
+   * Takes the token from the emailed reset link. Each token works once. Signs the user out of every
+   * session, so they sign in again with the new password. Also marks the email as verified.
+   *
+   * @throws {400} The token is invalid, expired, or already used
+   * @throws {403} The account is disabled
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async update({ i18n, request, serialize }: HttpContext) {
     const { token, password } = await request.validateUsing(resetPasswordValidator)
 
