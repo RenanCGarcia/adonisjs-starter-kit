@@ -217,8 +217,8 @@ catalogs:
       specifier: ^3.1152.0
       version: 3.1152.0
     '@enzopita/adonisjs-openapi':
-      specifier: ^0.2.0
-      version: 0.2.0
+      specifier: ^0.2.1
+      version: 0.2.1
     '@openrouter/ai-sdk-provider':
       specifier: ^3.1.0
       version: 3.1.0
@@ -415,7 +415,7 @@ importers:
         version: 3.1152.0
       '@enzopita/adonisjs-openapi':
         specifier: 'catalog:'
-        version: 0.2.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))
+        version: 0.2.1(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))
       '@japa/api-client':
         specifier: ^3.2.1
         version: 3.2.1(@japa/assert@4.2.0(@japa/runner@5.4.0))(@japa/runner@5.4.0)(supports-color@10.2.2)
@@ -1508,8 +1508,8 @@ packages:
     peerDependencies:
       e2e: '>=0.18.0 <1'
 
-  '@enzopita/adonisjs-openapi@0.2.0':
-    resolution: {integrity: sha512-alOPv/YT4bgPB6aQk+vqKk2Dq+WRcvOYi426VjW68TK65C/4FXjLyLNqNgLCod6ww5qvhT8vscjsjNGbKY/S6A==}
+  '@enzopita/adonisjs-openapi@0.2.1':
+    resolution: {integrity: sha512-DAe/XVa4tcSI5WexqTebLkUf8q+G6i9BpH5hzFSVDEtPSzgLQKddYQ2e89oZhs1HkIEv3OSwVcJiSn3Dng0hkQ==}
     engines: {node: '>=24.0.0'}
     peerDependencies:
       '@adonisjs/assembler': ^8.5.0
@@ -7841,7 +7841,7 @@ snapshots:
       e2e: 0.21.1(@ai-sdk/anthropic@4.0.80(zod@4.6.7))(ai@7.0.142(zod@4.6.7))
       playwright-core: 1.64.0
 
-  '@enzopita/adonisjs-openapi@0.2.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))':
+  '@enzopita/adonisjs-openapi@0.2.1(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@adonisjs/core@7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1))':
     dependencies:
       '@adonisjs/assembler': 8.5.2(typescript@7.0.2)
       '@adonisjs/core': 7.6.0(@adonisjs/assembler@8.5.2(typescript@7.0.2))(@vinejs/vine@4.4.0)(edge.js@6.5.1)(pino-pretty@13.2.0)(supports-color@10.2.2)(youch@4.1.1)

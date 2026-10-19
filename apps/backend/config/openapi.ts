@@ -49,8 +49,15 @@ export default defineConfig({
   ],
   securitySchemes: {
     accessToken: { type: 'http', scheme: 'bearer' },
+    tenant: {
+      type: 'apiKey',
+      in: 'header',
+      name: 'X-Tenant-Id',
+      description: 'The id of a tenant the signed-in user is a member of.',
+    },
   },
   middlewareSecurity: {
     auth: 'accessToken',
+    tenant: 'tenant',
   },
 })
