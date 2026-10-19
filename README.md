@@ -78,6 +78,7 @@ flowchart LR
 | 📎  | Attachments on S3 with signed URLs and orphan cleanup                     |
 | ✉️  | Mail (Mailpit in dev) and Redis queues                                    |
 | ❤️  | Health checks (`/health/live`, `/health/ready`)                           |
+| 📖  | OpenAPI document generated from the routes, with a docs page in dev       |
 | 🧬  | UUIDv7 primary keys, env validated at boot                                |
 | 🧪  | Unit, functional and e2e tests                                            |
 | 🧹  | oxlint + oxfmt, module boundaries enforced, Conventional Commits          |
@@ -124,6 +125,7 @@ pnpm dev
 | -------- | ------------------------------------ |
 | Frontend | http://localhost:5173                |
 | API      | http://localhost:3333/api/v1         |
+| API docs | http://localhost:3333/docs           |
 | Mailpit  | http://localhost:8025                |
 | RustFS   | http://localhost:9001/rustfs/console |
 

@@ -77,6 +77,8 @@ The frontend calls the API through Tuyau, whose types are inferred from the cont
 
 Expected failures return through the response helpers (`return response.notFound({ message, key })`): the frontend can narrow them with `error.isStatus(404)`.
 
+The same rules feed the OpenAPI document (`@enzopita/adonisjs-openapi`, configured in `config/openapi.ts`). Outside production, `GET /docs` renders it with Scalar, generated live on each request; `node ace openapi:generate` writes it to `openapi.json`. The first paragraph of the action's doc comment is the operation summary, and a `@throws {404} Reason` tag documents a status the return type can't show, such as the 404 of `findOrFail()`.
+
 ## Attachments
 
 A file reaches a record in two requests: the frontend uploads it to `POST /api/v1/attachments`, then sends the returned `id` with the record's write. `users.avatar_attachment_id` is the reference example. A module that stores files:
