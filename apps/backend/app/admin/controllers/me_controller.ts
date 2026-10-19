@@ -6,7 +6,7 @@ import PlatformAdmin from '#access/models/platform_admin'
  */
 export default class MeController {
   /**
-   * Show the caller's admin area access
+   * Show the signed-in user's admin access
    *
    * Any signed-in user may call it. `platformAdmin` tells the frontend whether to show the admin
    * area. `twoFactorRequired` is true for a platform admin who has not confirmed two-factor

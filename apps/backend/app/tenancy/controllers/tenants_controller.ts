@@ -9,7 +9,7 @@ import TenantTransformer from '#tenancy/transformers/tenant_transformer'
  */
 export default class TenantsController {
   /**
-   * List my tenants
+   * List the signed-in user's tenants
    *
    * Returns the tenants the signed-in user is a member of, suspended ones included, sorted
    * by name. Send a tenant's id in the X-Tenant-Id header to act inside it.

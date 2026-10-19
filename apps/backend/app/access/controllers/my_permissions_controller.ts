@@ -7,7 +7,7 @@ import { ALL_PERMISSIONS } from '#access/permissions'
  */
 export default class MyPermissionsController {
   /**
-   * List my permissions in the tenant
+   * List the signed-in user's permissions
    *
    * Returns the permission keys the signed-in user holds in the tenant, for the frontend to
    * show or hide its UI. The server still checks each permission on every request.

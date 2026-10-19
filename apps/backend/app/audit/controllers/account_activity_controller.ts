@@ -8,11 +8,11 @@ import AuditEventTransformer from '#audit/transformers/audit_event_transformer'
  */
 export default class AccountActivityController {
   /**
-   * List the caller's account activity
+   * List the signed-in user's account activity
    *
-   * Events on the caller's account outside any tenant, newest first: the ones they performed,
-   * such as sign-ins and profile changes, and the ones performed on their account, such as a
-   * platform admin disabling it.
+   * Events on the signed-in user's account outside any tenant, newest first: the ones they
+   * performed, such as sign-ins and profile changes, and the ones performed on their account, such
+   * as a platform admin disabling it.
    */
   async index({ auth, request, serialize }: HttpContext) {
     const pages = await request.validateUsing(listAccountActivityValidator)
