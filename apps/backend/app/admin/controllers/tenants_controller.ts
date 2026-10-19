@@ -13,7 +13,18 @@ import {
   tenantParamsValidator,
 } from '#admin/validators/tenant'
 
+/**
+ * @tags Admin
+ */
 export default class TenantsController {
+  /**
+   * List tenants
+   *
+   * Requires `platform.admin`. Lists every tenant on the platform, ordered by name, with its
+   * member count. `search` matches part of the name, ignoring case.
+   *
+   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   */
   async index({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)
     const filters = await request.validateUsing(listTenantsValidator)
@@ -23,6 +34,15 @@ export default class TenantsController {
     return serialize(AdminTenantTransformer.paginate(rows, meta))
   }
 
+  /**
+   * Show a tenant and its members
+   *
+   * Requires `platform.admin`. Each member comes with their role name in the tenant (null when
+   * they hold none) and whether they are a platform admin.
+   *
+   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {404} Tenant not found
+   */
   async show({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)
     const { params } = await request.validateUsing(tenantParamsValidator)
@@ -36,6 +56,14 @@ export default class TenantsController {
     })
   }
 
+  /**
+   * Rename a tenant
+   *
+   * Requires `platform.admin`. Records an audit event on the tenant's trail.
+   *
+   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {404} Tenant not found
+   */
   async update({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)
     const { params, name } = await request.validateUsing(renameTenantValidator)

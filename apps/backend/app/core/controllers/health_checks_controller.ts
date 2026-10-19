@@ -1,11 +1,28 @@
 import { healthChecks } from '#start/health'
 import type { HttpContext } from '@adonisjs/core/http'
 
+/**
+ * @tags Health
+ */
 export default class HealthChecksController {
+  /**
+   * Check that the API is running
+   *
+   * Answers `200` as long as the process can serve requests. Checks no dependencies.
+   */
   async live({ serialize }: HttpContext) {
     return serialize({ status: 'ok' as const })
   }
 
+  /**
+   * Check that the API and its services are ready
+   *
+   * Send the monitoring secret in the `X-Monitoring-Secret` header. Runs every health check
+   * (database, Redis, storage, disk and memory) and returns the report: `200` when all pass,
+   * `503` with the same report when any fails.
+   *
+   * @throws {401} The X-Monitoring-Secret header is missing or wrong
+   */
   async ready({ response, serialize }: HttpContext) {
     const report = await healthChecks.run()
 
