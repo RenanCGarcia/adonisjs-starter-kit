@@ -7,6 +7,21 @@ import type { HttpContext } from '@adonisjs/core/http'
 import UserTransformer from '#users/transformers/user_transformer'
 
 export default class AccessTokensController {
+  /**
+   * Sign in with email and password
+   *
+   * Returns the user and an access token to send as a bearer token. When the account has two-factor
+   * authentication on, it returns `twoFactorRequired: true` and a `challenge` instead: send it with
+   * a code to `POST /auth/login/two-factor` within 5 minutes.
+   *
+   * Wrong passwords for one email from one IP are limited to 5 per 15 minutes, then blocked for 15
+   * minutes.
+   *
+   * @tags Auth
+   * @throws {400} The email or password is wrong
+   * @throws {403} The account is disabled, or must reset its password through the emailed link
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async store({ request, serialize }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
 
@@ -26,6 +41,13 @@ export default class AccessTokensController {
     })
   }
 
+  /**
+   * Sign out of the current session
+   *
+   * Revokes the access token that made the request.
+   *
+   * @tags Sessions
+   */
   async destroy({ auth, i18n, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
 
