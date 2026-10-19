@@ -4,7 +4,22 @@ import AcceptInvitation from '#access/actions/accept_invitation'
 import { acceptInvitationValidator } from '#access/validators/invitation'
 import TenantTransformer from '#tenancy/transformers/tenant_transformer'
 
+/**
+ * @tags Invitations
+ */
 export default class InvitationAcceptController {
+  /**
+   * Accept an invitation
+   *
+   * Joins the tenant named by the invitation with its role, and marks the user's email as
+   * verified. The invitation must have been sent to the signed-in user's email. Accepting
+   * an invitation to a tenant the user already belongs to only uses it up. Returns the
+   * tenant; send its id in the X-Tenant-Id header of later requests.
+   *
+   * @throws {403} The invitation was sent to a different email
+   * @throws {404} The invitation is unknown, already used, or expired
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async store({ request, auth, serialize }: HttpContext) {
     const { token } = await request.validateUsing(acceptInvitationValidator)
     const user = auth.getUserOrFail()

@@ -7,7 +7,19 @@ import RevokeInvitation from '#access/actions/revoke_invitation'
 import InvitationTransformer from '#access/transformers/invitation_transformer'
 import { inviteMemberValidator, invitationParamsValidator } from '#access/validators/invitation'
 
+/**
+ * @tags Invitations
+ */
 export default class InvitationsController {
+  /**
+   * List invitations
+   *
+   * Requires `members.manage`. Returns the invitations not yet accepted or revoked, newest
+   * first. Expired ones are included: compare `expiresAt` with the current time.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `members.manage`
+   */
   async index({ bouncer, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)
 
@@ -16,6 +28,18 @@ export default class InvitationsController {
     return serialize(InvitationTransformer.transform(invitations))
   }
 
+  /**
+   * Invite a member
+   *
+   * Requires `members.manage`. Emails the invitation link, valid for 7 days. Inviting an
+   * email that already has a pending invitation replaces it: the old link stops working
+   * and the role and expiry are reset.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `members.manage`
+   * @throws {409} The email already belongs to a member of the tenant
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async store({ bouncer, request, auth, tenant, i18n, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)
     const { email, roleId } = await request.validateUsing(inviteMemberValidator)
@@ -31,6 +55,15 @@ export default class InvitationsController {
     return serialize(InvitationTransformer.transform(invitation))
   }
 
+  /**
+   * Revoke an invitation
+   *
+   * Requires `members.manage`. The invitation link stops working.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `members.manage`
+   * @throws {404} Invitation not found
+   */
   async destroy({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)
     const { params } = await request.validateUsing(invitationParamsValidator)
