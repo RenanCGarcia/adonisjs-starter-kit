@@ -1,7 +1,9 @@
+import app from '@adonisjs/core/services/app'
 import router from '@adonisjs/core/services/router'
 import env from '#start/env'
 import { safeEqual } from '@adonisjs/core/helpers'
 import { controllers } from '#generated/controllers'
+import { openapiRoutes } from '@enzopita/adonisjs-openapi/routes'
 
 const { HealthChecks } = controllers.core
 
@@ -22,3 +24,6 @@ router.get('/health/ready', [HealthChecks, 'ready']).use(({ request, response, i
 
   return response.unauthorized({ message: i18n.t('errors.E_UNAUTHORIZED_ACCESS') })
 })
+
+// Generated live from the TypeScript sources, which a production build does not ship.
+if (!app.inProduction) openapiRoutes()
