@@ -79,6 +79,15 @@ Expected failures return through the response helpers (`return response.notFound
 
 The same rules feed the OpenAPI document (`@enzopita/adonisjs-openapi`, configured in `config/openapi.ts`). Outside production, `GET /docs` renders it with Scalar, generated live on each request; `node ace openapi:generate` writes it to `openapi.json`. The first paragraph of the action's doc comment is the operation summary, and a `@throws {404} Reason` tag documents a status the return type can't show, such as the 404 of `findOrFail()`.
 
+Every action documents itself for API clients, in en-US, as a doc comment:
+
+- **Summary**: the first paragraph, an imperative phrase of at most 60 characters with no period (`Create a role`).
+- **Description**: the next paragraphs, only what a caller can't read from the schema: the permission it requires, side effects such as an email or signed-out sessions, and non-obvious behavior. Reasoning for maintainers goes in a `//` comment inside the method.
+- **`@tags`**: one tag declared in `config/openapi.ts`, on the class when every action shares it.
+- **`@throws {status} Reason`**: every status besides `401` and `422`, which the generator adds itself. Tenant routes throw `400` and `403` from the tenant middleware, and throttled routes `429`; copy the wording an existing controller uses.
+
+`app/core/tests/functional/openapi.spec.ts` fails on an operation without a summary or a declared tag.
+
 ## Attachments
 
 A file reaches a record in two requests: the frontend uploads it to `POST /api/v1/attachments`, then sends the returned `id` with the record's write. `users.avatar_attachment_id` is the reference example. A module that stores files:
