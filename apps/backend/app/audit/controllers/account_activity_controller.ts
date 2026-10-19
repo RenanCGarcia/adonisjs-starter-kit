@@ -3,7 +3,17 @@ import ListAuditEvents from '#audit/queries/list_audit_events'
 import { listAccountActivityValidator } from '#audit/validators/audit_event'
 import AuditEventTransformer from '#audit/transformers/audit_event_transformer'
 
+/**
+ * @tags Account
+ */
 export default class AccountActivityController {
+  /**
+   * List the signed-in user's account activity
+   *
+   * Events on the signed-in user's account outside any tenant, newest first: the ones they
+   * performed, such as sign-ins and profile changes, and the ones performed on their account, such
+   * as a platform admin disabling it.
+   */
   async index({ auth, request, serialize }: HttpContext) {
     const pages = await request.validateUsing(listAccountActivityValidator)
 

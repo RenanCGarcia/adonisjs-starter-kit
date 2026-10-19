@@ -23,7 +23,16 @@ function ownUser({ auth }: HttpContext): User {
   return user
 }
 
+/**
+ * @tags Two-factor
+ */
 export default class TwoFactorController {
+  /**
+   * Show the two-factor authentication status
+   *
+   * `recoveryCodesLeft` counts the unused recovery codes, and is 0 while two-factor authentication
+   * is off.
+   */
   async show({ auth, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
 
@@ -35,13 +44,33 @@ export default class TwoFactorController {
     })
   }
 
-  /** Starts, or restarts, enrollment: the secret to show as a QR code and for manual entry. */
+  /**
+   * Start two-factor enrollment
+   *
+   * Starts, or restarts, enrollment. Returns the secret to show as a QR code (`uri`) and for manual
+   * entry (`secret`). Calling it again replaces the pending secret. Nothing changes about signing
+   * in until `POST /account/two-factor/confirmation` confirms it with a code.
+   *
+   * @throws {403} The session is an admin acting as the user
+   * @throws {409} Two-factor authentication is already on
+   */
   async store(ctx: HttpContext) {
     const user = ownUser(ctx)
 
     return ctx.serialize(await new StartTwoFactorEnrollment().handle({ user }))
   }
 
+  /**
+   * Turn on two-factor authentication
+   *
+   * Confirms the pending secret with the password and a code from the authenticator app. Returns
+   * the recovery codes, the only time they are shown. Signs the user out of every other session.
+   *
+   * @throws {400} The password or the code is wrong
+   * @throws {403} The session is an admin acting as the user
+   * @throws {409} Two-factor authentication is already on, or enrollment was not started
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async confirm(ctx: HttpContext) {
     const user = ownUser(ctx)
     const { password, code } = await ctx.request.validateUsing(confirmTwoFactorValidator)
@@ -55,6 +84,17 @@ export default class TwoFactorController {
     return ctx.serialize({ recoveryCodes })
   }
 
+  /**
+   * Turn off two-factor authentication
+   *
+   * Needs the password and either a code from the authenticator app or one recovery code. Deletes
+   * the secret and every recovery code.
+   *
+   * @throws {400} The password is wrong, or the code or recovery code is wrong
+   * @throws {403} The session is an admin acting as the user
+   * @throws {409} Two-factor authentication is off
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async destroy(ctx: HttpContext) {
     const user = ownUser(ctx)
     const { password, ...factor } = await ctx.request.validateUsing(disableTwoFactorValidator)
@@ -64,6 +104,17 @@ export default class TwoFactorController {
     return ctx.serialize({ message: ctx.i18n.t('auth.two_factor_disabled') })
   }
 
+  /**
+   * Regenerate the recovery codes
+   *
+   * Needs the password and a code from the authenticator app. Replaces every recovery code, used or
+   * not, and returns the new ones, the only time they are shown.
+   *
+   * @throws {400} The password or the code is wrong
+   * @throws {403} The session is an admin acting as the user
+   * @throws {409} Two-factor authentication is off
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async regenerateRecoveryCodes(ctx: HttpContext) {
     const user = ownUser(ctx)
     const { password, code } = await ctx.request.validateUsing(regenerateRecoveryCodesValidator)

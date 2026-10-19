@@ -17,8 +17,23 @@ import {
   verifySecondFactor,
 } from '#auth/services/two_factor'
 
+/**
+ * @tags Auth
+ */
 export default class TwoFactorLoginsController {
-  /** The second step of a login that answered a challenge: the challenge and a second factor. */
+  /**
+   * Finish signing in with a two-factor code
+   *
+   * The second step of a login that answered with a `challenge`: send it with either a code from
+   * the authenticator app or one recovery code. Returns the user and an access token. A recovery
+   * code works once. When the challenge fails, sign in again with the password.
+   *
+   * Wrong codes for one user are limited to 5 per 15 minutes, then blocked for 15 minutes.
+   *
+   * @throws {400} The challenge is invalid or expired, or the code or recovery code is wrong
+   * @throws {403} The account is disabled, or must reset its password through the emailed link
+   * @throws {429} Too many attempts; retry after the Retry-After header
+   */
   async store({ request, serialize }: HttpContext) {
     const input = await request.validateUsing(twoFactorLoginValidator)
 

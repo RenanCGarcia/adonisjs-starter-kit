@@ -6,8 +6,21 @@ import { SUBJECT_PERMISSIONS } from '#audit/subject_permissions'
 import { listAuditEventsValidator } from '#audit/validators/audit_event'
 import AuditEventTransformer from '#audit/transformers/audit_event_transformer'
 
+/**
+ * @tags Audit
+ */
 export default class AuditEventsController {
-  /** The tenant's whole trail needs audit.view; one subject type's, its feature's permission. */
+  /**
+   * List the tenant's audit events
+   *
+   * Newest first. The whole trail requires `audit.view`. Filtering by `subjectType` also lets in
+   * the permission of the feature that owns that subject: `roles.manage` for `role`, and
+   * `members.manage` for `member` and `invitation`. `type` keeps only the listed event types, and
+   * `from` and `to` bound the creation date, both inclusive.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `audit.view`
+   */
   async index({ bouncer, request, tenant, serialize }: HttpContext) {
     const { type, ...filters } = await request.validateUsing(listAuditEventsValidator)
 

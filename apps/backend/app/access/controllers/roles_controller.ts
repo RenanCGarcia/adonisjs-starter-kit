@@ -12,8 +12,19 @@ import {
   updateRoleValidator,
 } from '#access/validators/role'
 
+/**
+ * @tags Roles
+ */
 export default class RolesController {
-  /** A members manager needs the role list to pick one when inviting or assigning. */
+  /**
+   * List roles
+   *
+   * Requires `roles.manage` or `members.manage`, so a members manager can pick a role when
+   * inviting or assigning. Sorted by name.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks both `roles.manage` and `members.manage`
+   */
   async index({ bouncer, serialize }: HttpContext) {
     const allowed =
       (await bouncer.allows(can, PERMISSIONS.rolesManage)) ||
@@ -26,6 +37,14 @@ export default class RolesController {
     return serialize(RoleTransformer.transform(roles))
   }
 
+  /**
+   * Create a role
+   *
+   * Requires `roles.manage`. Role names are unique in the tenant.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `roles.manage`
+   */
   async store({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
     const { name, permissions } = await request.validateUsing(createRoleValidator)
@@ -35,6 +54,16 @@ export default class RolesController {
     return serialize(RoleTransformer.transform(role))
   }
 
+  /**
+   * Update a role
+   *
+   * Requires `roles.manage`. Replaces the role's name and its whole permission list.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `roles.manage`
+   * @throws {404} Role not found
+   * @throws {409} The change would leave no one able to manage members
+   */
   async update({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
     const { params, name, permissions } = await request.validateUsing(updateRoleValidator)
@@ -49,6 +78,17 @@ export default class RolesController {
     return serialize(RoleTransformer.transform(role))
   }
 
+  /**
+   * Delete a role
+   *
+   * Requires `roles.manage`. A role still assigned to a member cannot be deleted: assign
+   * those members another role first.
+   *
+   * @throws {400} The X-Tenant-Id header is missing or not a UUID
+   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `roles.manage`
+   * @throws {404} Role not found
+   * @throws {409} The role is still assigned to a member
+   */
   async destroy({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
     const { params } = await request.validateUsing(roleParamsValidator)
