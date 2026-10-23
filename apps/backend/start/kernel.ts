@@ -23,4 +23,5 @@ export const middleware = router.named({
   auth: () => import('#auth/middleware/auth_middleware'),
   tenant: () => import('#tenancy/middleware/tenant_middleware'),
   twoFactor: () => import('#admin/middleware/require_two_factor_middleware'),
+  unaudited: () => import('#core/middleware/unaudited_middleware'),
 })

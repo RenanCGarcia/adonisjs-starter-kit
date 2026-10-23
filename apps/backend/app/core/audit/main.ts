@@ -69,6 +69,13 @@ export const audit = {
   async note<T extends AuditEventType>(type: T, entry: AuditEntry<T>) {
     await insert(type, entry)
   },
+
+  /** For an idempotent write that found nothing to change, such as a repeated pause. */
+  unchanged() {
+    const scope = currentAuditScope()
+
+    if (scope) scope.unchanged = true
+  },
 }
 
 /** Call before save(), which empties `$dirty`. Keys left out of `keys` never appear. */

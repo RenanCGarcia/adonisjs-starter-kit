@@ -292,6 +292,22 @@ The origin comes from the request. `audit_scope_middleware` (router stack, after
 
 The same middleware fails a `POST`, `PUT`, `PATCH` or `DELETE` that answers 2xx without recording an event. Outside production it answers 500 `E_UNAUDITED_WRITE`, so the endpoint's first functional test names the missing call. In production, where the write is already committed, it logs an error. A refused write (4xx) needs no event; the functional test owns any event it does record, such as the failed login.
 
+Two writes are exempt, each declared where its reason is known. Use these, not a flag of your own, so every exemption is found the same way:
+
+- **A route that is no person's action** and keeps its own trail, such as a provider's webhook whose rows record every status it reports, declares it on the route:
+
+  ```ts
+  router
+    .post('webhooks/provider/:kind', [ProviderWebhooks, 'store'])
+    .use(middleware.unaudited({ reason: 'provider_callback' }))
+  ```
+
+  Reasons are the `UnauditedReason` union in `#core/audit/scope`; a new one is a reviewed edit there. `unaudited_routes.spec.ts` lists every such route and fails one behind `auth` or `tenant`, so a new exemption shows in review.
+
+- **A write that found nothing to change**, such as repeating an idempotent pause, calls `audit.unchanged()` in its action. Only the action knows, so it is called there, not declared on the route.
+
+Either one recording an event anyway fails with 500 `E_AUDIT_EXEMPTION_MISUSED` outside production: the exemption is wrong.
+
 ### Why not a mixin or a trigger
 
 Lucid hooks run only inside an instance's `save()` and `delete()`, so a mixin misses the bulk `query().delete()` that `AssignRole` and `ReplaceGrants` use, and records row diffs instead of intent. A Postgres trigger has no actor, session or request unless every transaction sets them, and it records rows, not intent.
