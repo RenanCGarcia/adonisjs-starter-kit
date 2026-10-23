@@ -2,12 +2,19 @@ import { test } from '@japa/runner'
 import app from '@adonisjs/core/services/app'
 import { audit } from '#core/audit/main'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { currentAuditScope } from '#core/audit/scope'
 import AuditScopeMiddleware from '#core/middleware/audit_scope_middleware'
 import UnauditedWriteException from '#core/exceptions/unaudited_write_exception'
+import AuditExemptionMisusedException from '#core/exceptions/audit_exemption_misused_exception'
 
-type Request = { method: string; status: number; records: boolean }
+type Request = {
+  method: string
+  status: number
+  records: boolean
+  exempt?: 'unaudited' | 'unchanged'
+}
 
-async function handle({ method, status, records }: Request) {
+async function handle({ method, status, records, exempt }: Request) {
   const ctx = await testUtils.createHttpContext()
   ctx.request.request.method = method
   ctx.auth = (await app.container.make('auth.manager')).createAuthenticator(ctx)
@@ -20,6 +27,10 @@ async function handle({ method, status, records }: Request) {
         data: { email: 'ada@example.com' },
       })
     }
+
+    if (exempt === 'unaudited') currentAuditScope()!.unaudited = 'provider_callback'
+
+    if (exempt === 'unchanged') audit.unchanged()
 
     ctx.response.status(status)
   })
@@ -36,9 +47,22 @@ test.group('Core | audit scope middleware', group => {
     )
   })
 
-  test('lets through reads, refused writes, and writes that recorded', async () => {
+  test('lets through reads, refused writes, writes that recorded, and exempted writes', async () => {
     await handle({ method: 'GET', status: 200, records: false })
     await handle({ method: 'DELETE', status: 409, records: false })
     await handle({ method: 'PUT', status: 200, records: true })
+    await handle({ method: 'POST', status: 200, records: false, exempt: 'unaudited' })
+    await handle({ method: 'POST', status: 200, records: false, exempt: 'unchanged' })
+  })
+
+  test('fails an exempted write that recorded an event anyway: the exemption is wrong', async ({
+    assert,
+  }) => {
+    for (const exempt of ['unaudited', 'unchanged'] as const) {
+      await assert.rejects(
+        () => handle({ method: 'POST', status: 200, records: true, exempt }),
+        AuditExemptionMisusedException,
+      )
+    }
   })
 })
