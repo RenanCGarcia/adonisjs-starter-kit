@@ -46,7 +46,7 @@
     "@adonisjs/mail": "catalog:",
     "@adonisjs/queue": "catalog:",
     "@adonisjs/redis": "catalog:",
-    "@adonisjs/session": "^8.1.0",
+    "@adonisjs/session": "^8.3.0",
     "@adonisjs/shield": "^9.0.0",
     "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
@@ -63,12 +63,12 @@
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@adonisjs/assembler": "^8.5.2",
+    "@adonisjs/assembler": "^8.6.0",
     "@adonisjs/tsconfig": "^2.0.0",
     "@japa/assert": "^4.2.0",
     "@japa/plugin-adonisjs": "^5.2.0",
     "@japa/runner": "^5.3.0",
-    "@poppinss/ts-exec": "^1.4.4",
+    "@poppinss/ts-exec": "^1.5.1",
     "@types/luxon": "^3.7.5",
     "@types/mjml": "catalog:",
     "@types/node": "catalog:",
