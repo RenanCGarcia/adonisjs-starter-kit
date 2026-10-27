@@ -132,8 +132,9 @@ export function UserActions({ row }: { row: AdminUserRow }) {
       ]
     : []
 
-  const actions: RowAction[] = row.platformAdmin
-    ? [
+  function rowActions(): RowAction[] {
+    if (row.platformAdmin) {
+      return [
         {
           key: 'removeAdmin',
           label: t('admin.userActions.removeAdmin'),
@@ -142,39 +143,46 @@ export function UserActions({ row }: { row: AdminUserRow }) {
           onSelect: () => setConfirming('revoke'),
         },
       ]
-    : row.disabledAt
-      ? [
-          {
-            key: 'enable',
-            label: t('admin.userActions.enable'),
-            icon: CircleCheckIcon,
-            disabled: enable.isPending,
-            onSelect: () => enable.mutate(params),
-          },
-        ]
-      : [
-          {
-            key: 'impersonate',
-            label: t('admin.userActions.impersonate'),
-            icon: VenetianMaskIcon,
-            disabled: impersonate.isPending,
-            onSelect: () => impersonate.mutate(params),
-          },
-          {
-            key: 'makeAdmin',
-            label: t('admin.userActions.makeAdmin'),
-            icon: ShieldPlusIcon,
-            onSelect: () => setConfirming('grant'),
-          },
-          ...resetAction,
-          {
-            key: 'disable',
-            label: t('admin.userActions.disable'),
-            icon: BanIcon,
-            destructive: true,
-            onSelect: () => setConfirming('disable'),
-          },
-        ]
+    }
+
+    if (row.disabledAt) {
+      return [
+        {
+          key: 'enable',
+          label: t('admin.userActions.enable'),
+          icon: CircleCheckIcon,
+          disabled: enable.isPending,
+          onSelect: () => enable.mutate(params),
+        },
+      ]
+    }
+
+    return [
+      {
+        key: 'impersonate',
+        label: t('admin.userActions.impersonate'),
+        icon: VenetianMaskIcon,
+        disabled: impersonate.isPending,
+        onSelect: () => impersonate.mutate(params),
+      },
+      {
+        key: 'makeAdmin',
+        label: t('admin.userActions.makeAdmin'),
+        icon: ShieldPlusIcon,
+        onSelect: () => setConfirming('grant'),
+      },
+      ...resetAction,
+      {
+        key: 'disable',
+        label: t('admin.userActions.disable'),
+        icon: BanIcon,
+        destructive: true,
+        onSelect: () => setConfirming('disable'),
+      },
+    ]
+  }
+
+  const actions = rowActions()
 
   return (
     <div className="flex justify-end">
