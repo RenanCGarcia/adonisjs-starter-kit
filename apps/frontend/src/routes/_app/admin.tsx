@@ -23,13 +23,9 @@ function AdminLayout() {
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 md:flex-row md:gap-8 md:p-6">
       {canUseArea && <SideNav label={t('routes.admin.nav')} items={ADMIN_NAV} />}
       <main className="flex min-w-0 flex-1 flex-col gap-6">
-        {canUseArea ? (
-          <Outlet />
-        ) : platformAdmin ? (
-          <AdminTwoFactorRequired />
-        ) : (
-          <AdminAccessDenied />
-        )}
+        {canUseArea && <Outlet />}
+        {!canUseArea && platformAdmin && <AdminTwoFactorRequired />}
+        {!platformAdmin && <AdminAccessDenied />}
       </main>
     </div>
   )
