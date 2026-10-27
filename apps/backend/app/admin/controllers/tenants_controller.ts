@@ -23,7 +23,7 @@ export default class TenantsController {
    * Requires `platform.admin`. Lists every tenant on the platform, ordered by name, with its
    * member count. `search` matches part of the name, ignoring case.
    *
-   * @throws {403} Not a platform admin
+   * @response {403} Not a platform admin
    */
   async index({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)
@@ -40,8 +40,8 @@ export default class TenantsController {
    * Requires `platform.admin`. Each member comes with their role name in the tenant (null when
    * they hold none) and whether they are a platform admin.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} Tenant not found
+   * @response {403} Not a platform admin
+   * @response {404} Tenant not found
    */
   async show({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)
@@ -61,8 +61,8 @@ export default class TenantsController {
    *
    * Requires `platform.admin`. Records an audit event on the tenant's trail.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} Tenant not found
+   * @response {403} Not a platform admin
+   * @response {404} Tenant not found
    */
   async update({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)

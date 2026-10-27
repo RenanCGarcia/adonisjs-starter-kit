@@ -30,9 +30,7 @@ export default class TwoFactorLoginsController {
    *
    * Wrong codes for one user are limited to 5 per 15 minutes, then blocked for 15 minutes.
    *
-   * @throws {400} The challenge is invalid or expired, or the code or recovery code is wrong
-   * @throws {403} The account is disabled, or must reset its password through the emailed link
-   * @throws {429} Too many attempts; retry after the Retry-After header
+   * @response {429} Too many attempts; retry after the Retry-After header
    */
   async store({ request, serialize }: HttpContext) {
     const input = await request.validateUsing(twoFactorLoginValidator)

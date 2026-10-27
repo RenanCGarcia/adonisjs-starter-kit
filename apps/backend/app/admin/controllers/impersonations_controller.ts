@@ -16,9 +16,8 @@ export default class ImpersonationsController {
    * expires after one hour. The frontend uses this token in place of the admin's and keeps the
    * admin's token to switch back. Records an audit event.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} User not found
-   * @throws {409} The user is a platform admin or is disabled
+   * @response {403} Not a platform admin
+   * @response {404} User not found
    */
   async store({ auth, bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)

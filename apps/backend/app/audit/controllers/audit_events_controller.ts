@@ -18,7 +18,7 @@ export default class AuditEventsController {
    * `members.manage` for `member` and `invitation`. `type` keeps only the listed event types, and
    * `from` and `to` bound the creation date, both inclusive.
    *
-   * @throws {403} Lacks `audit.view`
+   * @response {403} Lacks `audit.view`
    */
   async index({ bouncer, request, tenant, serialize }: HttpContext) {
     const { type, ...filters } = await request.validateUsing(listAuditEventsValidator)

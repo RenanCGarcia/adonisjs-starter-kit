@@ -14,9 +14,8 @@ export default class UserSuspensionsController {
    * Requires `platform.admin`. Signs the user out everywhere and blocks their sign-in. Disabling
    * a user who is already disabled keeps their first disable date. Records an audit event.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} User not found
-   * @throws {409} The user is a platform admin
+   * @response {403} Not a platform admin
+   * @response {404} User not found
    */
   async store(ctx: HttpContext) {
     return this.set(ctx, true)
@@ -27,8 +26,8 @@ export default class UserSuspensionsController {
    *
    * Requires `platform.admin`. Records an audit event.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} User not found
+   * @response {403} Not a platform admin
+   * @response {404} User not found
    */
   async destroy(ctx: HttpContext) {
     return this.set(ctx, false)

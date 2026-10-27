@@ -18,9 +18,8 @@ export default class AccessTokensController {
    * minutes.
    *
    * @tags Auth
-   * @throws {400} The email or password is wrong
-   * @throws {403} The account is disabled, or must reset its password through the emailed link
-   * @throws {429} Too many attempts; retry after the Retry-After header
+   * @response {400} The email or password is wrong
+   * @response {429} Too many attempts; retry after the Retry-After header
    */
   async store({ request, serialize }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)

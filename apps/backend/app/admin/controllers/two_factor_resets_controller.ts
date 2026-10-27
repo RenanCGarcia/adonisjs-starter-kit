@@ -16,9 +16,8 @@ export default class TwoFactorResetsController {
    * cannot sign in until they choose a new password. Not idempotent: a repeat answers `409`
    * because two-factor is no longer enabled. Records an audit event.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} User not found
-   * @throws {409} The user is a platform admin, is disabled, or has no two-factor enabled
+   * @response {403} Not a platform admin
+   * @response {404} User not found
    */
   async destroy({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)

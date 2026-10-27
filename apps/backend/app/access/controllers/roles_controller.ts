@@ -22,7 +22,7 @@ export default class RolesController {
    * Requires `roles.manage` or `members.manage`, so a members manager can pick a role when
    * inviting or assigning. Sorted by name.
    *
-   * @throws {403} Lacks both `roles.manage` and `members.manage`
+   * @response {403} Lacks both `roles.manage` and `members.manage`
    */
   async index({ bouncer, serialize }: HttpContext) {
     const allowed =
@@ -41,7 +41,7 @@ export default class RolesController {
    *
    * Requires `roles.manage`. Role names are unique in the tenant.
    *
-   * @throws {403} Lacks `roles.manage`
+   * @response {403} Lacks `roles.manage`
    */
   async store({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
@@ -57,9 +57,8 @@ export default class RolesController {
    *
    * Requires `roles.manage`. Replaces the role's name and its whole permission list.
    *
-   * @throws {403} Lacks `roles.manage`
-   * @throws {404} Role not found
-   * @throws {409} The change would leave no one able to manage members
+   * @response {403} Lacks `roles.manage`
+   * @response {404} Role not found
    */
   async update({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
@@ -81,9 +80,8 @@ export default class RolesController {
    * Requires `roles.manage`. A role still assigned to a member cannot be deleted: assign
    * those members another role first.
    *
-   * @throws {403} Lacks `roles.manage`
-   * @throws {404} Role not found
-   * @throws {409} The role is still assigned to a member
+   * @response {403} Lacks `roles.manage`
+   * @response {404} Role not found
    */
   async destroy({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)

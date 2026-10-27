@@ -11,7 +11,7 @@ export default class EmailVerificationsController {
    * Does nothing when the email is already verified, and still answers with success.
    *
    * @tags Account
-   * @throws {429} Too many attempts; retry after the Retry-After header
+   * @response {429} Too many attempts; retry after the Retry-After header
    */
   async store({ auth, i18n, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
@@ -27,8 +27,7 @@ export default class EmailVerificationsController {
    * Takes the token from the emailed verification link. Each token works once.
    *
    * @tags Auth
-   * @throws {400} The token is invalid, expired, or already used
-   * @throws {429} Too many attempts; retry after the Retry-After header
+   * @response {429} Too many attempts; retry after the Retry-After header
    */
   async update({ i18n, request, serialize }: HttpContext) {
     const { token } = await request.validateUsing(verifyEmailValidator)

@@ -3,6 +3,9 @@ import UploadAttachment from '#attachments/actions/upload_attachment'
 import { uploadAttachmentValidator } from '#attachments/validators/attachment'
 import AttachmentTransformer from '#attachments/transformers/attachment_transformer'
 
+/** The bodyparser throws a plain `Exception` with this code, so no class documents it. */
+export type EntityTooLarge = { code: 'E_REQUEST_ENTITY_TOO_LARGE'; message: string }
+
 /**
  * @tags Attachments
  */
@@ -15,7 +18,7 @@ export default class AttachmentsController {
    * Pass its id to an endpoint that takes an attachment, such as the avatar. An attachment
    * that nothing uses after a day is deleted.
    *
-   * @throws {413} The request body is larger than 20 MB
+   * @response {413} {EntityTooLarge} The request body is larger than 20 MB
    */
   async store({ request, auth, serialize }: HttpContext) {
     const { file } = await request.validateUsing(uploadAttachmentValidator)

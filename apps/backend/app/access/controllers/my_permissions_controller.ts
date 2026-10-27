@@ -11,7 +11,6 @@ export default class MyPermissionsController {
    *
    * Returns the permission keys the signed-in user holds in the tenant, for the frontend to
    * show or hide its UI. The server still checks each permission on every request.
-   *
    */
   async show({ bouncer, serialize }: HttpContext) {
     const allowed = await Promise.all(
