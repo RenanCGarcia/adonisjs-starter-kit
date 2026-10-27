@@ -5,6 +5,7 @@
   "E_BAD_CSRF_TOKEN": "This page has expired. Reload it and try again.",
   "E_CANNOT_REVOKE_SELF": "You can’t remove your own platform admin access. Ask another platform admin.",
   "E_IMPERSONATING": "You can’t change the user’s sessions or security settings while impersonating them.",
+  "E_INTERNAL_SERVER_ERROR": "Something went wrong on our side. Try again in a moment.",
   "E_INVALID_ATTACHMENT": "This file can’t be used here.",
   "E_INVALID_CREDENTIALS": "Invalid email or password.",
   "E_INVALID_PASSWORD": "Wrong password.",

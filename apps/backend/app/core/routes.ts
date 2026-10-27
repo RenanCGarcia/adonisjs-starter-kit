@@ -9,10 +9,6 @@ const { HealthChecks } = controllers.core
 
 router.where('id', router.matchers.uuid())
 
-router.get('/', () => {
-  return { hello: 'world' }
-})
-
 router.get('/health/live', [HealthChecks, 'live'])
 
 router.get('/health/ready', [HealthChecks, 'ready']).use(({ request, response, i18n }, next) => {
@@ -22,7 +18,10 @@ router.get('/health/ready', [HealthChecks, 'ready']).use(({ request, response, i
     return next()
   }
 
-  return response.unauthorized({ message: i18n.t('errors.E_UNAUTHORIZED_ACCESS') })
+  return response.unauthorized({
+    code: 'E_UNAUTHORIZED_ACCESS' as const,
+    message: i18n.t('errors.E_UNAUTHORIZED_ACCESS'),
+  })
 })
 
 // Generated live from the TypeScript sources, which a production build does not ship.

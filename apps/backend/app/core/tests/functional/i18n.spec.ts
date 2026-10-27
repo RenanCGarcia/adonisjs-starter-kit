@@ -16,7 +16,10 @@ test.group('Core | i18n', group => {
       .json(wrongCredentials)
 
     signIn.assertStatus(400)
-    signIn.assertBodyContains({ errors: [{ message: 'E-mail ou senha inválidos.' }] })
+    signIn.assertBodyContains({
+      code: 'E_INVALID_CREDENTIALS',
+      message: 'E-mail ou senha inválidos.',
+    })
 
     const signUp = await client
       .visit('auth.new_account.store')
@@ -56,6 +59,9 @@ test.group('Core | i18n', group => {
       .header('accept-language', 'fr-FR,de;q=0.5')
       .json(wrongCredentials)
 
-    response.assertBodyContains({ errors: [{ message: 'Invalid email or password.' }] })
+    response.assertBodyContains({
+      code: 'E_INVALID_CREDENTIALS',
+      message: 'Invalid email or password.',
+    })
   })
 })

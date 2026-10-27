@@ -19,12 +19,16 @@ async function signUp(client: ApiClient, email: string) {
 test.group('Attachments | upload', group => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
 
-  test('rejects a guest', async ({ client }) => {
+  test('rejects a guest', async ({ client, assert }) => {
     const response = await client
       .post('/api/v1/attachments')
       .file('file', PNG_BYTES, { filename: 'a.png' })
 
     response.assertStatus(401)
+    assert.deepEqual(response.body(), {
+      code: 'E_UNAUTHORIZED_ACCESS',
+      message: 'Sign in to continue.',
+    })
   })
 
   test('rejects a type outside the registry', async ({ client, assert }) => {
