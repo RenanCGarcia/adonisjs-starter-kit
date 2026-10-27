@@ -2,7 +2,7 @@ import env from '#start/env'
 import { defineConfig } from '@enzopita/adonisjs-openapi'
 
 const TENANT_HEADER =
-  'Every operation here runs inside the tenant named by the `X-Tenant-Id` header. A missing or malformed header answers `400`; a tenant the user is not a member of, or a suspended one, answers `403`.'
+  'Every operation here runs inside the tenant named by the `X-Tenant-Id` header.'
 
 export default defineConfig({
   output: 'openapi.json',
@@ -11,7 +11,7 @@ export default defineConfig({
     version: '1.0.0',
     description: [
       'Authenticate with the access token that `POST /api/v1/auth/login` returns, sent as `Authorization: Bearer <token>`.',
-      'Successful responses wrap their payload in `data`. Every error carries a `message` for display.',
+      'Successful responses wrap their payload in `data`. Every error carries a machine-readable `code` and a `message` for display, except `422`, which lists the invalid fields.',
       'Messages follow the `Accept-Language` header: `en-US` or `pt-BR`, falling back to `en-US`.',
     ].join('\n\n'),
   },

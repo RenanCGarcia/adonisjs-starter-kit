@@ -14,8 +14,7 @@ export default class MemberRolesController {
    * Requires `members.manage`. Replaces the member's role; a null `roleId` leaves them
    * without one. Their individual permissions are kept.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `members.manage`
+   * @throws {403} Lacks `members.manage`
    * @throws {404} The user is not a member of the tenant
    * @throws {409} The change would leave no one able to manage members
    */
