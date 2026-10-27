@@ -9,5 +9,7 @@ export default {
     // Rewritten by tools: `e2e init` (skill) and the e2e runner (replay cache).
     '.agents/skills/e2e/**',
     '.e2e/**',
+    // Written by `node ace openapi:generate`, which `openapi:check` compares byte for byte.
+    'apps/backend/openapi.json',
   ],
 }
