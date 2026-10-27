@@ -94,21 +94,22 @@ Every error the API sends is `{ code, message }`, except the `422` of a failed v
 
 **Expected failures are `ApiException` subclasses.** One file per exception, in the `exceptions/` folder of the module that owns it (`app/access/exceptions/last_manager_exception.ts`). Extend `ApiException<'E_CODE'>` from `#core/exceptions/api_exception` and declare `static status`, `static code` and `static message`, the English fallback. Add `errors.<code>` to every file in `resources/lang/*/errors.json`; the handler translates the message by that key. Throw the exception from an action or a middleware, never answer an expected failure with a response helper.
 
-**The handler owns the shape of everything else.** `app/core/exceptions/handler.ts` renders `{ code, message }` for framework and package errors, such as a missing route or `E_ROW_NOT_FOUND`. A server error (`5xx`) sends `E_INTERNAL_SERVER_ERROR` and a generic message outside development, so a SQL or driver message never reaches the client. It also renders the package errors that bring a body of their own (`401`, invalid credentials, `429`) in the same shape. Change the shape there, in one place.
+**The handler owns the shape of everything else.** `app/core/exceptions/handler.ts` renders `{ code, message }` for framework and package errors, such as a missing route or `E_ROW_NOT_FOUND`. A server error (`5xx`) sends `E_INTERNAL_SERVER_ERROR` and a generic message outside development, so a SQL or driver message never reaches the client. It also renders the package errors that bring a body of their own in the same shape: `E_UNAUTHORIZED_ACCESS` and `E_INVALID_CREDENTIALS` from auth, `E_AUTHORIZATION_FAILURE` from bouncer, and `E_TOO_MANY_REQUESTS` from the limiter. Change the shape there, in one place.
 
-**What the OpenAPI document derives on its own:**
+**The OpenAPI document derives most error responses on its own:**
 
-- An exception thrown in a middleware, on every route that uses it (the tenant header and membership checks, `RequireTwoFactorMiddleware`).
+- An exception the app throws with `throw new`, in the action, in the actions and services it calls, or in a middleware of the route, with its literal `code`.
 - A response a middleware sends with a helper, such as `response.unauthorized(...)`.
 - The `401` of an authenticated route, and the `422` of an action that calls `request.validateUsing()`.
-- An exception the handler throws with `throw new`.
 
-**What still needs a `@throws` tag in the action's doc comment:**
+**Add a `@throws` tag to the action's doc comment for what it can't see:**
 
-- An exception thrown in an action, or in a service or action it calls: `@throws {import('#access/exceptions/last_manager_exception').default}`. The controller doesn't import it.
 - The `404` of `findOrFail()`: `@throws {404} Reason`. The status of a package exception is typed `number`, so the generator can't read it.
 - The `403` of a bouncer `authorize()`, naming the permission: `` @throws {403} Lacks `members.manage` ``. The exception is thrown inside the package.
 - The `429` of a throttled route: `@throws {429} Reason`.
+- An exception thrown from code the generator doesn't follow, such as a function a package calls: `@throws {import('#access/exceptions/last_manager_exception').default}`. The controller doesn't import it.
+
+A `@throws {status} Reason` on a status the generator already derives replaces its standard text with the reason. Give one to every status the action can answer with, so a caller reads when it happens.
 
 To generate the document, open `GET /docs` in development, or run `node ace openapi:generate` to write `openapi.json`. The command prints a warning for a route it skipped, such as a closure, and for a model returned without a transformer.
 
