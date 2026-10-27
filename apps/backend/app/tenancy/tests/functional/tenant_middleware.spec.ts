@@ -34,7 +34,7 @@ test.group('Tenancy | tenant middleware', group => {
 
     const missing = await client.get('/__tests/tenant-context').loginAs(user)
     missing.assertStatus(400)
-    missing.assertBodyContains({ key: 'E_INVALID_TENANT_HEADER' })
+    missing.assertBodyContains({ code: 'E_INVALID_TENANT_HEADER' })
 
     const malformed = await client
       .get('/__tests/tenant-context')

@@ -5,6 +5,9 @@ import Tenant from '#tenancy/models/tenant'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import { runInTenant } from '#tenancy/tenant_context'
+import InvalidTenantHeaderException from '#tenancy/exceptions/invalid_tenant_header_exception'
+import TenantAccessDeniedException from '#tenancy/exceptions/tenant_access_denied_exception'
+import TenantSuspendedException from '#tenancy/exceptions/tenant_suspended_exception'
 
 /**
  * Resolves the tenant named by the X-Tenant-Id header and runs the rest of the
@@ -17,10 +20,7 @@ export default class TenantMiddleware {
     const tenantId = ctx.request.header('x-tenant-id')
 
     if (!tenantId || !vine.helpers.isUUID(tenantId)) {
-      return ctx.response.badRequest({
-        message: ctx.i18n.t('errors.E_INVALID_TENANT_HEADER'),
-        key: 'E_INVALID_TENANT_HEADER',
-      })
+      throw new InvalidTenantHeaderException()
     }
 
     const userId = ctx.auth.getUserOrFail().id
@@ -40,18 +40,12 @@ export default class TenantMiddleware {
         })
       }
 
-      return ctx.response.forbidden({
-        message: ctx.i18n.t('errors.E_TENANT_ACCESS_DENIED'),
-        key: 'E_TENANT_ACCESS_DENIED',
-      })
+      throw new TenantAccessDeniedException()
     }
 
     // Only a member learns the tenant is suspended: everyone else got the 403 above.
     if (tenant.suspendedAt) {
-      return ctx.response.forbidden({
-        message: ctx.i18n.t('errors.E_TENANT_SUSPENDED'),
-        key: 'E_TENANT_SUSPENDED',
-      })
+      throw new TenantSuspendedException()
     }
 
     ctx.tenant = tenant
