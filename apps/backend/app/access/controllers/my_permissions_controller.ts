@@ -12,8 +12,6 @@ export default class MyPermissionsController {
    * Returns the permission keys the signed-in user holds in the tenant, for the frontend to
    * show or hide its UI. The server still checks each permission on every request.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, or the tenant is suspended
    */
   async show({ bouncer, serialize }: HttpContext) {
     const allowed = await Promise.all(

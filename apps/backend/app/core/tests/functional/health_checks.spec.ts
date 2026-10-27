@@ -2,10 +2,14 @@ import { test } from '@japa/runner'
 import env from '#start/env'
 
 test.group('Core | health checks', () => {
-  test('rejects a readiness probe without the monitoring secret', async ({ client }) => {
+  test('rejects a readiness probe without the monitoring secret', async ({ client, assert }) => {
     const response = await client.get('/health/ready').header('x-monitoring-secret', 'wrong')
 
     response.assertStatus(401)
+    assert.deepEqual(response.body(), {
+      code: 'E_UNAUTHORIZED_ACCESS',
+      message: 'Sign in to continue.',
+    })
   })
 
   test('reports every indicator to a probe with the monitoring secret', async ({

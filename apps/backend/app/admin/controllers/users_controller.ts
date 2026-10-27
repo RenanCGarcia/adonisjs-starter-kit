@@ -16,7 +16,7 @@ export default class UsersController {
    * tenant count and whether they are a platform admin. `search` matches part of the email or
    * full name, ignoring case.
    *
-   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {403} Not a platform admin
    */
   async index({ bouncer, request, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.platformAdmin)

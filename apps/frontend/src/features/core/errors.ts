@@ -1,7 +1,7 @@
 import type { TuyauError } from '@tuyau/core/client'
 import { t } from '@/features/core/i18n'
 
-/** Codes the API returns for expected failures: exceptions send `code`, the tenant middleware sends `key`. */
+/** Codes the API returns for expected failures: every one carries a `code`. */
 const API_ERROR_CODES = [
   'E_ROLE_IN_USE',
   'E_LAST_MANAGER',
@@ -27,13 +27,12 @@ export type ApiErrorCode = (typeof API_ERROR_CODES)[number]
 const KNOWN_CODES = new Set<string>(API_ERROR_CODES)
 
 /**
- * Every error body the backend sends, merged: exceptions, the tenant middleware, and validation.
+ * Every error body the backend sends, merged: `{ code, message }` and the validation `errors`.
  * Its messages are already in the locale the request's Accept-Language asked for.
  */
 type ApiErrorBody = {
   message?: string
   code?: string
-  key?: string
   errors?: { field?: string; message: string }[]
 }
 
@@ -55,10 +54,9 @@ function isKnownCode(code: string): code is ApiErrorCode {
 }
 
 export function apiErrorCode(error: TuyauError): ApiErrorCode | null {
-  const { code, key } = errorBody(error)
-  const value = code ?? key
+  const { code } = errorBody(error)
 
-  return value !== undefined && isKnownCode(value) ? value : null
+  return code !== undefined && isKnownCode(code) ? code : null
 }
 
 export function errorMessage(error: TuyauError): string {

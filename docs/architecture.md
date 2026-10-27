@@ -75,18 +75,43 @@ The frontend calls the API through Tuyau, whose types are inferred from the cont
 - **Validate with `request.validateUsing(validator)`.** Without it, the request body is typed `any` on the frontend.
 - **Return `serialize(...)`.** A model through its transformer (`serialize(UserTransformer.transform(user))`, `serialize(UserTransformer.paginate(rows, meta))` for a paginated list), anything else as a plain object (`serialize({ message })`). Never return a model or a bare object: a model reaches the frontend as `ModelObject` with no fields, and a bare object skips the `{ data }` envelope that `providers/api_provider.ts` gives every response.
 
-Expected failures return through the response helpers (`return response.notFound({ message, key })`): the frontend can narrow them with `error.isStatus(404)`.
+Expected failures are exceptions, not response helpers: see [Errors](#errors). The frontend narrows them with `error.isStatus(404)` or by `code`.
 
-The same rules feed the OpenAPI document (`@enzopita/adonisjs-openapi`, configured in `config/openapi.ts`). Outside production, `GET /docs` renders it with Scalar, generated live on each request; `node ace openapi:generate` writes it to `openapi.json`. The first paragraph of the action's doc comment is the operation summary, and a `@throws {404} Reason` tag documents a status the return type can't show, such as the 404 of `findOrFail()`.
+The same rules feed the OpenAPI document (`@enzopita/adonisjs-openapi`, configured in `config/openapi.ts`). Outside production, `GET /docs` renders it with Scalar, generated live on each request; `node ace openapi:generate` writes it to `openapi.json`. The first paragraph of the action's doc comment is the operation summary, and `@throws` tags document the statuses the generator can't derive on its own.
 
 Every action documents itself for API clients, in en-US, as a doc comment:
 
 - **Summary**: the first paragraph, an imperative phrase of at most 60 characters with no period (`Create a role`).
 - **Description**: the next paragraphs, only what a caller can't read from the schema: the permission it requires, side effects such as an email or signed-out sessions, and non-obvious behavior. Reasoning for maintainers goes in a `//` comment inside the method.
 - **`@tags`**: one tag declared in `config/openapi.ts`, on the class when every action shares it.
-- **`@throws {status} Reason`**: every status besides `401` and `422`, which the generator adds itself. Tenant routes throw `400` and `403` from the tenant middleware, and throttled routes `429`; copy the wording an existing controller uses.
+- **`@throws`**: only what the generator can't see, listed under [Errors](#errors).
 
 `app/core/tests/functional/openapi.spec.ts` fails on an operation without a summary or a declared tag.
+
+## Errors
+
+Every error the API sends is `{ code, message }`, except the `422` of a failed validation, which is `{ errors: [{ field, message, rule }] }`. The `code` is stable and the frontend branches on it; the `message` is translated for display.
+
+**Expected failures are `ApiException` subclasses.** One file per exception, in the `exceptions/` folder of the module that owns it (`app/access/exceptions/last_manager_exception.ts`). Extend `ApiException<'E_CODE'>` from `#core/exceptions/api_exception` and declare `static status`, `static code` and `static message`, the English fallback. Add `errors.<code>` to every file in `resources/lang/*/errors.json`; the handler translates the message by that key. Throw the exception from an action or a middleware, never answer an expected failure with a response helper.
+
+**The handler owns the shape of everything else.** `app/core/exceptions/handler.ts` renders `{ code, message }` for framework and package errors, such as a missing route or `E_ROW_NOT_FOUND`. A server error (`5xx`) sends `E_INTERNAL_SERVER_ERROR` and a generic message outside development, so a SQL or driver message never reaches the client. It also renders the package errors that bring a body of their own in the same shape: `E_UNAUTHORIZED_ACCESS` and `E_INVALID_CREDENTIALS` from auth, `E_AUTHORIZATION_FAILURE` from bouncer, and `E_TOO_MANY_REQUESTS` from the limiter. Change the shape there, in one place.
+
+**The OpenAPI document derives most error responses on its own:**
+
+- An exception the app throws with `throw new`, in the action, in the actions and services it calls, or in a middleware of the route, with its literal `code`.
+- A response a middleware sends with a helper, such as `response.unauthorized(...)`.
+- The `401` of an authenticated route, and the `422` of an action that calls `request.validateUsing()`.
+
+**Add a `@throws` tag to the action's doc comment for what it can't see:**
+
+- The `404` of `findOrFail()`: `@throws {404} Reason`. The status of a package exception is typed `number`, so the generator can't read it.
+- The `403` of a bouncer `authorize()`, naming the permission: `` @throws {403} Lacks `members.manage` ``. The exception is thrown inside the package.
+- The `429` of a throttled route: `@throws {429} Reason`.
+- An exception thrown from code the generator doesn't follow, such as a function a package calls: `@throws {import('#access/exceptions/last_manager_exception').default}`. The controller doesn't import it.
+
+A `@throws {status} Reason` on a status the generator already derives replaces its standard text with the reason. Give one to every status the action can answer with, so a caller reads when it happens.
+
+To generate the document, open `GET /docs` in development, or run `node ace openapi:generate` to write `openapi.json`. The command prints a warning for a route it skipped, such as a closure, and for a model returned without a transformer.
 
 ## Attachments
 

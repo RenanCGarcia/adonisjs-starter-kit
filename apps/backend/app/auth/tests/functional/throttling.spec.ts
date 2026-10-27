@@ -9,6 +9,7 @@ test.group('Auth | throttling', group => {
 
   test('blocks login after 5 failures for the same email, but another email from the same IP still works', async ({
     client,
+    assert,
   }) => {
     await client.visit('auth.new_account.store').json({ ...account, email: 'ada@example.com' })
     await client.visit('auth.new_account.store').json({ ...account, email: 'eve@example.com' })
@@ -27,6 +28,10 @@ test.group('Auth | throttling', group => {
 
     blocked.assertStatus(429)
     blocked.assertHeader('retry-after')
+    assert.deepEqual(blocked.body(), {
+      code: 'E_TOO_MANY_REQUESTS',
+      message: 'Too many attempts. Please wait a bit and try again.',
+    })
 
     const otherEmail = await client
       .visit('auth.access_tokens.store')

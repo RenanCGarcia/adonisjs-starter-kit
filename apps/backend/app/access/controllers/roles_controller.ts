@@ -22,8 +22,7 @@ export default class RolesController {
    * Requires `roles.manage` or `members.manage`, so a members manager can pick a role when
    * inviting or assigning. Sorted by name.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks both `roles.manage` and `members.manage`
+   * @throws {403} Lacks both `roles.manage` and `members.manage`
    */
   async index({ bouncer, serialize }: HttpContext) {
     const allowed =
@@ -42,8 +41,7 @@ export default class RolesController {
    *
    * Requires `roles.manage`. Role names are unique in the tenant.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `roles.manage`
+   * @throws {403} Lacks `roles.manage`
    */
   async store({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.rolesManage)
@@ -59,8 +57,7 @@ export default class RolesController {
    *
    * Requires `roles.manage`. Replaces the role's name and its whole permission list.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `roles.manage`
+   * @throws {403} Lacks `roles.manage`
    * @throws {404} Role not found
    * @throws {409} The change would leave no one able to manage members
    */
@@ -84,8 +81,7 @@ export default class RolesController {
    * Requires `roles.manage`. A role still assigned to a member cannot be deleted: assign
    * those members another role first.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `roles.manage`
+   * @throws {403} Lacks `roles.manage`
    * @throws {404} Role not found
    * @throws {409} The role is still assigned to a member
    */

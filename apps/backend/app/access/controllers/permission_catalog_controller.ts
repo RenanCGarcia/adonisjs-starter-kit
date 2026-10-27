@@ -11,8 +11,6 @@ export default class PermissionCatalogController {
    * Any member of the tenant may call it. Returns every permission a role or a member can
    * hold, grouped by area, for rendering role and permission editors.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, or the tenant is suspended
    */
   async show({ serialize }: HttpContext) {
     return serialize({ groups: PERMISSION_GROUPS })

@@ -18,8 +18,7 @@ export default class AuditEventsController {
    * `members.manage` for `member` and `invitation`. `type` keeps only the listed event types, and
    * `from` and `to` bound the creation date, both inclusive.
    *
-   * @throws {400} The X-Tenant-Id header is missing or not a UUID
-   * @throws {403} Not a member of the tenant, the tenant is suspended, or lacks `audit.view`
+   * @throws {403} Lacks `audit.view`
    */
   async index({ bouncer, request, tenant, serialize }: HttpContext) {
     const { type, ...filters } = await request.validateUsing(listAuditEventsValidator)

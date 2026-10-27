@@ -213,10 +213,10 @@ test.group('Admin | tenants', group => {
 
     const locked = await enter(client, member, acme.tenant.id)
     locked.assertStatus(403)
-    locked.assertBodyContains({ key: 'E_TENANT_SUSPENDED' })
+    locked.assertBodyContains({ code: 'E_TENANT_SUSPENDED' })
 
     const foreign = await enter(client, outsider, acme.tenant.id)
-    foreign.assertBodyContains({ key: 'E_TENANT_ACCESS_DENIED' })
+    foreign.assertBodyContains({ code: 'E_TENANT_ACCESS_DENIED' })
 
     const listed = await client.visit('tenants.tenants.index').loginAs(member)
     assert.containsSubset(listed.body().data, [

@@ -5,6 +5,7 @@
   "E_BAD_CSRF_TOKEN": "Esta página expirou. Recarregue-a e tente novamente.",
   "E_CANNOT_REVOKE_SELF": "Você não pode remover seu próprio acesso de administrador da plataforma. Peça a outro administrador.",
   "E_IMPERSONATING": "Você não pode alterar as sessões ou as configurações de segurança do usuário enquanto o personifica.",
+  "E_INTERNAL_SERVER_ERROR": "Algo deu errado do nosso lado. Tente novamente em instantes.",
   "E_INVALID_ATTACHMENT": "Este arquivo não pode ser usado aqui.",
   "E_INVALID_CREDENTIALS": "E-mail ou senha inválidos.",
   "E_INVALID_PASSWORD": "Senha incorreta.",

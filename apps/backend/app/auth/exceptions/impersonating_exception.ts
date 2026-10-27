@@ -1,6 +1,6 @@
-import { Exception } from '@adonisjs/core/exceptions'
+import ApiException from '#core/exceptions/api_exception'
 
-export default class ImpersonatingException extends Exception {
+export default class ImpersonatingException extends ApiException<'E_IMPERSONATING'> {
   static override status = 403
   static override code = 'E_IMPERSONATING'
   static override message =

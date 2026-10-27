@@ -16,7 +16,7 @@ export default class TenantSuspensionsController {
    * Suspending a tenant that is already suspended keeps its first suspension date. Records an
    * audit event.
    *
-   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {403} Not a platform admin
    * @throws {404} Tenant not found
    */
   async store(ctx: HttpContext) {
@@ -28,7 +28,7 @@ export default class TenantSuspensionsController {
    *
    * Requires `platform.admin`. Records an audit event.
    *
-   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {403} Not a platform admin
    * @throws {404} Tenant not found
    */
   async destroy(ctx: HttpContext) {

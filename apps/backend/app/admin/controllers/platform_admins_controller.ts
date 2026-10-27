@@ -14,7 +14,7 @@ export default class PlatformAdminsController {
    * Requires `platform.admin`. The user gets `platform.admin` in every tenant, and must confirm
    * two-factor authentication before they can use the admin area. Records an audit event.
    *
-   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {403} Not a platform admin
    * @throws {404} User not found
    */
   async store(ctx: HttpContext) {
@@ -27,7 +27,7 @@ export default class PlatformAdminsController {
    * Requires `platform.admin`. Admins cannot revoke their own access, so at least one platform
    * admin always remains. Records an audit event.
    *
-   * @throws {403} Not a platform admin, or two-factor authentication is not confirmed
+   * @throws {403} Not a platform admin
    * @throws {404} User not found
    * @throws {409} The caller tried to revoke their own access
    */

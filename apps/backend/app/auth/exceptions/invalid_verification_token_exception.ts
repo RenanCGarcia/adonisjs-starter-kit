@@ -1,6 +1,6 @@
-import { Exception } from '@adonisjs/core/exceptions'
+import ApiException from '#core/exceptions/api_exception'
 
-export default class InvalidVerificationTokenException extends Exception {
+export default class InvalidVerificationTokenException extends ApiException<'E_INVALID_VERIFICATION_TOKEN'> {
   static override status = 400
   static override code = 'E_INVALID_VERIFICATION_TOKEN'
   static override message = 'This email verification link is unknown or has expired'

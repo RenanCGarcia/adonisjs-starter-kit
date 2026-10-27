@@ -1,6 +1,6 @@
-import { Exception } from '@adonisjs/core/exceptions'
+import ApiException from '#core/exceptions/api_exception'
 
-export default class PasswordResetRequiredException extends Exception {
+export default class PasswordResetRequiredException extends ApiException<'E_PASSWORD_RESET_REQUIRED'> {
   static override status = 403
   static override code = 'E_PASSWORD_RESET_REQUIRED'
   static override message = 'Choose a new password through the emailed link before signing in'
