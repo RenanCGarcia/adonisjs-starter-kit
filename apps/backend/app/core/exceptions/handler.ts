@@ -1,5 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { errors as authErrors } from '@adonisjs/auth'
+import { errors as bouncerErrors } from '@adonisjs/bouncer'
 import { errors as limiterErrors } from '@adonisjs/limiter'
 import { Exception } from '@adonisjs/core/exceptions'
 import { ExceptionHandler, type HttpContext } from '@adonisjs/core/http'
@@ -28,6 +29,13 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     if (error instanceof authErrors.E_INVALID_CREDENTIALS) {
       return ctx.response.badRequest({
         code: 'E_INVALID_CREDENTIALS' as const,
+        message: error.message,
+      })
+    }
+
+    if (error instanceof bouncerErrors.E_AUTHORIZATION_FAILURE) {
+      return ctx.response.forbidden({
+        code: 'E_AUTHORIZATION_FAILURE' as const,
         message: error.message,
       })
     }

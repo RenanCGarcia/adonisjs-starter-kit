@@ -30,7 +30,10 @@ test.group('Access | roles', group => {
         .loginAs(plain),
     ]
 
-    for (const response of responses) response.assertStatus(403)
+    for (const response of responses) {
+      response.assertStatus(403)
+      response.assertBodyContains({ code: 'E_AUTHORIZATION_FAILURE' })
+    }
   })
 
   test('lets a members manager list roles, but not write them', async ({ client }) => {
