@@ -1,6 +1,6 @@
-import { Exception } from '@adonisjs/core/exceptions'
+import ApiException from '#core/exceptions/api_exception'
 
-export default class InvalidTwoFactorChallengeException extends Exception {
+export default class InvalidTwoFactorChallengeException extends ApiException<'E_INVALID_TWO_FACTOR_CHALLENGE'> {
   static override status = 400
   static override code = 'E_INVALID_TWO_FACTOR_CHALLENGE'
   static override message = 'The two-factor challenge is invalid or has expired'

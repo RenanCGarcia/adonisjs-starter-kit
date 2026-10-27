@@ -1,6 +1,6 @@
-import { Exception } from '@adonisjs/core/exceptions'
+import ApiException from '#core/exceptions/api_exception'
 
-export default class InvalidAttachmentException extends Exception {
+export default class InvalidAttachmentException extends ApiException<'E_INVALID_ATTACHMENT'> {
   static override status = 422
   static override code = 'E_INVALID_ATTACHMENT'
   static override message = 'One or more attachments are missing or not accepted here'

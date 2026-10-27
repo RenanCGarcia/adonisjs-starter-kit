@@ -1,6 +1,6 @@
-import { Exception } from '@adonisjs/core/exceptions'
+import ApiException from '#core/exceptions/api_exception'
 
-export default class LastManagerException extends Exception {
+export default class LastManagerException extends ApiException<'E_LAST_MANAGER'> {
   static override status = 409
   static override code = 'E_LAST_MANAGER'
   static override message = 'This change would leave no one able to manage members'
