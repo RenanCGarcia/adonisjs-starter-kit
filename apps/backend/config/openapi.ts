@@ -1,8 +1,4 @@
 import env from '#start/env'
-import { errors as authErrors } from '@adonisjs/auth'
-import { errors as bouncerErrors } from '@adonisjs/bouncer'
-import { errors as limiterErrors } from '@adonisjs/limiter'
-import { errors as lucidErrors } from '@adonisjs/lucid'
 import { defineConfig } from '@enzopita/adonisjs-openapi'
 
 const TENANT_HEADER =
@@ -66,29 +62,6 @@ export default defineConfig({
     middleware: {
       auth: 'accessToken',
       tenant: 'tenant',
-    },
-  },
-  errors: {
-    throwers: {
-      'bouncer.authorize': bouncerErrors.E_AUTHORIZATION_FAILURE,
-      'findOrFail': lucidErrors.E_ROW_NOT_FOUND,
-      'firstOrFail': lucidErrors.E_ROW_NOT_FOUND,
-      'failures.consume': limiterErrors.E_TOO_MANY_REQUESTS,
-      'User.verifyCredentials': authErrors.E_INVALID_CREDENTIALS,
-    },
-    // `limiter.define(name, ...)` names its middleware `${name}Throttle`.
-    middleware: {
-      login_ipThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      two_factor_login_ipThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      two_factor_manageThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      signupThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      invitations_createThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      invitation_acceptThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      password_forgot_ipThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      password_forgot_emailThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      password_resetThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      email_verifyThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
-      email_verification_resendThrottle: limiterErrors.E_TOO_MANY_REQUESTS,
     },
   },
   strict: true,

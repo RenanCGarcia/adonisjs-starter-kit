@@ -136,19 +136,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "locale": {
-                    "enum": [
-                      "en-US",
-                      "pt-BR"
-                    ]
-                  },
-                  "timezone": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
+                "$ref": "#/components/schemas/profile.profile.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.profile.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.profile.update.body"
               }
             }
           }
@@ -249,20 +247,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "attachmentId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "format": "uuid"
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "attachmentId"
-                ]
+                "$ref": "#/components/schemas/profile.avatar.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.avatar.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.avatar.update.body"
               }
             }
           }
@@ -517,18 +512,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 255
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "name"
-                ]
+                "$ref": "#/components/schemas/tenants.tenants.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/tenants.tenants.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/tenants.tenants.store.body"
               }
             }
           }
@@ -2990,18 +2984,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 255
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "name"
-                ]
+                "$ref": "#/components/schemas/admin.tenants.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/admin.tenants.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/admin.tenants.update.body"
               }
             }
           }
@@ -5124,49 +5117,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "fullName": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "maxLength": 254
-                  },
-                  "password": {
-                    "type": "string",
-                    "minLength": 8,
-                    "maxLength": 128
-                  },
-                  "passwordConfirmation": {
-                    "type": "string",
-                    "minLength": 8,
-                    "maxLength": 128
-                  },
-                  "locale": {
-                    "enum": [
-                      "en-US",
-                      "pt-BR"
-                    ]
-                  },
-                  "timezone": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "fullName",
-                  "email",
-                  "password",
-                  "passwordConfirmation"
-                ]
+                "$ref": "#/components/schemas/auth.new_account.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.new_account.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.new_account.store.body"
               }
             }
           }
@@ -5445,22 +5406,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "maxLength": 254
-                  },
-                  "password": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "$ref": "#/components/schemas/auth.access_tokens.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.access_tokens.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.access_tokens.store.body"
               }
             }
           }
@@ -5683,25 +5639,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "challenge": {
-                    "type": "string",
-                    "maxLength": 2048
-                  },
-                  "code": {
-                    "type": "string",
-                    "maxLength": 16
-                  },
-                  "recoveryCode": {
-                    "type": "string",
-                    "maxLength": 32
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "challenge"
-                ]
+                "$ref": "#/components/schemas/auth.two_factor_logins.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.two_factor_logins.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.two_factor_logins.store.body"
               }
             }
           }
@@ -5808,18 +5756,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "maxLength": 254
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "email"
-                ]
+                "$ref": "#/components/schemas/auth.password_resets.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.password_resets.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.password_resets.store.body"
               }
             }
           }
@@ -5932,28 +5879,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string",
-                    "minLength": 8,
-                    "maxLength": 128
-                  },
-                  "passwordConfirmation": {
-                    "type": "string",
-                    "minLength": 8,
-                    "maxLength": 128
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "token",
-                  "password",
-                  "passwordConfirmation"
-                ]
+                "$ref": "#/components/schemas/auth.password_resets.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.password_resets.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.password_resets.update.body"
               }
             }
           }
@@ -6063,16 +5999,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "token"
-                ]
+                "$ref": "#/components/schemas/auth.email_verifications.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.email_verifications.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/auth.email_verifications.update.body"
               }
             }
           }
@@ -6844,24 +6781,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "password": {
-                    "type": "string"
-                  },
-                  "code": {
-                    "type": "string",
-                    "maxLength": 16
-                  },
-                  "recoveryCode": {
-                    "type": "string",
-                    "maxLength": 32
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "password"
-                ]
+                "$ref": "#/components/schemas/profile.two_factor.destroy.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.two_factor.destroy.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.two_factor.destroy.body"
               }
             }
           }
@@ -7093,21 +7023,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "password": {
-                    "type": "string"
-                  },
-                  "code": {
-                    "type": "string",
-                    "maxLength": 16
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "password",
-                  "code"
-                ]
+                "$ref": "#/components/schemas/profile.two_factor.confirm.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.two_factor.confirm.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.two_factor.confirm.body"
               }
             }
           }
@@ -7297,21 +7223,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "password": {
-                    "type": "string"
-                  },
-                  "code": {
-                    "type": "string",
-                    "maxLength": 16
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "password",
-                  "code"
-                ]
+                "$ref": "#/components/schemas/profile.two_factor.regenerate_recovery_codes.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.two_factor.regenerate_recovery_codes.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/profile.two_factor.regenerate_recovery_codes.body"
               }
             }
           }
@@ -7882,30 +7804,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "permissions": {
-                    "type": "array",
-                    "items": {
-                      "enum": [
-                        "roles.manage",
-                        "members.manage",
-                        "audit.view"
-                      ]
-                    },
-                    "uniqueItems": true
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "name",
-                  "permissions"
-                ]
+                "$ref": "#/components/schemas/access.roles.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/access.roles.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/access.roles.store.body"
               }
             }
           }
@@ -8111,30 +8020,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "permissions": {
-                    "type": "array",
-                    "items": {
-                      "enum": [
-                        "roles.manage",
-                        "members.manage",
-                        "audit.view"
-                      ]
-                    },
-                    "uniqueItems": true
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "name",
-                  "permissions"
-                ]
+                "$ref": "#/components/schemas/access.roles.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/access.roles.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/access.roles.update.body"
               }
             }
           }
@@ -8728,20 +8624,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "roleId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "format": "uuid"
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "roleId"
-                ]
+                "$ref": "#/components/schemas/access.member_roles.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/access.member_roles.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/access.member_roles.update.body"
               }
             }
           }
@@ -8944,24 +8837,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "permissions": {
-                    "type": "array",
-                    "items": {
-                      "enum": [
-                        "roles.manage",
-                        "members.manage",
-                        "audit.view"
-                      ]
-                    },
-                    "uniqueItems": true
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "permissions"
-                ]
+                "$ref": "#/components/schemas/access.member_permissions.update.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/access.member_permissions.update.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/access.member_permissions.update.body"
               }
             }
           }
@@ -9307,26 +9193,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "maxLength": 254
-                  },
-                  "roleId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "format": "uuid"
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "email",
-                  "roleId"
-                ]
+                "$ref": "#/components/schemas/access.invitations.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/access.invitations.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/access.invitations.store.body"
               }
             }
           }
@@ -9696,16 +9573,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "token"
-                ]
+                "$ref": "#/components/schemas/invitation_accept.store.body"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/invitation_accept.store.body"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/invitation_accept.store.body"
               }
             }
           }
@@ -11855,21 +11733,26 @@
               "type": "object",
               "properties": {
                 "message": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The human-readable error message"
                 },
                 "field": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The field path where the error occurred (dot notation)"
                 },
                 "rule": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the validation rule that failed"
                 },
                 "index": {
-                  "type": "number"
+                  "type": "number",
+                  "description": "The array index if this error is for an array element"
                 },
                 "meta": {
                   "type": "object",
                   "properties": {},
-                  "additionalProperties": {}
+                  "additionalProperties": {},
+                  "description": "Additional metadata about the error (e.g., attempted value, rule options)"
                 }
               },
               "additionalProperties": false,
@@ -11884,6 +11767,411 @@
         "additionalProperties": false,
         "required": [
           "errors"
+        ]
+      },
+      "profile.profile.update.body": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "enum": [
+              "en-US",
+              "pt-BR"
+            ]
+          },
+          "timezone": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "profile.avatar.update.body": {
+        "type": "object",
+        "properties": {
+          "attachmentId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "attachmentId"
+        ]
+      },
+      "tenants.tenants.store.body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ]
+      },
+      "admin.tenants.update.body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ]
+      },
+      "auth.new_account.store.body": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "passwordConfirmation": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "locale": {
+            "enum": [
+              "en-US",
+              "pt-BR"
+            ]
+          },
+          "timezone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "fullName",
+          "email",
+          "password",
+          "passwordConfirmation"
+        ]
+      },
+      "auth.access_tokens.store.body": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "auth.two_factor_logins.store.body": {
+        "type": "object",
+        "properties": {
+          "challenge": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "recoveryCode": {
+            "type": "string",
+            "maxLength": 32
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "challenge"
+        ]
+      },
+      "auth.password_resets.store.body": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "email"
+        ]
+      },
+      "auth.password_resets.update.body": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "passwordConfirmation": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "token",
+          "password",
+          "passwordConfirmation"
+        ]
+      },
+      "auth.email_verifications.update.body": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "token"
+        ]
+      },
+      "profile.two_factor.confirm.body": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 16
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "password",
+          "code"
+        ]
+      },
+      "profile.two_factor.destroy.body": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "recoveryCode": {
+            "type": "string",
+            "maxLength": 32
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "password"
+        ]
+      },
+      "profile.two_factor.regenerate_recovery_codes.body": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 16
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "password",
+          "code"
+        ]
+      },
+      "access.roles.store.body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "roles.manage",
+                "members.manage",
+                "audit.view"
+              ]
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "permissions"
+        ]
+      },
+      "access.roles.update.body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "roles.manage",
+                "members.manage",
+                "audit.view"
+              ]
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "permissions"
+        ]
+      },
+      "access.member_roles.update.body": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "roleId"
+        ]
+      },
+      "access.member_permissions.update.body": {
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "roles.manage",
+                "members.manage",
+                "audit.view"
+              ]
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "permissions"
+        ]
+      },
+      "access.invitations.store.body": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "roleId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "roleId"
+        ]
+      },
+      "invitation_accept.store.body": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "token"
+        ]
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "E_ACCOUNT_DISABLED",
+          "E_ALREADY_MEMBER",
+          "E_AUTHORIZATION_FAILURE",
+          "E_CANNOT_REVOKE_SELF",
+          "E_IMPERSONATING",
+          "E_INVALID_ATTACHMENT",
+          "E_INVALID_CREDENTIALS",
+          "E_INVALID_PASSWORD",
+          "E_INVALID_RESET_TOKEN",
+          "E_INVALID_TENANT_HEADER",
+          "E_INVALID_TWO_FACTOR_CHALLENGE",
+          "E_INVALID_TWO_FACTOR_CODE",
+          "E_INVALID_VERIFICATION_TOKEN",
+          "E_INVITATION_EMAIL_MISMATCH",
+          "E_INVITATION_NOT_FOUND",
+          "E_LAST_MANAGER",
+          "E_MEMBER_NOT_FOUND",
+          "E_PASSWORD_RESET_REQUIRED",
+          "E_PLATFORM_ADMIN_PROTECTED",
+          "E_REQUEST_ENTITY_TOO_LARGE",
+          "E_ROLE_IN_USE",
+          "E_SESSION_NOT_FOUND",
+          "E_TENANT_ACCESS_DENIED",
+          "E_TENANT_SUSPENDED",
+          "E_TOO_MANY_REQUESTS",
+          "E_TWO_FACTOR_ALREADY_ENABLED",
+          "E_TWO_FACTOR_NOT_ENABLED",
+          "E_TWO_FACTOR_NOT_STARTED",
+          "E_TWO_FACTOR_REQUIRED",
+          "E_UNAUTHORIZED_ACCESS",
+          "E_USER_DISABLED"
         ]
       }
     },

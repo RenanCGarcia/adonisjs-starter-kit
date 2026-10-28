@@ -101,7 +101,7 @@ Every error the API sends is `{ code, message }`, except the `422` of a failed v
 - An exception the app throws with `throw new`, in the action, in the actions and services it calls, or in a middleware of the route, with its literal `code`.
 - A response a middleware sends with a helper, such as `response.unauthorized(...)`.
 - The `401` of an authenticated route, and the `422` of an action that calls `request.validateUsing()`.
-- An exception thrown inside a package, by a call or a middleware that `errors` in `config/openapi.ts` names: the `403` of `bouncer.authorize()`, the `404` of `findOrFail()` and `firstOrFail()`, the `400` of `User.verifyCredentials()`, and the `429` of `failures.consume()` and of each throttle. Add a new throttle from `start/limiter.ts` to `errors.middleware`, under the name `node ace list:routes` shows.
+- An exception thrown inside an AdonisJS package, with no config: the `403` of `bouncer.authorize()`, the `404` of `findOrFail()` and `firstOrFail()`, the `400` of `verifyCredentials()`, and the `429` of the limiter. An exception thrown inside another package goes in `errors` in `config/openapi.ts`.
 
 **Describe a response once, on its class.** The first paragraph of an exception's doc comment (`/** The role is still assigned to a member */`) describes its response on every route. A response that only that class sends becomes a `$ref` in `components.responses`.
 
