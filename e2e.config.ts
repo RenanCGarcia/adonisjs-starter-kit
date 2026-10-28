@@ -23,8 +23,26 @@ export default {
         url: 'http://localhost:5173',
         readyUrl: 'http://localhost:3333/',
         command: {
-          executable: 'pnpm',
-          args: ['dev', '--ui=stream'],
+          // The runner spawns without a shell, and Windows only runs pnpm's `.cmd` shim through one.
+          // Its default environment also misses the Windows variables tools locate their files by
+          // (docker finds its compose plugin under ProgramFiles and USERPROFILE).
+          ...(process.platform === 'win32'
+            ? {
+                executable: 'cmd.exe',
+                args: ['/d', '/s', '/c', 'pnpm dev --ui=stream'],
+                inheritEnv: [
+                  'USERPROFILE',
+                  'APPDATA',
+                  'LOCALAPPDATA',
+                  'ProgramData',
+                  'ProgramFiles',
+                  'ProgramFiles(x86)',
+                  'ProgramW6432',
+                  'SystemDrive',
+                  'PATHEXT',
+                ],
+              }
+            : { executable: 'pnpm', args: ['dev', '--ui=stream'] }),
           startupTimeout: 120_000,
           log: '.e2e/logs/app.log',
         },
