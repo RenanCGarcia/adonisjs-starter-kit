@@ -30,9 +30,6 @@ export default class SessionsController {
    * Revoke a session
    *
    * Signs that session out. It can be the current one.
-   *
-   * @throws {403} The session is an admin acting as the user
-   * @throws {404} No active session of the user has this id
    */
   async destroy({ auth, i18n, request, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
@@ -53,8 +50,6 @@ export default class SessionsController {
    *
    * Signs the user out everywhere except the session making the request. `revoked` is how many
    * sessions were signed out.
-   *
-   * @throws {403} The session is an admin acting as the user
    */
   async destroyAll({ auth, serialize }: HttpContext) {
     const user = auth.getUserOrFail()

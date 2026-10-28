@@ -14,7 +14,7 @@ export default class MembersController {
    * Requires `members.manage`. Returns each member's profile, role id and individual
    * permissions, sorted by name, or by email when the name is empty.
    *
-   * @throws {403} Lacks `members.manage`
+   * @response {403} Lacks `members.manage`
    */
   async index({ bouncer, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)

@@ -17,7 +17,7 @@ export default class InvitationsController {
    * Requires `members.manage`. Returns the invitations not yet accepted or revoked, newest
    * first. Expired ones are included: compare `expiresAt` with the current time.
    *
-   * @throws {403} Lacks `members.manage`
+   * @response {403} Lacks `members.manage`
    */
   async index({ bouncer, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)
@@ -34,9 +34,8 @@ export default class InvitationsController {
    * email that already has a pending invitation replaces it: the old link stops working
    * and the role and expiry are reset.
    *
-   * @throws {403} Lacks `members.manage`
-   * @throws {409} The email already belongs to a member of the tenant
-   * @throws {429} Too many attempts; retry after the Retry-After header
+   * @response {403} Lacks `members.manage`
+   * @response {429} Too many attempts; retry after the Retry-After header
    */
   async store({ bouncer, request, auth, tenant, i18n, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)
@@ -58,8 +57,8 @@ export default class InvitationsController {
    *
    * Requires `members.manage`. The invitation link stops working.
    *
-   * @throws {403} Lacks `members.manage`
-   * @throws {404} Invitation not found
+   * @response {403} Lacks `members.manage`
+   * @response {404} Invitation not found
    */
   async destroy({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)

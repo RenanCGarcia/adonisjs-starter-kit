@@ -14,9 +14,7 @@ export default class MemberRolesController {
    * Requires `members.manage`. Replaces the member's role; a null `roleId` leaves them
    * without one. Their individual permissions are kept.
    *
-   * @throws {403} Lacks `members.manage`
-   * @throws {404} The user is not a member of the tenant
-   * @throws {409} The change would leave no one able to manage members
+   * @response {403} Lacks `members.manage`
    */
   async update({ bouncer, request, tenant, serialize }: HttpContext) {
     await bouncer.authorize(can, PERMISSIONS.membersManage)

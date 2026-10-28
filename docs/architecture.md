@@ -77,16 +77,16 @@ The frontend calls the API through Tuyau, whose types are inferred from the cont
 
 Expected failures are exceptions, not response helpers: see [Errors](#errors). The frontend narrows them with `error.isStatus(404)` or by `code`.
 
-The same rules feed the OpenAPI document (`@enzopita/adonisjs-openapi`, configured in `config/openapi.ts`). Outside production, `GET /docs` renders it with Scalar, generated live on each request; `node ace openapi:generate` writes it to `openapi.json`. The first paragraph of the action's doc comment is the operation summary, and `@throws` tags document the statuses the generator can't derive on its own.
+The same rules feed the OpenAPI document (`@enzopita/adonisjs-openapi`, configured in `config/openapi.ts`). Outside production, `GET /docs` renders it with Scalar, generated live on each request; `node ace openapi:generate` writes it to `openapi.json`, which is committed. The first paragraph of the action's doc comment is the operation summary, and `@response` tags describe the statuses that need a reason for this action.
 
 Every action documents itself for API clients, in en-US, as a doc comment:
 
 - **Summary**: the first paragraph, an imperative phrase of at most 60 characters with no period (`Create a role`).
 - **Description**: the next paragraphs, only what a caller can't read from the schema: the permission it requires, side effects such as an email or signed-out sessions, and non-obvious behavior. Reasoning for maintainers goes in a `//` comment inside the method.
 - **`@tags`**: one tag declared in `config/openapi.ts`, on the class when every action shares it.
-- **`@throws`**: only what the generator can't see, listed under [Errors](#errors).
+- **`@response`**: a reason for a status only this action explains, listed under [Errors](#errors).
 
-`app/core/tests/functional/openapi.spec.ts` fails on an operation without a summary or a declared tag.
+`config/openapi.ts` sets `strict: true` and the summary rules, so any warning, such as an operation without a summary or a declared tag, fails `node ace openapi:check --strict`. `app/core/tests/functional/openapi.spec.ts` and the `pre-push` hook run it.
 
 ## Errors
 
@@ -101,17 +101,19 @@ Every error the API sends is `{ code, message }`, except the `422` of a failed v
 - An exception the app throws with `throw new`, in the action, in the actions and services it calls, or in a middleware of the route, with its literal `code`.
 - A response a middleware sends with a helper, such as `response.unauthorized(...)`.
 - The `401` of an authenticated route, and the `422` of an action that calls `request.validateUsing()`.
+- An exception thrown inside an AdonisJS package, with no config: the `403` of `bouncer.authorize()`, the `404` of `findOrFail()` and `firstOrFail()`, the `400` of `verifyCredentials()`, and the `429` of the limiter. An exception thrown inside another package goes in `errors` in `config/openapi.ts`.
 
-**Add a `@throws` tag to the action's doc comment for what it can't see:**
+**Describe a response once, on its class.** The first paragraph of an exception's doc comment (`/** The role is still assigned to a member */`) describes its response on every route. A response that only that class sends becomes a `$ref` in `components.responses`.
 
-- The `404` of `findOrFail()`: `@throws {404} Reason`. The status of a package exception is typed `number`, so the generator can't read it.
-- The `403` of a bouncer `authorize()`, naming the permission: `` @throws {403} Lacks `members.manage` ``. The exception is thrown inside the package.
-- The `429` of a throttled route: `@throws {429} Reason`.
-- An exception thrown from code the generator doesn't follow, such as a function a package calls: `@throws {import('#access/exceptions/last_manager_exception').default}`. The controller doesn't import it.
+**Add a `@response` tag to the action's doc comment only for a reason the action owns:**
 
-A `@throws {status} Reason` on a status the generator already derives replaces its standard text with the reason. Give one to every status the action can answer with, so a caller reads when it happens.
+- `` @response {403} Lacks `members.manage` `` for a bouncer `authorize()`, naming the permission.
+- `@response {404} Role not found` for a `findOrFail()`.
+- `@response {429} Reason` for a throttled route.
 
-To generate the document, open `GET /docs` in development, or run `node ace openapi:generate` to write `openapi.json`. The command prints a warning for a route it skipped, such as a closure, and for a model returned without a transformer.
+`@response {N} reason` only describes a status the generator already derives, and fails with `OA-T003` otherwise. Its reason replaces the description for that operation. For a status that nothing derives and no class sends, declare the body too: `@response {413} {EntityTooLarge} Reason`. For an exception thrown from code the generator doesn't follow, such as a function a package calls, use `@throws {LastManagerException}`, found by name in `app/**/exceptions/`.
+
+After changing a route, an action, a validator or an exception, run `node ace openapi:generate` and commit `openapi.json`. `node ace openapi:check --strict` fails when the committed file is stale or a diagnostic is left, such as a route the generator skipped or a model returned without a transformer. `node ace openapi:generate --explain=<route name>` prints where each response of a route comes from.
 
 ## Attachments
 

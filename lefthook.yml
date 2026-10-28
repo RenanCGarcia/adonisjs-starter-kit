@@ -18,3 +18,10 @@ commit-msg:
   commands:
     commitlint:
       run: pnpm commitlint --edit {1}
+
+pre-push:
+  commands:
+    openapi:
+      root: apps/backend/
+      glob: "apps/backend/{app/**,start/**,config/openapi.ts,adonisrc.ts,package.json,openapi.json}"
+      run: node ace openapi:check --strict

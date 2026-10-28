@@ -10,7 +10,6 @@ export default class PermissionCatalogController {
    *
    * Any member of the tenant may call it. Returns every permission a role or a member can
    * hold, grouped by area, for rendering role and permission editors.
-   *
    */
   async show({ serialize }: HttpContext) {
     return serialize({ groups: PERMISSION_GROUPS })

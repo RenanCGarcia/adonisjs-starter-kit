@@ -16,8 +16,8 @@ export default class TenantSuspensionsController {
    * Suspending a tenant that is already suspended keeps its first suspension date. Records an
    * audit event.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} Tenant not found
+   * @response {403} Not a platform admin
+   * @response {404} Tenant not found
    */
   async store(ctx: HttpContext) {
     return this.set(ctx, true)
@@ -28,8 +28,8 @@ export default class TenantSuspensionsController {
    *
    * Requires `platform.admin`. Records an audit event.
    *
-   * @throws {403} Not a platform admin
-   * @throws {404} Tenant not found
+   * @response {403} Not a platform admin
+   * @response {404} Tenant not found
    */
   async destroy(ctx: HttpContext) {
     return this.set(ctx, false)

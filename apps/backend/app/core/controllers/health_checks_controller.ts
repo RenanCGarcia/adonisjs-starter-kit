@@ -21,7 +21,7 @@ export default class HealthChecksController {
    * (database, Redis, storage, disk and memory) and returns the report: `200` when all pass,
    * `503` with the same report when any fails.
    *
-   * @throws {401} The X-Monitoring-Secret header is missing or wrong
+   * @response {401} The X-Monitoring-Secret header is missing or wrong
    */
   async ready({ response, serialize }: HttpContext) {
     const report = await healthChecks.run()
