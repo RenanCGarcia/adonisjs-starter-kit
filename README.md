@@ -103,8 +103,6 @@ Arrows are allowed imports, declared in [`apps/backend/modules.json`](apps/backe
 ## Quick start
 
 > Requires **Node 24**, **pnpm** via Corepack (`corepack enable`) and **Docker**.
->
-> On Windows, run `pnpm test:e2e` inside WSL 2: the e2e runner doesn't support native Windows.
 
 ```sh
 git clone --depth 1 https://github.com/enzopita/adonisjs-starter-kit.git my-app
